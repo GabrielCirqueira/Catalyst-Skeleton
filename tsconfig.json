@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "lib": ["ES2015", "DOM"],
+        "strict": true,
+        "baseUrl": "assets/js",
+        "paths": {
+            "@components/*": ["components/*"],
+        }
+    }
+  }
+  
