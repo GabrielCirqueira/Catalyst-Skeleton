@@ -1,6 +1,6 @@
 # Modern Symfony + React + Vite + Chakra UI Starter
 
-![Project Architecture](https://github.com/user-attachments/assets/879c752c-fc46-4581-9761-df564a551129)
+![image](https://github.com/user-attachments/assets/7060048b-d585-4a1d-8b26-863d52c4a8d2)
 
 Este é um starter kit moderno que integra o Symfony como backend com React no frontend, utilizando Vite como bundler e Chakra UI para estilização. A estrutura foi projetada para desenvolvimento ágil com foco em performance, qualidade de código e boas práticas.
 
