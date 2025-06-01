@@ -1,152 +1,217 @@
-# Skeleton Symfony + React + Vite + Chakra UI
+# Modern Symfony + React + Vite + Chakra UI Starter
 
-![image](https://github.com/user-attachments/assets/879c752c-fc46-4581-9761-df564a551129)
+![Project Architecture](https://github.com/user-attachments/assets/879c752c-fc46-4581-9761-df564a551129)
 
-Este é um skeleton que integra o framework Symfony com React, usando o Vite como bundler e Chakra UI para estilização. Esse esqueleto foi projetado para fornecer uma estrutura inicial simples e eficiente para desenvolvimento de aplicações web modernas.
+Este é um starter kit moderno que integra o Symfony como backend com React no frontend, utilizando Vite como bundler e Chakra UI para estilização. A estrutura foi projetada para desenvolvimento ágil com foco em performance, qualidade de código e boas práticas.
 
-## Tecnologias
+## ✨ Tecnologias Principais
 
-*   **Symfony:** Framework PHP robusto para construção de aplicações web.
-*   **React:** Biblioteca JavaScript para criação de interfaces de usuário dinâmicas.
-*   **Vite:** Bundler ultra-rápido para aplicações JavaScript e React.
-*   **Chakra UI:** Biblioteca de componentes React para estilização com foco em acessibilidade e simplicidade.
+- **Symfony 6**: Framework PHP robusto para construção de APIs e backend
+- **React 18**: Biblioteca JavaScript para interfaces dinâmicas com TypeScript
+- **Vite**: Bundler ultra-rápido com hot module replacement
+- **Chakra UI**: Biblioteca de componentes acessíveis e customizáveis
+- **Lucide**: Ícones modernos e leves para a interface
+- **ESLint + PHP CS Fixer**: Linters para manter a qualidade do código
 
-## Instalação
+## 🚀 Instalação
 
 ### Pré-requisitos
 
-Certifique-se de que você tenha o Composer (para o Symfony) e o Node.js (para o React e Vite) instalados no seu sistema.
+- PHP 8.2+
+- Composer 2.6+
+- Node.js 18+
+- Yarn (opcional)
 
-*   [Instalar o Composer](https://getcomposer.org/download/)
-*   [Instalar o Node.js](https://nodejs.org/)
+### Passo a Passo
 
-### Passo 1: Instalar Dependências do PHP (Symfony)
+1. **Clonar o repositório**
+   ```bash
+   git clone https://github.com/GabrielCirqueira/Skeleton-Symfony-React.git
+   cd Skeleton-Symfony-React
+   ```
 
-No diretório raiz do projeto, execute o seguinte comando para instalar as dependências do PHP com o Composer:
+2. **Instalar dependências PHP**
+   ```bash
+   composer install
+   ```
 
+3. **Instalar dependências JavaScript**
+   ```bash
+   npm install
+   # ou com yarn
+   yarn
+   ```
+
+4. **Iniciar servidores de desenvolvimento**
+   ```bash
+   # Backend (Symfony)
+   symfony serve -d
+   
+   # Frontend (Vite)
+   npm run dev
+   ```
+
+5. **Acessar a aplicação**
+   - Backend: `http://localhost:8000`
+   - Frontend: `http://localhost:5173`
+
+## 🏗️ Estrutura do Projeto
+
+```
+├── assets/
+│   ├── js/
+│   │   ├── app/            # Aplicação React principal
+│   │   │   ├── layouts/    # Layouts compartilhados
+│   │   │   ├── pages/      # Páginas lazy-loaded
+│   │   │   └── themes/     # Configurações de tema
+│   │   └── index.tsx       # Ponto de entrada
+├── config/
+│   └── routes.yaml         # Configuração de rotas
+├── public/                 # Arquivos públicos
+├── src/                    # Código PHP Symfony
+├── .eslintrc               # Configuração ESLint
+├── .php-cs-fixer.php       # Configuração PHP CS Fixer
+├── package.json            # Dependências Node.js
+├── composer.json           # Dependências PHP
+└── vite.config.js          # Configuração Vite
+```
+
+## 🔍 Principais Funcionalidades
+
+### Linting e Formatação
+
+**JavaScript/TypeScript:**
 ```bash
-composer install
- ```
-
-Este comando irá ler o arquivo `composer.json` e instalar as dependências necessárias para o Symfony funcionar corretamente.
-
-### Passo 2: Instalar Dependências do Node.js (React + Vite + Chakra UI)
-
-Após instalar as dependências do PHP, vamos instalar as dependências do Node.js para o React, Vite, Chakra UI e outros pacotes.
-
-1.  Navegue até o diretório do projeto onde está o `package.json` (geralmente na raiz do projeto).
-2.  Execute o seguinte comando para instalar os pacotes:
-
- ```bash
- npm install
- ```
-
-Esse comando irá ler o `package.json` e instalar todos os pacotes necessários, incluindo o React, Vite, Chakra UI, e outros módulos que seu projeto pode depender.
-
-### Passo 3: Inicializar o Symfony
-
-Com as dependências do Composer instaladas, inicie o servidor local do Symfony para rodar a parte backend da aplicação:
-
- ```bash
- symfony server:start
- ```
-
-Isso irá iniciar o servidor de desenvolvimento do Symfony.
-
-### Passo 4: Inicializar o Vite para React
-
-Agora, inicie o Vite para rodar a aplicação React com hot-reloading. Execute o seguinte comando para iniciar o servidor de desenvolvimento:
-
- ```bash
- npm run dev
- ```
-
-Este comando vai iniciar o Vite, que irá servir a aplicação React no endereço `http://localhost:5173` (ou o endereço configurado no `vite.config.js`).
-
-### Passo 5: Acessar a Aplicação
-
-*   Acesse o Symfony pelo endereço padrão: `http://localhost:8000`.
-*   Acesse o frontend React servido pelo Vite: `http://localhost:5173`.
-
-## Estrutura do Projeto
-
-A estrutura do projeto está organizada da seguinte maneira:
-
-```
-/public
-│── index.php                # Arquivo de entrada do Symfony
-│
-/assets
-│── /js
-│   │── index.tsx            # Arquivo principal do React
-│   │
-│   └── /components
-│       └── HelloWorld.tsx   # Componente HelloWorld
-│
-│── /styles
-│   └── style.css            # Arquivo de estilos principais (se necessário)
-│
-/templates
-│── base.html.twig           # Template base do Symfony
-│
-/config
-│── /packages
-│   └── pentatrion_vite.yaml # Configuração do Vite no Symfony
-│
-vite.config.js               # Configuração do Vite
-composer.json                # Dependências do Symfony (PHP)
-package.json                 # Dependências do Node.js (React, Vite, Chakra UI)
-
+npm run lint:tsx  # ESLint para arquivos React/TypeScript
 ```
 
-## Como Funciona
+**PHP:**
+```bash
+npm run lint:php  # PHP CS Fixer para padronização PHP
+```
 
-*   O Symfony serve como backend e fornece as rotas para renderizar o frontend.
-*   O React é utilizado para criar a interface de usuário interativa.
-*   O Vite serve como bundler e servidor de desenvolvimento para a aplicação React.
-*   Chakra UI é utilizado para estilizar o frontend de maneira simples e acessível.
+**Ambos:**
+```bash
+npm run lint:all  # Executa ambos os linters
+```
 
+Configurações padrão incluídas para:
+- ESLint com plugins React e TypeScript
+- Prettier para formatação automática
+- PHP CS Fixer com padrões PSR-12
 
-## Como Usar
+### Estrutura React Moderna
 
-Este esqueleto foi projetado para servir como ponto de partida para o desenvolvimento de aplicações web modernas, combinando o poder do backend com Symfony e a flexibilidade do frontend com React, Vite e Chakra UI.
+- **Componentes funcionais** com Hooks
+- **Lazy loading** de páginas e componentes
+- **Tema centralizado** com Chakra UI
+- **Ícones** com Lucide React
+- **Gerenciamento de estado** pronto para expansão
 
-**Fluxo de Desenvolvimento:**
+## 🛠️ Comandos Úteis
 
-1.  **Backend (Symfony):**
-    *   Desenvolva a lógica de negócios, APIs e rotas no Symfony.
-    *   Crie os endpoints necessários para o frontend consumir dados e realizar ações.
-    *   Utilize o sistema de templates do Symfony (Twig) para renderizar o HTML inicial e integrar o frontend React.
+| Comando                | Descrição                                  |
+|------------------------|-------------------------------------------|
+| `npm run dev`          | Inicia Vite dev server                    |
+| `npm run build`        | Build de produção                         |
+| `npm run lint:tsx`     | Lint para arquivos TypeScript/JSX         |
+| `npm run lint:php`     | Lint para arquivos PHP                    |
+| `npm run lint:all`     | Executa todos os linters                  |
+| `symfony serve -d`     | Inicia servidor Symfony em background     |
 
-2.  **Frontend (React, Vite, Chakra UI):**
-    *   Construa a interface de usuário com React, utilizando componentes reutilizáveis e gerenciamento de estado.
-    *   Faça requisições para os endpoints do backend Symfony para obter dados e executar ações.
-    *   Utilize o Vite para otimizar o processo de desenvolvimento, com hot-reloading e build rápido.
-    *   Estilize a aplicação com Chakra UI, aproveitando seus componentes acessíveis e personalizáveis.
+## 🎨 Design System
+ 
+Nosso tema utiliza uma paleta de cores personalizada chamada **brand** que segue o padrão do Chakra UI:
 
-**Passos para Começar:**
+```ts
+colors: {
+  brand: {
+      50: '#E6F6F7',
+      100: '#B3E1E4',
+      200: '#80CCCC',
+      300: '#4DB7B3',
+      400: '#26A3A0',
+      500: '#1F8C89',
+      600: '#186F6E',
+      700: '#125355',
+      800: '#0B393B',
+      900: '#041F20',
+  }
+}
+```
 
-1.  **Clone o repositório:**
+### Como usar as cores brand:
+```tsx
+// Exemplo de uso
+<Box bg="brand.100" color="brand.700">
+  <Text>Texto com cor brand</Text>
+</Box>
 
-    ```bash
-    git clone https://github.com/GabrielCirqueira/Skeleton-Symfony-React.git
-    ```
+<Button colorScheme="brand">Botão Primário</Button>
+```
 
-2.  **Instale as dependências:**
-    *   Siga os passos de instalação descritos anteriormente para configurar o Symfony e o ambiente React.
+**Dica profissional:** Use `useColorModeValue` para alternar entre cores em light/dark mode:
+```tsx
+const color = useColorModeValue('brand.600', 'brand.300')
+```
 
-3.  **Desenvolva:**
-    *   Comece pelo backend, criando as rotas e controladores necessários no Symfony.
-    *   Em seguida, desenvolva os componentes React e conecte-os aos endpoints do backend.
-    *   Utilize o Vite para visualizar as alterações em tempo real durante o desenvolvimento.
+## 🛣️ Sistema de Rotas Avançado
 
-4.  **Teste:**
-    *   Certifique-se de testar tanto o backend (com testes unitários e de integração) quanto o frontend (com testes unitários e de componentes).
+### Backend (Symfony)
+```yaml
+# config/routes.yaml
+react_frontend:
+  path: /{reactRouting}
+  controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+  defaults:
+    template: 'base.html.twig'
+  requirements:
+    reactRouting: ".+"
+```
 
-5.  **Implante:**
-    *   Após finalizar o desenvolvimento e testes, prepare a aplicação para implantação em um servidor.
-    *   Consulte a documentação do Symfony e do Vite para obter instruções sobre como realizar a implantação.
+Esta configuração permite que:
+- Todas as rotas sejam manipuladas pelo React Router
+- O Symfony sirva apenas o template base para o frontend
+- URLs amigáveis e limpas
 
+### Frontend (React Router)
+Estrutura moderna com lazy loading:
 
+```tsx
+// Exemplo de roteamento lazy-loaded
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<AppLayout />}>
+      <Route 
+        path="/" 
+        lazy={() => import('@app/pages/Home')} 
+      />
+      <Route 
+        path="/about" 
+        lazy={() => import('@app/pages/About')} 
+      />
+      <Route 
+        path="*" 
+        lazy={() => import('@app/pages/NotFound')} 
+      />
+    </Route>
+  )
+)
+```
 
-Este modelo oferece uma base sólida para construir aplicações web modernas e eficientes, explorando o melhor dos dois mundos: a robustez do Symfony no backend e a interatividade do React no frontend.
+**Vantagens:**
+- Carregamento sob demanda (melhor performance)
+- Código dividido automaticamente pelo Vite
+- Fácil manutenção e adição de novas rotas
+
+## 🤝 Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.

@@ -1,13 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import App from 'App'
 import { ChakraProvider } from '@chakra-ui/react'
-import HelloWorld from './components/HelloWorld';
+import ReactDOM from 'react-dom/client'
 
-const element = document.getElementById('root') as HTMLElement;
-const root = ReactDOM.createRoot(element);
+const element = document.getElementById('root') as HTMLElement
+const root = ReactDOM.createRoot(element)
 
 root.render(
   <ChakraProvider>
-    <HelloWorld />
+    <App />
   </ChakraProvider>
-);
+)

@@ -1,0 +1,11 @@
+node_modules/
+vendor/
+public/
+build/
+dist/
+*.config.js
+*.config.cjs
+*.config.mjs
+*.json
+*.php
+*.js

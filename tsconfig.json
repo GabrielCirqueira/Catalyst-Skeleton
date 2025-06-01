@@ -1,12 +1,40 @@
 {
-    "compilerOptions": {
-        "jsx": "react-jsx",
-        "lib": ["ES2015", "DOM"],
-        "strict": true,
-        "baseUrl": "assets/js",
-        "paths": {
-            "@components/*": ["components/*"],
-        }
-    }
-  }
-  
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": false,
+    "noImplicitAny": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "sourceMap": true,
+    "noLib": false,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "incremental": true,
+    "baseUrl": "./assets/js",
+    "paths": {
+      "@app/*": ["app/*"],
+      "@components/*": ["app/components/*"],
+      "@pages/*": ["app/pages/*"],
+      "@themes/*": ["app/themes/*"],
+      "@layouts/*": ["app/layouts/*"]
+    },
+    "types": ["webpack-env", "node"],
+    "lib": ["DOM", "ESNext"]
+  },
+  "include": ["assets/js"],
+  "exclude": ["node_modules","vendor", "public/build"]
+}
