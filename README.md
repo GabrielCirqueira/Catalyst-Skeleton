@@ -26,8 +26,8 @@ Este é um starter kit moderno que integra o Symfony como backend com React no f
 
 1. **Clonar o repositório**
    ```bash
-   git clone https://github.com/GabrielCirqueira/Skeleton-Symfony-React.git
-   cd Skeleton-Symfony-React
+   git clone https://github.com/GabrielCirqueira/Catalyst-Skeleton.git
+   cd Catalyst-Skeleton
    ```
 
 2. **Instalar dependências PHP**
@@ -52,8 +52,10 @@ Este é um starter kit moderno que integra o Symfony como backend com React no f
    ```
 
 5. **Acessar a aplicação**
-   - Backend: `http://localhost:8000`
-   - Frontend: `http://localhost:5173`
+   - Backend: `http://localhost:8000` (configurável via `BACKEND_PORT` em `docker/ports.env`)
+   - Frontend: `http://localhost:5173` (configurável via `FRONTEND_PORT` em `docker/ports.env`)
+
+   > Ajuste os valores em `docker/ports.env` para trocar as portas expostas pela stack.
 
 ## 🏗️ Estrutura do Projeto
 

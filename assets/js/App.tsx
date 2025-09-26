@@ -11,7 +11,7 @@ import theme from '@app/themes/theme'
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AppLayout />}>
-        <Route path="*" lazy={() => import('@app/pages/HelloWorld')} />
+      <Route path="*" lazy={() => import('@app/pages/HelloWorld')} />
     </Route>
   )
 )

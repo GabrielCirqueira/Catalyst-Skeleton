@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import symfonyPlugin from 'vite-plugin-symfony'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+const frontendPort = Number.parseInt(process.env.FRONTEND_PORT ?? '', 10) || 5173
+
 export default defineConfig((config) => ({
   plugins: [
     react(),
@@ -20,7 +22,8 @@ export default defineConfig((config) => ({
   server: {
     hmr: {
       host: 'localhost',
+      port: frontendPort,
     },
-    port: 5173,
+    port: frontendPort,
   },
 }))

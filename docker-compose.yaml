@@ -1,14 +1,71 @@
 services:
-  db:
+  database:
     image: mysql:8.3
+    container_name: skeleton_database
+    restart: always
     environment:
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpass
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: skeleton
+      MYSQL_USER: skeleton
+      MYSQL_PASSWORD: skeleton
     ports:
-      - "3309:3306"
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    tmpfs:
-      - /var/lib/mysql
+      - "${DATABASE_HOST_PORT:-3309}:${DATABASE_CONTAINER_PORT:-3306}"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  symfony:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skeleton_symfony
+    restart: always
+    env_file:
+      - ports.env
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+      - "${SUPERVISOR_PORT:-9001}:9001"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - database
+      # - redis
+
+  vite-react:
+    image: node:20
+    container_name: skeleton_vite_react
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
+    env_file:
+      - ports.env
+    ports:
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
+    depends_on:
+      - symfony
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis
+  #   restart: always
+  #   command: redis-server --appendonly yes
+  #   volumes:
+  #     - redis_data:/data
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 10
+
+  # redisinsight:
+  #   image: redis/redisinsight:latest
+  #   container_name: redisinsight
+  #   restart: always
+  #   ports:
+  #     - "5540:5540"
+  #   depends_on:
+  #     - redis
+
+volumes:
+  db_data:
+  # redis_data:

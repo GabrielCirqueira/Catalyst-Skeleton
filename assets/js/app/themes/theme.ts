@@ -1,10 +1,10 @@
-import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
+import { extendTheme, type ThemeConfig } from '@chakra-ui/react'
 
 // Configuração inicial do tema (dark/light mode)
 const config: ThemeConfig = {
   initialColorMode: 'light',
   useSystemColorMode: false,
-};
+}
 
 const theme = extendTheme({
   config,
@@ -61,7 +61,6 @@ const theme = extendTheme({
         borderRadius: 'full',
       },
     }),
-    
   },
   components: {
     Button: {
@@ -144,6 +143,6 @@ const theme = extendTheme({
       },
     },
   },
-});
+})
 
-export default theme;
+export default theme

@@ -1,0 +1,4 @@
+# Tarefas agendadas do container.
+
+# Executa um comando de teste a cada hora.
+0 * * * * root php /var/www/html/bin/console app:cron:heartbeat --no-interaction >> /var/log/cron/command.log 2>&1
