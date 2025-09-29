@@ -11,7 +11,6 @@ export default function AppContainer({
       maxW="full"
       flex={1}
       flexDirection="column"
-      px={{ base: 4, md: 20 }}
       justifyItems="center"
     >
       {children}

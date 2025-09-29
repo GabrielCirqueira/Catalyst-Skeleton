@@ -14,7 +14,7 @@ export default defineConfig((config) => ({
   build: {
     rollupOptions: {
       input: {
-        app: './assets/js/app/main.tsx',
+        app: './web/main.tsx',
       },
     },
     sourcemap: config.mode === 'development',

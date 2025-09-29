@@ -37,7 +37,7 @@ export function Component() {
   }, [])
 
   return (
-    <VStack gap={24} align="stretch" px={{ base: 4, md: 14 }} py={20}>
+    <VStack gap={24} align="stretch" px={{ base: 4, md: 14 }} py={5}>
       <ColorModeButton
         size="lg"
         alignSelf="flex-end"

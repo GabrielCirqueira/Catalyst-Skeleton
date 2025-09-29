@@ -13,7 +13,7 @@ const config = defineConfig({
   theme: {
     tokens: {
       colors: {
-        brand: {
+        brand: {  
           50: { value: '#e0faf9' },
           100: { value: '#b8f2ed' },
           200: { value: '#7fe2dc' },

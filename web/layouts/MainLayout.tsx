@@ -8,7 +8,7 @@ export default function MainLayout({
   children?: React.ReactNode
 }) {
   return (
-    <Container maxW="container.lg" py={8}>
+    <Container maxW="container.lg" >
       {children || <Outlet />}
     </Container>
   )
