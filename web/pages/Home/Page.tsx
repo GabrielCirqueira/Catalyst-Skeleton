@@ -53,9 +53,12 @@ export function Component() {
         animationName="fade-in, slide-from-bottom"
         animationDuration="600ms"
       >
-        <Heading size="3xl" color="brand.500">
-          Skeleton Vite + React + Chakra UI v3
+        <Heading size="4xl" color="brand.500">
+          Catalyst Skeleton
         </Heading>
+        <Text fontSize="2xl" color={textColor}>
+          Skeleton Vite + React + Chakra UI v3
+        </Text>
         <Text mt={3} fontSize="lg" color={textColor}>
           Estrutura mínima com roteamento, tema custom e lint prontos para uso
         </Text>
