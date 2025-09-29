@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
-    "declaration": false,
     "noImplicitAny": false,
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
@@ -18,23 +18,26 @@
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "incremental": true,
-    "baseUrl": "./assets/js",
+    "baseUrl": "./",
     "paths": {
-      "@app/*": ["app/*"],
-      "@components/*": ["app/components/*"],
-      "@pages/*": ["app/pages/*"],
-      "@themes/*": ["app/themes/*"],
-      "@layouts/*": ["app/layouts/*"]
+      "@app/*": ["web/*"],
+      "@components/*": ["web/components/*"],
+      "@pages/*": ["web/pages/*"],
+      "@themes/*": ["web/themes/*"],
+      "@layouts/*": ["web/layouts/*"]
     },
     "types": ["webpack-env", "node"],
     "lib": ["DOM", "ESNext"]
   },
-  "include": ["assets/js"],
+  "include": ["assets/js", "web/components", "web/layouts", "web/pages", "web/themes", "web/App.tsx", "web/main.tsx", "web/vite-env.d.ts"],
   "exclude": ["node_modules","vendor", "public/build"]
 }
