@@ -5,9 +5,9 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 import system from '@app/themes/theme'
-import { ChakraProvider } from '@chakra-ui/react'
 import { MainLayout } from '@app/layouts'
 import { ColorModeProvider } from '@app/components/ui/color-mode'
+import { ChakraProvider } from '@chakra-ui/react'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -16,8 +16,8 @@ const router = createBrowserRouter(
         <Route index lazy={() => import('@app/pages/Home')} />
         <Route path="*" lazy={() => import('@app/pages/NotFound')} />
       </Route>
-    </Route>,
-  ),
+    </Route>
+  )
 )
 
 function App() {

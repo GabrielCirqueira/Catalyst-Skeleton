@@ -4,11 +4,11 @@ COMPOSE ?= docker compose
 COMPOSE_FILE ?= docker-compose.yaml
 COMPOSE_ENV_FILE ?= ports.env
 COMPOSE_CMD = $(COMPOSE) --env-file $(COMPOSE_ENV_FILE) -f $(COMPOSE_FILE)
-EXEC_BACKEND = $(COMPOSE_CMD) exec backend
-EXEC_FRONTEND = $(COMPOSE_CMD) exec frontend
-EXEC_SCHEDULER = $(COMPOSE_CMD) exec scheduler
+EXEC_BACKEND = $(COMPOSE_CMD) exec symfony
+EXEC_FRONTEND = $(COMPOSE_CMD) exec vite-react
+EXEC_SCHEDULER = $(COMPOSE_CMD) exec symfony
 
-.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell
+.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell
 
 help: ## List available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-24s %s\n", $$1, $$2}'
@@ -31,40 +31,46 @@ down: ## Stop and remove all services
 
 install: install-backend install-frontend ## Install PHP and Node dependencies
 
-install-backend: ## Install composer dependencies using the backend image
-	$(COMPOSE_CMD) run --rm backend composer install --no-interaction --prefer-dist
+install-backend: ## Install composer dependencies using the symfony container
+	$(COMPOSE_CMD) run --rm symfony composer install --no-interaction --prefer-dist
 
-install-frontend: ## Install npm dependencies using the frontend image
-	$(COMPOSE_CMD) run --rm frontend sh -lc "npm install"
+install-frontend: ## Install npm dependencies using the Vite container
+	$(COMPOSE_CMD) run --rm vite-react sh -lc "npm install"
 
 composer: ## Run an arbitrary composer command (ARGS="update")
-	$(COMPOSE_CMD) run --rm backend composer $(ARGS)
+	$(COMPOSE_CMD) run --rm symfony composer $(ARGS)
 
 npm: ## Run an arbitrary npm command (ARGS="run build")
-	$(COMPOSE_CMD) run --rm frontend npm $(ARGS)
+	$(COMPOSE_CMD) run --rm vite-react npm $(ARGS)
 
-lint-php: ## Fix PHP code style using PHP-CS-Fixer inside the backend container
+lint-php: ## Fix PHP code style using PHP-CS-Fixer inside the symfony container
 	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix
 
-lint-tsx: ## Fix React/TypeScript lint issues inside the frontend container
+lint-tsx: ## Fix React/TypeScript lint issues inside the vite-react container
 	$(EXEC_FRONTEND) npx eslint . --ext .tsx,.ts,.jsx,.js --fix
 
 lint-all: lint-php lint-tsx ## Run all linters
 
-logs-backend: ## Tail backend logs
-	$(COMPOSE_CMD) logs -f backend
+fix-php: ## Auto-fix PHP CS issues in src and tests
+	./cli/phpcbf.sh
 
-logs-frontend: ## Tail frontend logs
-	$(COMPOSE_CMD) logs -f frontend
+fix-php-diff: ## Auto-fix PHP CS issues only for files changed vs HEAD (override with ARGS="--cached", etc.)
+	./cli/phpcbf-diff.sh $(ARGS)
 
-logs-scheduler: ## Tail supervisor/cron logs
-	$(COMPOSE_CMD) logs -f scheduler
+logs-backend: ## Tail backend logs (symfony container)
+	$(COMPOSE_CMD) logs -f symfony
 
-bash-backend: ## Open a Bash shell in the backend container
+logs-frontend: ## Tail frontend logs (vite-react container)
+	$(COMPOSE_CMD) logs -f vite-react
+
+logs-scheduler: ## Tail supervisor/cron logs from symfony container
+	$(COMPOSE_CMD) logs -f symfony
+
+bash-backend: ## Open a Bash shell in the symfony container
 	$(EXEC_BACKEND) bash
 
-bash-frontend: ## Open a Bash shell in the frontend container
+bash-frontend: ## Open a shell in the vite-react container
 	$(EXEC_FRONTEND) sh
 
-supervisor-shell: ## Open a Bash shell in the scheduler container
+supervisor-shell: ## Open a Bash shell in the symfony container
 	$(EXEC_SCHEDULER) bash

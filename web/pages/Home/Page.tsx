@@ -1,7 +1,4 @@
-import {
-  useColorModeValue,
-  ColorModeButton,
-} from '@app/components/ui/color-mode'
+import { useColorModeValue, ColorModeButton } from '@app/components/ui/color-mode'
 import {
   Box,
   Button,
@@ -38,11 +35,7 @@ export function Component() {
 
   return (
     <VStack gap={24} align="stretch" px={{ base: 4, md: 14 }} py={5}>
-      <ColorModeButton
-        size="lg"
-        alignSelf="flex-end"
-        _hover={{ transform: 'scale(1.1)' }}
-      />
+      <ColorModeButton size="lg" alignSelf="flex-end" _hover={{ transform: 'scale(1.1)' }} />
 
       <Box
         rounded="2xl"
@@ -63,9 +56,8 @@ export function Component() {
           Estrutura mínima com roteamento, tema custom e lint prontos para uso
         </Text>
         <Text mt={6} maxW="3xl" mx="auto" color={textColor}>
-          Comece projetos com tipagem forte em TypeScript, page-routing
-          assíncrono e tokens semânticos que alternam suavemente entre modos
-          claro e escuro.
+          Comece projetos com tipagem forte em TypeScript, page-routing assíncrono e tokens
+          semânticos que alternam suavemente entre modos claro e escuro.
         </Text>
         <HStack mt={10} gap={6} justify="center" flexWrap="wrap">
           <Button
@@ -77,11 +69,7 @@ export function Component() {
             <Blocks size={18} />
             Explorar Código
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            _hover={{ bg: 'bg', transform: 'translateY(-2px)' }}
-          >
+          <Button variant="outline" size="lg" _hover={{ bg: 'bg', transform: 'translateY(-2px)' }}>
             <PenLine size={18} />
             Documentação
           </Button>
@@ -266,10 +254,9 @@ export function Component() {
           Considerações
         </Heading>
         <Text mx="auto" maxW="3xl" textAlign="center" color={textColor}>
-          Este esqueleto demonstra uma configuração moderna de React +
-          TypeScript com Chakra UI v3. Inclui navegação, suporte a dark mode,
-          gráficos prontos e tema personalizável — ponto de partida ideal para
-          projetos que precisam de theming consistente, roteamento e boas
+          Este esqueleto demonstra uma configuração moderna de React + TypeScript com Chakra UI v3.
+          Inclui navegação, suporte a dark mode, gráficos prontos e tema personalizável — ponto de
+          partida ideal para projetos que precisam de theming consistente, roteamento e boas
           práticas de linting.
         </Text>
       </VStack>

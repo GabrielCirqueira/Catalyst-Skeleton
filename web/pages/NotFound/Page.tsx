@@ -1,15 +1,5 @@
 import { useColorModeValue } from '@app/components/ui/color-mode'
-import {
-  Box,
-  Button,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Icon,
-  List,
-  useToken,
-} from '@chakra-ui/react'
+import { Box, Button, Heading, Text, VStack, HStack, Icon, List, useToken } from '@chakra-ui/react'
 import { Home, SmilePlus, CheckCircle } from 'lucide-react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
@@ -25,13 +15,7 @@ export function Component() {
   }, [])
 
   return (
-    <VStack
-      gap={16}
-      py={20}
-      px={{ base: 4, md: 14 }}
-      align="stretch"
-      textAlign="center"
-    >
+    <VStack gap={16} py={20} px={{ base: 4, md: 14 }} align="stretch" textAlign="center">
       <Box animationName="fade-in, scale-in" animationDuration="600ms">
         <Icon as={SmilePlus} boxSize={16} color="brand.500" mb={10} />
         <Heading fontSize="8xl" color="brand.500">
@@ -43,12 +27,7 @@ export function Component() {
       </Box>
 
       <HStack justify="center" flexWrap="wrap" gap={6}>
-        <Button
-          as={RouterLink as any}
-          onClick={() => navigate('/')}
-          colorScheme="brand"
-          size="xl"
-        >
+        <Button as={RouterLink as any} onClick={() => navigate('/')} colorScheme="brand" size="xl">
           <Home size={18} />
           Ir para Home
         </Button>
