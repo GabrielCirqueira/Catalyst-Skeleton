@@ -13,6 +13,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Configurar diretório de trabalho
 WORKDIR /var/www/html
 
+RUN git config --global --add safe.directory /var/www/html
+
 # Copiar arquivos do projeto
 COPY . .
 
@@ -23,7 +25,8 @@ RUN chmod +x docker/bootstrap.sh
 RUN APP_ENV=test composer install --no-interaction --optimize-autoloader --no-scripts
 
 # Permissões para cache/logs
-RUN chown -R www-data:www-data /var/www/html/var
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var
 
 # Scripts auxiliares
 COPY wait-for-db.sh /usr/local/bin/wait-for-db.sh

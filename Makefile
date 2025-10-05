@@ -31,14 +31,17 @@ down: ## Stop and remove all services
 
 install: install-backend install-frontend ## Install PHP and Node dependencies
 
-install-backend: ## Install composer dependencies using the symfony container
-	$(COMPOSE_CMD) run --rm symfony composer install --no-interaction --prefer-dist
+install-backend: ## Install composer deps (with git safe.directory) using the symfony container
+	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist"
 
 install-frontend: ## Install npm dependencies using the Vite container
-	$(COMPOSE_CMD) run --rm vite-react sh -lc "npm install"
+	$(COMPOSE_CMD) run --rm vite-react sh -lc "npm install --legacy-peer-deps"
 
-composer: ## Run an arbitrary composer command (ARGS="update")
-	$(COMPOSE_CMD) run --rm symfony composer $(ARGS)
+composer: ## Run an arbitrary composer command (ARGS="update") with git safe.directory
+	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer $(ARGS)"
+
+update-backend: ## Update pentatrion/vite-bundle lock to match composer.json (^8)
+	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer update pentatrion/vite-bundle -W"
 
 npm: ## Run an arbitrary npm command (ARGS="run build")
 	$(COMPOSE_CMD) run --rm vite-react npm $(ARGS)

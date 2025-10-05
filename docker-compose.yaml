@@ -31,7 +31,9 @@ services:
       # - redis
 
   vite-react:
-    image: node:20
+    build:
+      context: .
+      dockerfile: docker/vite.Dockerfile
     container_name: skeleton_vite_react
     working_dir: /app
     volumes:
