@@ -1,13 +1,12 @@
+import { MainLayout } from '@app/layouts'
+import theme from '@app/themes/theme'
+import { MantineProvider } from '@mantine/core'
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from 'react-router-dom'
-import system from '@app/themes/theme'
-import { MainLayout } from '@app/layouts'
-import { ColorModeProvider } from '@app/components/ui/color-mode'
-import { ChakraProvider } from '@chakra-ui/react'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,11 +21,9 @@ const router = createBrowserRouter(
 
 function App() {
   return (
-    <ColorModeProvider>
-      <ChakraProvider value={system}>
-        <RouterProvider router={router} />
-      </ChakraProvider>
-    </ColorModeProvider>
+    <MantineProvider theme={theme} defaultColorScheme="light">
+      <RouterProvider router={router} />
+    </MantineProvider>
   )
 }
 

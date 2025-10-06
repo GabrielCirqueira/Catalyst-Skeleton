@@ -52,6 +52,8 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      // Permite catch vazio (comum para ignorar localStorage/feature detection)
+      'no-empty': ['error', { allowEmptyCatch: true }],
     },
   }
 );

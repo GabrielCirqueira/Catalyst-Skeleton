@@ -83,10 +83,12 @@
             "importmap:install": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@hooks:install"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@hooks:install"
         ],
         "lint:php:stan": "./cli/phpstan.sh",
         "lint:php:cs": "./cli/phpcs.sh src tests",
@@ -113,6 +115,7 @@
     "require-dev": {
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.6.29",
+        "friendsofphp/php-cs-fixer": "^3.66",
         "squizlabs/php_codesniffer": "^4.0",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",

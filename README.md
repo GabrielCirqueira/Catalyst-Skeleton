@@ -1,26 +1,24 @@
-# Modern Symfony + React + Vite + Chakra UI Starter
+# Catalyst Skeleton — Symfony 7 + React + Vite
 
 ![image](https://github.com/user-attachments/assets/7060048b-d585-4a1d-8b26-863d52c4a8d2)
 
-Este é um starter kit moderno que integra o Symfony como backend com React no frontend, utilizando Vite como bundler e Chakra UI para estilização. A estrutura foi projetada para desenvolvimento ágil com foco em performance, qualidade de código e boas práticas.
+Starter moderno integrando Symfony (backend) e React (frontend), com Vite, Mantine UI e tooling de qualidade (ESLint/Prettier, PHPCS, PHPStan). Projetado para dev ágil com foco em performance e boas práticas.
 
 ## ✨ Tecnologias Principais
 
-- **Symfony 6**: Framework PHP robusto para construção de APIs e backend
-- **React 18**: Biblioteca JavaScript para interfaces dinâmicas com TypeScript
-- **Vite**: Bundler ultra-rápido com hot module replacement
-- **Chakra UI**: Biblioteca de componentes acessíveis e customizáveis
-- **Lucide**: Ícones modernos e leves para a interface
-- **ESLint + PHP CS Fixer**: Linters para manter a qualidade do código
+- Symfony 7.3 (PHP 8.4 no container)
+- React 18 + TypeScript
+- Vite 7 (HMR)
+- Mantine 8 (UI)
+- Lucide (ícones)
+- ESLint + Prettier, PHPCS, PHPStan
 
 ## 🚀 Instalação
 
-### Pré-requisitos
+### Pré-requisitos (alternativas)
 
-- PHP 8.2+
-- Composer 2.6+
-- Node.js 18+
-- Yarn (opcional)
+- Com Docker: Docker Desktop e Docker Compose (recomendado)
+- Sem Docker: PHP 8.4+, Composer 2.6+, Node.js 18+
 
 ### Passo a Passo
 
@@ -44,11 +42,12 @@ Este é um starter kit moderno que integra o Symfony como backend com React no f
 
 4. **Iniciar servidores de desenvolvimento**
    ```bash
-   # Backend (Symfony)
-   symfony serve -d
-   
-   # Frontend (Vite)
-   npm run dev
+   # Recomendado: via Docker
+   make up-d
+
+   # Ou localmente
+   npm install && npm run dev
+   php -S localhost:8000 -t public # ou Apache/Nginx local
    ```
 
 5. **Acessar a aplicação**
@@ -57,73 +56,53 @@ Este é um starter kit moderno que integra o Symfony como backend com React no f
 
    > Ajuste os valores em `docker/ports.env` para trocar as portas expostas pela stack.
 
-## 🏗️ Estrutura do Projeto
+## 🏗️ Estrutura (high-level)
 
-```
-├── assets/
-│   ├── js/
-│   │   ├── app/            # Aplicação React principal
-│   │   │   ├── layouts/    # Layouts compartilhados
-│   │   │   ├── pages/      # Páginas lazy-loaded
-│   │   │   └── themes/     # Configurações de tema
-│   │   └── index.tsx       # Ponto de entrada
-├── config/
-│   └── routes.yaml         # Configuração de rotas
-├── public/                 # Arquivos públicos
-├── src/                    # Código PHP Symfony
-├── .eslintrc               # Configuração ESLint
-├── .php-cs-fixer.php       # Configuração PHP CS Fixer
-├── package.json            # Dependências Node.js
-├── composer.json           # Dependências PHP
-└── vite.config.js          # Configuração Vite
-```
+- `web/` — Frontend React (App, layouts, pages, theme)
+- `templates/base.html.twig` — Shell do SPA com tags Vite
+- `src/` — Backend Symfony (controllers, console, kernel)
+- `config/` — Configurações do framework/bundles/rotas
+- `docker-compose.yaml`, `Dockerfile`, `docker/` — Orquestração
+- `cli/` — Scripts de lint/QA e hooks
+- `Makefile` — Comandos de conveniência
 
 ## 🔍 Principais Funcionalidades
 
 ### Linting e Formatação
 
-**JavaScript/TypeScript:**
-```bash
-npm run lint:tsx  # ESLint para arquivos React/TypeScript
-```
+- Frontend: `npm run lint:frontend` (ou `lint:frontend:fix`)
+- Backend: `composer lint:php:cs` (ou `composer fix:php`)
+- Tudo: `./cli/run-qa.sh` (ou `npm run lint:all`)
 
-**PHP:**
-```bash
-npm run lint:php  # PHP CS Fixer para padronização PHP
-```
+### Frontend
 
-**Ambos:**
-```bash
-npm run lint:all  # Executa ambos os linters
-```
-
-Configurações padrão incluídas para:
-- ESLint com plugins React e TypeScript
-- Prettier para formatação automática
-- PHP CS Fixer com padrões PSR-12
-
-### Estrutura React Moderna
-
-- **Componentes funcionais** com Hooks
-- **Lazy loading** de páginas e componentes
-- **Tema centralizado** com Chakra UI
-- **Ícones** com Lucide React
-- **Gerenciamento de estado** pronto para expansão
+- Componentes funcionais com Hooks
+- Lazy routes (React Router)
+- Tema centralizado (Mantine)
+- Ícones Lucide
 
 ## 🛠️ Comandos Úteis
 
-| Comando                | Descrição                                  |
-|------------------------|-------------------------------------------|
-| `npm run dev`          | Inicia Vite dev server                    |
-| `npm run build`        | Build de produção                         |
-| `npm run lint:tsx`     | Lint para arquivos TypeScript/JSX         |
-| `npm run lint:php`     | Lint para arquivos PHP                    |
-| `npm run lint:all`     | Executa todos os linters                  |
-| `symfony serve -d`     | Inicia servidor Symfony em background     |
+- `make up-d` — sobe a stack Docker
+- `npm run dev` — Vite em modo dev (local)
+- `npm run build` — build de produção
+- `./cli/run-qa.sh` — roda todos os linters
+- `make help` — lista todos os comandos do Makefile
 
-## 🎨 Design System
- 
-Nosso tema utiliza uma paleta de cores personalizada chamada **brand** que segue o padrão do Chakra UI:
+## 📚 Documentação
+
+Para uma visão mais detalhada, consulte:
+
+- Frontend: documentation/frontend.md
+- Backend (Symfony): documentation/backend.md
+- Makefile (comandos): documentation/makefile.md
+- Scripts CLI: documentation/cli.md
+- Lint e formatação: documentation/formatting.md
+- Docker e orquestração: documentation/docker.md
+
+## 🎨 Tema
+
+O tema Mantine inclui uma paleta personalizada `brand` definida em `web/themes/theme.ts`.
 
 ```ts
 colors: {

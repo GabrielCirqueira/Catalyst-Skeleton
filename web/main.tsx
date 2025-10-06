@@ -1,6 +1,7 @@
-import ReactDOM from 'react-dom/client'
 import React from 'react'
+import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import '@mantine/core/styles.css'
 
 const element = document.getElementById('root') as HTMLElement
 const root = ReactDOM.createRoot(element)
