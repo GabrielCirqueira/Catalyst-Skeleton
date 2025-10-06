@@ -1,6 +1,7 @@
 # Catalyst Skeleton — Symfony 7 + React + Vite
 
-![image](https://github.com/user-attachments/assets/7060048b-d585-4a1d-8b26-863d52c4a8d2)
+<img width="1147" height="836" alt="image" src="https://github.com/user-attachments/assets/28e02cb8-297c-4af7-9ba6-1933e0698a0f" />
+
 
 Starter moderno integrando Symfony (backend) e React (frontend), com Vite, Mantine UI e tooling de qualidade (ESLint/Prettier, PHPCS, PHPStan). Projetado para dev ágil com foco em performance e boas práticas.
 
