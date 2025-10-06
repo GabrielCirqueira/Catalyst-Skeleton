@@ -609,15 +609,7 @@ export function Component() {
         </SimpleGrid>
       </Container>
 
-      <Box
-        style={{
-          background:
-            computed === 'dark'
-              ? 'linear-gradient(135deg, var(--mantine-color-dark-7) 0%, var(--mantine-color-dark-5) 100%)'
-              : 'linear-gradient(135deg, var(--mantine-color-brand) 0%, var(--mantine-color-cyan-6) 100%)',
-        }}
-        py={100}
-      >
+      <Box py={50}>
         <Container size="sm">
           <MotionBox
             initial={{ opacity: 0, y: 30 }}
