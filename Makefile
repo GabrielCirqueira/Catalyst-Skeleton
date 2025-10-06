@@ -1,12 +1,16 @@
 SHELL := /bin/bash
 
+DEV_UID := $(shell id -u)
+DEV_GID := $(shell id -g)
+
 COMPOSE ?= docker compose
 COMPOSE_FILE ?= docker-compose.yaml
 COMPOSE_ENV_FILE ?= ports.env
-COMPOSE_CMD = $(COMPOSE) --env-file $(COMPOSE_ENV_FILE) -f $(COMPOSE_FILE)
-EXEC_BACKEND = $(COMPOSE_CMD) exec symfony
-EXEC_FRONTEND = $(COMPOSE_CMD) exec vite-react
-EXEC_SCHEDULER = $(COMPOSE_CMD) exec symfony
+COMPOSE_ENV = DEV_UID=$(DEV_UID) DEV_GID=$(DEV_GID)
+COMPOSE_CMD = $(COMPOSE_ENV) $(COMPOSE) --env-file $(COMPOSE_ENV_FILE) -f $(COMPOSE_FILE)
+EXEC_BACKEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
+EXEC_FRONTEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) vite-react
+EXEC_SCHEDULER = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 
 .PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell
 
@@ -32,32 +36,38 @@ down: ## Stop and remove all services
 install: install-backend install-frontend ## Install PHP and Node dependencies
 
 install-backend: ## Install composer deps (with git safe.directory) using the symfony container
-	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist"
+	$(COMPOSE_CMD) run --rm --user $(DEV_UID):$(DEV_GID) --env HOME=/tmp/git-home symfony sh -lc 'mkdir -p "$$HOME" && git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist'
 
-install-frontend: ## Install npm dependencies using the Vite container
+install-frontend: ## Install npm dependencies using the Vite container without creating root-owned files
+	if [ -d node_modules ] && [ ! -w node_modules ]; then \
+		$(COMPOSE_CMD) run --rm --user root:root vite-react sh -lc "rm -rf node_modules"; \
+	fi
+	if [ -d public/build ] && [ ! -w public/build ]; then \
+		$(COMPOSE_CMD) run --rm --user root:root vite-react sh -lc "rm -rf public/build"; \
+	fi
 	$(COMPOSE_CMD) run --rm vite-react sh -lc "npm install --legacy-peer-deps"
 
 composer: ## Run an arbitrary composer command (ARGS="update") with git safe.directory
-	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer $(ARGS)"
+	$(COMPOSE_CMD) run --rm --user $(DEV_UID):$(DEV_GID) --env HOME=/tmp/git-home symfony sh -lc 'mkdir -p "$$HOME" && git config --global --add safe.directory /var/www/html && composer $(ARGS)'
 
 update-backend: ## Update pentatrion/vite-bundle lock to match composer.json (^8)
-	$(COMPOSE_CMD) run --rm symfony sh -lc "git config --global --add safe.directory /var/www/html && composer update pentatrion/vite-bundle -W"
+	$(COMPOSE_CMD) run --rm --user $(DEV_UID):$(DEV_GID) --env HOME=/tmp/git-home symfony sh -lc 'mkdir -p "$$HOME" && git config --global --add safe.directory /var/www/html && composer update pentatrion/vite-bundle -W'
 
 npm: ## Run an arbitrary npm command (ARGS="run build")
-	$(COMPOSE_CMD) run --rm vite-react npm $(ARGS)
+	$(COMPOSE_CMD) run --rm vite-react npm $(if $(ARGS),$(ARGS),run build)
 
 lint-php: ## Fix PHP code style using PHP-CS-Fixer inside the symfony container
 	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix
 
 lint-tsx: ## Fix React/TypeScript lint issues inside the vite-react container
-	$(EXEC_FRONTEND) npx eslint . --ext .tsx,.ts,.jsx,.js --fix
+	$(EXEC_FRONTEND) npx eslint web --ext .tsx,.ts,.jsx,.js --fix
 
 lint-all: lint-php lint-tsx ## Run all linters
 
 fix-php: ## Auto-fix PHP CS issues in src and tests
 	./cli/phpcbf.sh
 
-fix-php-diff: ## Auto-fix PHP CS issues only for files changed vs HEAD (override with ARGS="--cached", etc.)
+auto-fix-diff: ## Auto-fix PHP CS issues only for files changed vs HEAD (override with ARGS="--cached", etc.)
 	./cli/phpcbf-diff.sh $(ARGS)
 
 logs-backend: ## Tail backend logs (symfony container)

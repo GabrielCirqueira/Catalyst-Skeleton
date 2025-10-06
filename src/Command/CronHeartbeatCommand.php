@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use DateTimeImmutable;
-use DateTimeZone;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +19,7 @@ final class CronHeartbeatCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $nowUtc = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $nowUtc = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $message = sprintf('[cron] Comando executado às %s UTC', $nowUtc->format('Y-m-d H:i:s'));
 
         file_put_contents(self::LOG_FILE, $message . PHP_EOL, FILE_APPEND);

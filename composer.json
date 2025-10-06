@@ -11,7 +11,7 @@
         "doctrine/doctrine-bundle": "^2.16.2",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.5.2",
-        "pentatrion/vite-bundle": "^8.0",
+        "pentatrion/vite-bundle": "^8.2.2",
         "phpdocumentor/reflection-docblock": "^5.6.3",
         "phpstan/phpdoc-parser": "^2.3",
         "symfony/asset": "7.3.*",
@@ -115,7 +115,7 @@
     "require-dev": {
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.6.29",
-        "friendsofphp/php-cs-fixer": "^3.66",
+        "friendsofphp/php-cs-fixer": "^3.88.2",
         "squizlabs/php_codesniffer": "^4.0",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",

@@ -439,7 +439,6 @@ export function Component() {
         </SimpleGrid>
       </Container>
 
-      {/* Quick Start Section */}
       <Box
         style={{
           background:
@@ -564,7 +563,6 @@ export function Component() {
         </Container>
       </Box>
 
-      {/* Tech Stack Section */}
       <Container size="lg" py={80}>
         <MotionBox
           initial={{ opacity: 0, y: 30 }}
@@ -611,7 +609,6 @@ export function Component() {
         </SimpleGrid>
       </Container>
 
-      {/* CTA Section */}
       <Box
         style={{
           background:
@@ -752,7 +749,6 @@ export function Component() {
         </Container>
       </Box>
 
-      {/* Quick Start Modal */}
       <Modal
         opened={opened}
         onClose={close}
@@ -810,7 +806,6 @@ export function Component() {
         </Stack>
       </Modal>
 
-      {/* Video Demo Modal */}
       <Modal
         opened={videoModalOpened}
         onClose={closeVideoModal}
@@ -845,7 +840,6 @@ export function Component() {
         </Box>
       </Modal>
 
-      {/* Floating Action Button */}
       <Affix position={{ bottom: 20, right: 20 }}>
         <Transition transition="slide-up" mounted={scroll.y > 400}>
           {(transitionStyles) => (
@@ -861,7 +855,6 @@ export function Component() {
         </Transition>
       </Affix>
 
-      {/* Tips Popup */}
       <AnimatePresence>
         {showTips && (
           <MotionBox
