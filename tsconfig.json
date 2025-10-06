@@ -2,11 +2,9 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
     "sourceMap": true,
     "noLib": false,
     "allowSyntheticDefaultImports": true,
@@ -35,7 +33,7 @@
       "@themes/*": ["web/themes/*"],
       "@layouts/*": ["web/layouts/*"]
     },
-    "types": ["webpack-env", "node"],
+    "types": ["vite/client"],
     "lib": ["DOM", "ESNext"]
   },
   "include": ["assets/js", "web/components", "web/layouts", "web/pages", "web/themes", "web/App.tsx", "web/main.tsx", "web/vite-env.d.ts"],

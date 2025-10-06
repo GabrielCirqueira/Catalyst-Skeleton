@@ -31,9 +31,12 @@ services:
       # - redis
 
   vite-react:
-    image: node:20
+    build:
+      context: .
+      dockerfile: docker/vite.Dockerfile
     container_name: skeleton_vite_react
     working_dir: /app
+    user: "${DEV_UID:-1000}:${DEV_GID:-1000}"
     volumes:
       - .:/app
     command: sh -c "npm install --legacy-peer-deps && npm run dev"

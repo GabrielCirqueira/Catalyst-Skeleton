@@ -35,3 +35,12 @@ yarn-error.log
 /node_modules/
 /public/build/
 ###< pentatrion/vite-bundle ###
+
+###> composer ###
+.composer
+###< composer ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###

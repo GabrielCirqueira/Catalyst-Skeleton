@@ -4,48 +4,48 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2",
+        "php": "^8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/dbal": "^3",
-        "doctrine/doctrine-bundle": "^2.13",
-        "doctrine/doctrine-migrations-bundle": "^3.4",
-        "doctrine/orm": "^3.3",
-        "pentatrion/vite-bundle": "^7.1",
-        "phpdocumentor/reflection-docblock": "^5.6",
-        "phpstan/phpdoc-parser": "^2.0",
-        "symfony/asset": "7.2.*",
-        "symfony/asset-mapper": "7.2.*",
-        "symfony/console": "7.2.*",
-        "symfony/doctrine-messenger": "7.2.*",
-        "symfony/dotenv": "7.2.*",
-        "symfony/expression-language": "7.2.*",
-        "symfony/flex": "^2",
-        "symfony/form": "7.2.*",
-        "symfony/framework-bundle": "7.2.*",
-        "symfony/http-client": "7.2.*",
-        "symfony/intl": "7.2.*",
-        "symfony/mailer": "7.2.*",
-        "symfony/mime": "7.2.*",
-        "symfony/monolog-bundle": "^3.0",
-        "symfony/notifier": "7.2.*",
-        "symfony/process": "7.2.*",
-        "symfony/property-access": "7.2.*",
-        "symfony/property-info": "7.2.*",
-        "symfony/runtime": "7.2.*",
-        "symfony/security-bundle": "7.2.*",
-        "symfony/serializer": "7.2.*",
-        "symfony/stimulus-bundle": "^2.22",
-        "symfony/string": "7.2.*",
-        "symfony/translation": "7.2.*",
-        "symfony/twig-bundle": "7.2.*",
-        "symfony/ux-turbo": "^2.22",
-        "symfony/validator": "7.2.*",
-        "symfony/web-link": "7.2.*",
-        "symfony/webpack-encore-bundle": "^2.2",
-        "symfony/yaml": "7.2.*",
-        "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "doctrine/dbal": "^3.10.2",
+        "doctrine/doctrine-bundle": "^2.16.2",
+        "doctrine/doctrine-migrations-bundle": "^3.4.2",
+        "doctrine/orm": "^3.5.2",
+        "pentatrion/vite-bundle": "^8.2.2",
+        "phpdocumentor/reflection-docblock": "^5.6.3",
+        "phpstan/phpdoc-parser": "^2.3",
+        "symfony/asset": "7.3.*",
+        "symfony/asset-mapper": "7.3.*",
+        "symfony/console": "7.3.*",
+        "symfony/doctrine-messenger": "7.3.*",
+        "symfony/dotenv": "7.3.*",
+        "symfony/expression-language": "7.3.*",
+        "symfony/flex": "^2.8.2",
+        "symfony/form": "7.3.*",
+        "symfony/framework-bundle": "7.3.*",
+        "symfony/http-client": "7.3.*",
+        "symfony/intl": "7.3.*",
+        "symfony/mailer": "7.3.*",
+        "symfony/mime": "7.3.*",
+        "symfony/monolog-bundle": "^3.10",
+        "symfony/notifier": "7.3.*",
+        "symfony/process": "7.3.*",
+        "symfony/property-access": "7.3.*",
+        "symfony/property-info": "7.3.*",
+        "symfony/runtime": "7.3.*",
+        "symfony/security-bundle": "7.3.*",
+        "symfony/serializer": "7.3.*",
+        "symfony/stimulus-bundle": "^2.30",
+        "symfony/string": "7.3.*",
+        "symfony/translation": "7.3.*",
+        "symfony/twig-bundle": "7.3.*",
+        "symfony/ux-turbo": "^2.30",
+        "symfony/validator": "7.3.*",
+        "symfony/web-link": "7.3.*",
+        "symfony/webpack-encore-bundle": "^2.3",
+        "symfony/yaml": "7.3.*",
+        "twig/extra-bundle": "^2.12|^3.21",
+        "twig/twig": "^2.12|^3.21.1"
     },
     "config": {
         "allow-plugins": {
@@ -83,10 +83,24 @@
             "importmap:install": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@hooks:install"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@hooks:install"
+        ],
+        "lint:php:stan": "./cli/phpstan.sh",
+        "lint:php:cs": "./cli/phpcs.sh src tests",
+        "lint:frontend": "./cli/frontend-lint.sh",
+        "fix:php": "./cli/phpcbf.sh",
+        "fix:php:diff": "./cli/phpcbf-diff.sh",
+        "fix:frontend": "./cli/frontend-fix.sh",
+        "hooks:install": "./cli/install-hooks.sh",
+        "qa": [
+            "@lint:php:stan",
+            "@lint:php:cs",
+            "@lint:frontend"
         ]
     },
     "conflict": {
@@ -95,17 +109,20 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.2.*"
+            "require": "7.3.*"
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "symfony/browser-kit": "7.2.*",
-        "symfony/css-selector": "7.2.*",
-        "symfony/debug-bundle": "7.2.*",
-        "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "^7.2",
-        "symfony/stopwatch": "7.2.*",
-        "symfony/web-profiler-bundle": "7.2.*"
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^9.6.29",
+        "friendsofphp/php-cs-fixer": "^3.88.2",
+        "squizlabs/php_codesniffer": "^4.0",
+        "symfony/browser-kit": "7.3.*",
+        "symfony/css-selector": "7.3.*",
+        "symfony/debug-bundle": "7.3.*",
+        "symfony/maker-bundle": "^1.64",
+        "symfony/phpunit-bridge": "^7.3.4",
+        "symfony/stopwatch": "7.3.*",
+        "symfony/web-profiler-bundle": "7.3.*"
     }
 }

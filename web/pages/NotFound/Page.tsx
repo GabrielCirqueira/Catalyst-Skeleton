@@ -1,23 +1,16 @@
-import { useColorModeValue } from '@app/components/ui/color-mode'
-import {
-  Box,
-  Button,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Icon,
-  List,
-  useToken,
-} from '@chakra-ui/react'
+import { Anchor, Box, Button, Group, List, Stack, Text, Title } from '@mantine/core'
+import { useComputedColorScheme, useMantineTheme } from '@mantine/core'
 import { Home, SmilePlus, CheckCircle } from 'lucide-react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { Link as RouterLink } from 'react-router-dom'
 
 export function Component() {
-  const [brand] = useToken('colors', ['brand.500'])
-  const textColor = useColorModeValue('gray.700', 'gray.300')
+  const theme = useMantineTheme()
+  const computed = useComputedColorScheme('light', { getInitialValueInEffect: true })
+  const brand = theme.colors.brand?.[6] || theme.colors.blue[6]
+  const textColor =
+    computed === 'dark' ? 'var(--mantine-color-gray-3)' : 'var(--mantine-color-gray-7)'
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,55 +18,47 @@ export function Component() {
   }, [])
 
   return (
-    <VStack
-      gap={16}
-      py={20}
-      px={{ base: 4, md: 14 }}
-      align="stretch"
-      textAlign="center"
-    >
-      <Box animationName="fade-in, scale-in" animationDuration="600ms">
-        <Icon as={SmilePlus} boxSize={16} color="brand.500" mb={10} />
-        <Heading fontSize="8xl" color="brand.500">
+    <Stack gap={40} py={80} px={20} align="stretch" style={{ textAlign: 'center' }}>
+      <Box>
+        <SmilePlus size={64} color={brand} style={{ marginBottom: 24 }} />
+        <Title order={1} style={{ fontSize: 96, color: brand }}>
           404
-        </Heading>
-        <Text mt={100} fontSize="lg" color={textColor}>
+        </Title>
+        <Text mt={40} size="lg" c={textColor}>
           Ops... não encontramos esta página.
         </Text>
       </Box>
 
-      <HStack justify="center" flexWrap="wrap" gap={6}>
-        <Button
-          as={RouterLink as any}
-          onClick={() => navigate('/')}
-          colorScheme="brand"
-          size="xl"
-        >
+      <Group justify="center" wrap="wrap" gap={24}>
+        <Button component={RouterLink} to="/" onClick={() => navigate('/')} size="lg" color="brand">
           <Home size={18} />
-          Ir para Home
+          <span style={{ marginLeft: 8 }}>Ir para Home</span>
         </Button>
-      </HStack>
+      </Group>
 
-      <VStack gap={6}>
-        <Heading size="md" color="brand.500">
+      <Stack gap={16} align="center">
+        <Title order={3} c={brand}>
           Dicas rápidas
-        </Heading>
-        <List.Root gap="2" justifyContent="left" alignItems="start">
+        </Title>
+        <List spacing="xs" style={{ textAlign: 'left' }}>
           {[
             'Verifique a URL digitada',
             'Use a busca acima',
             'Acesse links sugeridos',
             'Reporte se o problema persistir',
           ].map((item) => (
-            <List.Item key={item}>
-              <HStack gap={2} justify="center">
-                <CheckCircle size={14} color={brand} />
-                <Text color={textColor}>{item}</Text>
-              </HStack>
+            <List.Item key={item} icon={<CheckCircle size={14} color={brand} />}>
+              <Text c={textColor}>{item}</Text>
             </List.Item>
           ))}
-        </List.Root>
-      </VStack>
-    </VStack>
+        </List>
+        <Group justify="center" gap={8} mt={8}>
+          <Text c={textColor}>Precisa de ajuda?</Text>
+          <Anchor href="/" onClick={(e) => e.preventDefault()} c={brand}>
+            Contate o suporte
+          </Anchor>
+        </Group>
+      </Stack>
+    </Stack>
   )
 }

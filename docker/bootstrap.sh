@@ -5,8 +5,12 @@ echo "[bootstrap] Starting container bootstrap sequence."
 
 if [[ -d /var/www/html/var ]]; then
   mkdir -p /var/www/html/var/cache /var/www/html/var/log
-  chown -R www-data:www-data /var/www/html/var
-  echo "[bootstrap] Ensured cache/log directories exist with proper ownership."
+  if [[ $(id -u) -eq 0 ]]; then
+    chown -R www-data:www-data /var/www/html/var
+    echo "[bootstrap] Ensured cache/log directories exist with proper ownership."
+  else
+    echo "[bootstrap] Running unprivileged; skipped chown of var/."
+  fi
 fi
 
 if [[ -f /var/www/html/bin/console ]]; then

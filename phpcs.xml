@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="App Standards">
+    <description>PSR-12 with a few project-specific tweaks.</description>
+
+    <!-- Files are provided explicitly by CLI (file-list); do not lock scope here. -->
+    <!-- Note: do not exclude project "var/" here to avoid accidental
+         matching of the system path "/var/..." when PHPCS resolves absolute
+         paths inside containers. The CLI targets already scope to src/tests. -->
+    <exclude-pattern>vendor/</exclude-pattern>
+    <exclude-pattern>public/</exclude-pattern>
+
+    <rule ref="PSR12"/>
+
+    <config name="php_version" value="80400"/>
+</ruleset>
