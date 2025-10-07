@@ -28,7 +28,15 @@ if [[ ${diff_args[0]} == "--all" ]]; then
   exit 0
 fi
 
-readarray -d '' -t raw_files < <(git diff --name-only -z --diff-filter=ACMRTUXB "${diff_args[@]}" -- '*.php')
+declare -a raw_files
+while IFS= read -r -d '' file; do
+  raw_files+=("$file")
+done < <(git diff --name-only -z --diff-filter=ACMRTUXB "${diff_args[@]}" -- '*.php')
+
+# Include untracked PHP files so new files are auto-fixed without requiring git add.
+while IFS= read -r -d '' file; do
+  raw_files+=("$file")
+done < <(git ls-files --others --exclude-standard -z -- '*.php')
 
 if [[ ${#raw_files[@]} -eq 0 ]]; then
   echo "No PHP files with changes detected (scope: git diff ${diff_args[*]})."

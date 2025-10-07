@@ -3,5 +3,4 @@ parameters:
     paths:
         - src
         - tests
-    tmpDir: var/cache/phpstan-local
     treatPhpDocTypesAsCertain: false
