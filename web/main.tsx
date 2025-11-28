@@ -1,13 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import '@mantine/core/styles.css'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
 
-const element = document.getElementById('root') as HTMLElement
-const root = ReactDOM.createRoot(element)
+const rootElement = document.getElementById("root");
 
-root.render(
-  <React.StrictMode>
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+createRoot(rootElement).render(
+  <StrictMode>
     <App />
-  </React.StrictMode>
-)
+  </StrictMode>
+);

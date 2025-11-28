@@ -1,30 +1,27 @@
-import { MainLayout } from '@app/layouts'
-import theme from '@app/themes/theme'
-import { MantineProvider } from '@mantine/core'
+import { ThemeProvider } from "@/contexts";
+import { MainLayout } from "@layouts";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
-} from 'react-router-dom'
+} from "react-router-dom";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route element={<MainLayout />}>
-        <Route index lazy={() => import('@app/pages/Home')} />
-        <Route path="*" lazy={() => import('@app/pages/NotFound')} />
+        <Route index lazy={() => import("@pages/Home/Home")} />
+        <Route path="*" lazy={() => import("@pages/NotFound/NotFound")} />
       </Route>
     </Route>
   )
-)
+);
 
-function App() {
+export default function App() {
   return (
-    <MantineProvider theme={theme} defaultColorScheme="light">
+    <ThemeProvider>
       <RouterProvider router={router} />
-    </MantineProvider>
-  )
+    </ThemeProvider>
+  );
 }
-
-export default App
