@@ -28,10 +28,13 @@
     "baseUrl": "./",
     "paths": {
       "@app/*": ["web/*"],
+      "@/*": ["web/*"],
       "@components/*": ["web/components/*"],
       "@pages/*": ["web/pages/*"],
       "@themes/*": ["web/themes/*"],
-      "@layouts/*": ["web/layouts/*"]
+      "@layouts/*": ["web/layouts/*"],
+      "@shadcn/*": ["web/shadcn/*"],
+      "@shadcn": ["web/shadcn/components/ui"]
     },
     "types": ["vite/client"],
     "lib": ["DOM", "ESNext"]
