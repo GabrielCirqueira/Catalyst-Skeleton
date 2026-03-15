@@ -1,39 +1,34 @@
-import { ThemeProvider } from "@/contexts";
-import { MainLayout } from "@layouts";
-import { RotaProtegida } from "@routes";
+import { ThemeProvider } from '@/contexts'
+import { MainLayout } from '@layouts'
+import { RotaProtegida } from '@routes'
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
-} from "react-router-dom";
+} from 'react-router-dom'
 
-/**
- * Rotas da aplicação.
- *
- * Todas as rotas são lazy-loaded via lazy().
- * Rotas protegidas ficam dentro de <RotaProtegida />.
- *
- * Consulte GUIA-GERAL.md seção 6.8 para regras de roteamento.
- */
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
+      {/* Rotas públicas */}
       <Route element={<MainLayout />}>
-        <Route index lazy={() => import("@pages/Home/Home")} />
-        <Route path="*" lazy={() => import("@pages/NotFound/NotFound")} />
+        <Route index lazy={() => import('@pages/Home/Home')} />
+        <Route path="*" lazy={() => import('@pages/NotFound/NotFound')} />
+      </Route>
 
-        <Route element={<RotaProtegida />}>
-        </Route>
+      {/* Rotas protegidas */}
+      <Route element={<MainLayout />}>
+        <Route element={<RotaProtegida />}>{/* Adicione rotas privadas aqui */}</Route>
       </Route>
     </Route>
   )
-);
+)
 
 export default function App() {
   return (
     <ThemeProvider>
       <RouterProvider router={router} />
     </ThemeProvider>
-  );
+  )
 }

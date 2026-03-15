@@ -5,11 +5,11 @@
  */
 
 export interface Usuario {
-  uuid: string
-  nome: string
-  email: string
+  id: number
+  nomeCompleto: string
+  username: string
+  roles: string[]
   criadoEm: string
-  atualizadoEm: string
 }
 
 export interface Paginacao {

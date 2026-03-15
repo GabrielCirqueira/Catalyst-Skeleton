@@ -1,0 +1,6 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+    # Validade do refresh token: 30 dias (em segundos)
+    ttl: 2592000
+    # Renova o TTL do refresh token a cada uso
+    ttl_update: true

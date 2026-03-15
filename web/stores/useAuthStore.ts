@@ -5,8 +5,10 @@ import type { Usuario } from '@/shared/types'
 interface AuthStore {
   usuario: Usuario | null
   token: string | null
+  refreshToken: string | null
   autenticado: boolean
-  setAutenticado: (usuario: Usuario, token: string) => void
+  setAutenticado: (usuario: Usuario, token: string, refreshToken: string) => void
+  setToken: (token: string, refreshToken: string) => void
   limpar: () => void
 }
 
@@ -23,21 +25,33 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       usuario: null,
       token: null,
+      refreshToken: null,
       autenticado: false,
 
-      setAutenticado: (usuario, token) => {
+      setAutenticado: (usuario, token, refreshToken) => {
         localStorage.setItem('token', token)
-        set({ usuario, token, autenticado: true })
+        set({ usuario, token, refreshToken, autenticado: true })
+      },
+
+      // Rotaciona apenas os tokens sem mexer no usuário (chamado pelo interceptor)
+      setToken: (token, refreshToken) => {
+        localStorage.setItem('token', token)
+        set({ token, refreshToken })
       },
 
       limpar: () => {
         localStorage.removeItem('token')
-        set({ usuario: null, token: null, autenticado: false })
+        set({ usuario: null, token: null, refreshToken: null, autenticado: false })
       },
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ usuario: state.usuario, token: state.token }),
+      partialize: (state) => ({
+        usuario: state.usuario,
+        token: state.token,
+        refreshToken: state.refreshToken,
+      }),
     }
   )
 )
+

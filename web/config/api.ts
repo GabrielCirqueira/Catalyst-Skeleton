@@ -1,10 +1,14 @@
 import axios from 'axios'
+import { useAuthStore } from '@stores'
+import type { RespostaRefresh } from '@features/auth/types'
 
 /**
  * Instância centralizada do Axios.
  *
  * Todo acesso HTTP do frontend DEVE usar esta instância — nunca axios direto.
  * O token JWT é injetado automaticamente via interceptor.
+ * Quando o access token expira (401), o refresh token é usado automaticamente
+ * para renová-lo. Requisições concorrentes são enfileiradas durante o refresh.
  */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '',
@@ -15,6 +19,8 @@ export const api = axios.create({
   withCredentials: false,
 })
 
+// ─── Interceptor de request: injeta o Bearer token ───────────────────────────
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -23,13 +29,81 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// ─── Fila de requisições aguardando o refresh ─────────────────────────────────
+
+type QueueEntry = { resolve: (token: string) => void; reject: (err: unknown) => void }
+
+let isRefreshing = false
+let failedQueue: QueueEntry[] = []
+
+function drainQueue(error: unknown, token: string | null) {
+  failedQueue.forEach((entry) => {
+    if (error || !token) entry.reject(error)
+    else entry.resolve(token)
+  })
+  failedQueue = []
+}
+
+// ─── Interceptor de response: refresh automático em 401 ──────────────────────
+
 api.interceptors.response.use(
   (response) => response,
-  (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+  async (error: unknown) => {
+    if (!axios.isAxiosError(error)) return Promise.reject(error)
+
+    const originalRequest = error.config as typeof error.config & { _retry?: boolean }
+    if (!originalRequest) return Promise.reject(error)
+
+    // Não tenta refresh se o 401 veio do próprio endpoint de refresh (token inválido/expirado)
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      originalRequest.url?.includes('/api/token/refresh')
+    ) {
+      if (error.response?.status === 401) {
+        useAuthStore.getState().limpar()
+      }
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
-  }
+
+    const { refreshToken } = useAuthStore.getState()
+    if (!refreshToken) {
+      useAuthStore.getState().limpar()
+      return Promise.reject(error)
+    }
+
+    // Se já está renovando, enfileira a requisição atual
+    if (isRefreshing) {
+      return new Promise<string>((resolve, reject) => {
+        failedQueue.push({ resolve, reject })
+      }).then((token) => {
+        originalRequest.headers = originalRequest.headers ?? {}
+        originalRequest.headers.Authorization = `Bearer ${token}`
+        return api(originalRequest)
+      })
+    }
+
+    originalRequest._retry = true
+    isRefreshing = true
+
+    try {
+      const { data } = await axios.post<RespostaRefresh>(
+        `${api.defaults.baseURL ?? ''}/api/token/refresh`,
+        { refresh_token: refreshToken },
+      )
+
+      useAuthStore.getState().setToken(data.token, data.refresh_token)
+      drainQueue(null, data.token)
+
+      originalRequest.headers = originalRequest.headers ?? {}
+      originalRequest.headers.Authorization = `Bearer ${data.token}`
+      return api(originalRequest)
+    } catch (refreshError) {
+      drainQueue(refreshError, null)
+      useAuthStore.getState().limpar()
+      return Promise.reject(refreshError)
+    } finally {
+      isRefreshing = false
+    }
+  },
 )

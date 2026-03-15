@@ -5,6 +5,49 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+
+    /* Cores shadcn/ui — light mode */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 165 80% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 215 25% 27%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 165 74% 93%;
+    --accent-foreground: 165 80% 22%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 165 80% 32%;
+  }
+
+  .dark {
+    --background: 220 13% 9%;
+    --foreground: 0 0% 100%;
+    --card: 220 13% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 165 65% 49%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 165 74% 8%;
+    --accent-foreground: 165 65% 65%;
+    --destructive: 0 62% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 165 65% 49%;
   }
 
   body {

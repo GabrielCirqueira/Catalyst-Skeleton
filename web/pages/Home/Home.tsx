@@ -29,10 +29,18 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { ModalAuth } from "@features/auth";
 
 export function Component() {
   const { theme, toggleTheme } = useTheme();
   const [showModal, setShowModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authTab, setAuthTab] = useState<'login' | 'cadastro'>('login');
+
+  function abrirAuth(tab: 'login' | 'cadastro') {
+    setAuthTab(tab);
+    setShowAuthModal(true);
+  }
 
   return (
     <AppContainer paddingX="0" className="min-h-screen transition-colors duration-500 w-full">
@@ -66,8 +74,11 @@ export function Component() {
             >
               <Icon icon={theme === "light" ? Moon : Sun} className="size-5" />
             </Button>
-            <Button className=" text-white rounded-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 transition-all duration-300 shadow-hard-2">
-              Começar
+            <Button
+              className="text-white rounded-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 transition-all duration-300 shadow-hard-2"
+              onClick={() => abrirAuth('login')}
+            >
+              Entrar
             </Button>
           </HStack>
         </HStack>
@@ -397,6 +408,7 @@ export function Component() {
                 size="lg"
                 variant="secondary"
                 className="rounded-full bg-white hover:bg-zinc-100 text-brand-700 font-bold px-10 py-7 shadow-hard-3 hover:shadow-hard-4 transition-all duration-300 hover:scale-110"
+                onClick={() => abrirAuth('cadastro')}
               >
                 <HStack className="gap-2 items-center">
                   <Icon icon={Rocket} className="size-6" />
@@ -535,6 +547,8 @@ export function Component() {
           </Box>
         </Container>
       </Footer>
+
+      <ModalAuth open={showAuthModal} onOpenChange={setShowAuthModal} defaultTab={authTab} />
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-2xl rounded-xl p-0 border-2 border-zinc-200">
