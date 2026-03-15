@@ -8,5 +8,6 @@
     "typescript",
     "typescriptreact"
   ],
-  "eslint.experimental.useFlatConfig": true
+  "eslint.experimental.useFlatConfig": true,
+  "snyk.advanced.autoSelectOrganization": true
 }

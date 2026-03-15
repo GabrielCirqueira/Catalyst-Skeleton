@@ -46,3 +46,15 @@ yarn-error.log
 ###< friendsofphp/php-cs-fixer ###
 
 leading/*
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+###> produção ###
+/.env.prod
+###< produção ###
+
+###> gerados automaticamente ###
+*.tsbuildinfo
+###< gerados automaticamente ###

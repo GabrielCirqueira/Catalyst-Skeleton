@@ -1,0 +1,74 @@
+# devops/docker-compose.prod.yml — Produção
+#
+# Os paths aqui são relativos a este arquivo (devops/).
+# O build context aponta para a raiz do projeto (context: ..).
+#
+# Uso a partir da raiz do projeto:
+#   docker compose -f devops/docker-compose.prod.yml build
+#   docker compose -f devops/docker-compose.prod.yml up -d
+#
+# Ou use os scripts prontos:
+#   bash devops/deploy.sh      (primeira vez / rebuild completo)
+#   bash devops/update.sh      (atualização incremental)
+#
+# Requer .env na raiz do projeto (copie de devops/.env.prod.example).
+
+services:
+  database:
+    image: mysql:8.3
+    container_name: skeleton_database_prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: America/Sao_Paulo
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  symfony:
+    build:
+      context: ..
+      dockerfile: docker/prod/php/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost}
+    container_name: skeleton_symfony_prod
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+    env_file:
+      - ../.env
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+    volumes:
+      - jwt_keys:/var/www/html/config/jwt
+      - storage:/var/www/html/storage
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  app_net:
+    driver: bridge
+
+volumes:
+  db_data:
+  jwt_keys:
+  storage:

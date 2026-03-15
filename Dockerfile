@@ -32,13 +32,8 @@ RUN mkdir -p var/cache var/log \
 COPY wait-for-db.sh /usr/local/bin/wait-for-db.sh
 RUN chmod +x /usr/local/bin/wait-for-db.sh
 
-# Diretório para as chaves JWT
+# Diretório para as chaves JWT (geradas pelo bootstrap.sh em runtime)
 RUN mkdir -p config/jwt
-
-# Gerar as chaves automaticamente (senha fixa "jwtpass")
-RUN openssl genrsa -aes256 -passout pass:jwtpass -out config/jwt/private.pem 4096 \
-    && openssl rsa -pubout -in config/jwt/private.pem -passin pass:jwtpass -out config/jwt/public.pem \
-    && chmod 644 config/jwt/*.pem
 
 # Copiar config do Apache com Rewrite e Authorization
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf

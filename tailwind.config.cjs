@@ -46,6 +46,32 @@ module.exports = {
         full: '9999px',
       },
       colors: {
+        /* shadcn/ui CSS-variable aliases */
+        foreground: "hsl(var(--foreground))",
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+
         brand: {
           50: '#e6f7f3',
           100: '#c0ede3',
@@ -61,6 +87,8 @@ module.exports = {
         },
 
         primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
           50: '#e8faf7',
           100: '#c4f0e7',
           200: '#9ee6d6',
@@ -75,6 +103,8 @@ module.exports = {
         },
 
         secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
@@ -153,6 +183,7 @@ module.exports = {
           950: '#0a0a0a',
         },
         background: {
+          DEFAULT: "hsl(var(--background))",
           50: '#f9fafb',
           100: '#f3f4f6',
           200: '#e5e7eb',
