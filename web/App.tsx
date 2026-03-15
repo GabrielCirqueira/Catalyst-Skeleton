@@ -11,15 +11,13 @@ import {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
-      {/* Rotas públicas */}
       <Route element={<MainLayout />}>
         <Route index lazy={() => import('@pages/Home/Home')} />
         <Route path="*" lazy={() => import('@pages/NotFound/NotFound')} />
       </Route>
 
-      {/* Rotas protegidas */}
       <Route element={<MainLayout />}>
-        <Route element={<RotaProtegida />}>{/* Adicione rotas privadas aqui */}</Route>
+        <Route element={<RotaProtegida />}></Route>
       </Route>
     </Route>
   )

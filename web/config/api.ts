@@ -19,8 +19,6 @@ export const api = axios.create({
   withCredentials: false,
 })
 
-// ─── Interceptor de request: injeta o Bearer token ───────────────────────────
-
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -28,8 +26,6 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
-
-// ─── Fila de requisições aguardando o refresh ─────────────────────────────────
 
 type QueueEntry = { resolve: (token: string) => void; reject: (err: unknown) => void }
 
@@ -44,8 +40,6 @@ function drainQueue(error: unknown, token: string | null) {
   failedQueue = []
 }
 
-// ─── Interceptor de response: refresh automático em 401 ──────────────────────
-
 api.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
@@ -54,7 +48,6 @@ api.interceptors.response.use(
     const originalRequest = error.config as typeof error.config & { _retry?: boolean }
     if (!originalRequest) return Promise.reject(error)
 
-    // Não tenta refresh se o 401 veio do próprio endpoint de refresh (token inválido/expirado)
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
@@ -72,7 +65,6 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // Se já está renovando, enfileira a requisição atual
     if (isRefreshing) {
       return new Promise<string>((resolve, reject) => {
         failedQueue.push({ resolve, reject })

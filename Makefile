@@ -12,7 +12,7 @@ EXEC_BACKEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 EXEC_FRONTEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) vite-react
 EXEC_SCHEDULER = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 
-.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell
+.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage
 
 help: ## List available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-24s %s\n", $$1, $$2}'
@@ -87,3 +87,14 @@ bash-frontend: ## Open a shell in the vite-react container
 
 supervisor-shell: ## Open a Bash shell in the symfony container
 	$(EXEC_SCHEDULER) bash
+test: ## Run all test suites (unit + integration)
+	$(EXEC_BACKEND) php vendor/bin/phpunit
+
+test-unit: ## Run only unit tests (no database required)
+	$(EXEC_BACKEND) php vendor/bin/phpunit --testsuite Unit
+
+test-integration: ## Run only integration tests (requires running database)
+	$(EXEC_BACKEND) php vendor/bin/phpunit --testsuite Integration
+
+test-coverage: ## Run all tests with HTML coverage report (output: var/coverage/)
+	$(EXEC_BACKEND) php vendor/bin/phpunit --coverage-html var/coverage

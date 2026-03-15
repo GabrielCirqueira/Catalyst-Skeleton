@@ -1,0 +1,6 @@
+# Deprecações de vendor conhecidas e ignoradas intencionalmente.
+# Cada linha é uma regex PHP completa (com delimitadores).
+
+# doctrine/dbal v3 emite este evento internamente no SchemaTool::createSchema().
+# Corrigido no DBAL 4.0: https://github.com/doctrine/dbal/issues/5784
+/Subscribing to onSchemaCreateTable events is deprecated/

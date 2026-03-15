@@ -33,7 +33,6 @@ export const useAuthStore = create<AuthStore>()(
         set({ usuario, token, refreshToken, autenticado: true })
       },
 
-      // Rotaciona apenas os tokens sem mexer no usuário (chamado pelo interceptor)
       setToken: (token, refreshToken) => {
         localStorage.setItem('token', token)
         set({ token, refreshToken })
@@ -54,4 +53,3 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 )
-

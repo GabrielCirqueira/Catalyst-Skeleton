@@ -20,8 +20,6 @@ import { api } from '@config/api'
 import { useAuthStore } from '@stores'
 import type { RespostaLogin, RespostaMe, RespostaCadastro } from './types'
 
-// ─── Schemas ────────────────────────────────────────────────────────────────
-
 const loginSchema = z.object({
   username: z.string().min(1, 'Informe o nome de usuário.'),
   senha: z.string().min(1, 'Informe a senha.'),
@@ -45,8 +43,6 @@ const cadastroSchema = z
 
 type LoginValues = z.infer<typeof loginSchema>
 type CadastroValues = z.infer<typeof cadastroSchema>
-
-// ─── Campo de senha com toggle de visibilidade ──────────────────────────────
 
 function SenhaInput({ placeholder, className, ...props }: React.ComponentProps<typeof Input>) {
   const [show, setShow] = useState(false)
@@ -72,15 +68,11 @@ function SenhaInput({ placeholder, className, ...props }: React.ComponentProps<t
   )
 }
 
-// ─── Props ───────────────────────────────────────────────────────────────────
-
 interface ModalAuthProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   defaultTab?: 'login' | 'cadastro'
 }
-
-// ─── Formulário de Login ─────────────────────────────────────────────────────
 
 function FormLogin({ onSuccess }: { onSuccess: () => void }) {
   const { setAutenticado } = useAuthStore()
@@ -185,8 +177,6 @@ function FormLogin({ onSuccess }: { onSuccess: () => void }) {
     </Form>
   )
 }
-
-// ─── Formulário de Cadastro ───────────────────────────────────────────────────
 
 function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
   const mutation = useMutation({
@@ -323,8 +313,6 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
   )
 }
 
-// ─── Conteúdo compartilhado (Dialog e Drawer) ────────────────────────────────
-
 function ConteudoAuth({
   tab,
   setTab,
@@ -336,13 +324,10 @@ function ConteudoAuth({
 }) {
   return (
     <>
-      {/* Cabeçalho */}
       <div className="relative overflow-hidden border-b border-outline-100 bg-background-50 px-8 pb-0 pt-8 dark:border-outline-900 dark:bg-background-800">
-        {/* Blob decorativo sutil */}
         <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-brand-500/[0.08] blur-[64px]" />
 
         <div className="relative">
-          {/* Logo */}
           <div className="mb-5 flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-brand-500/10">
               <Code2 className="size-5 text-brand-600 dark:text-brand-400" strokeWidth={2} />
@@ -352,7 +337,6 @@ function ConteudoAuth({
             </span>
           </div>
 
-          {/* Eyebrow + Título */}
           <span className="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">
             {tab === 'login' ? 'Acesso à plataforma' : 'Novo cadastro'}
           </span>
@@ -366,7 +350,6 @@ function ConteudoAuth({
           </p>
         </div>
 
-        {/* Abas underline — coladas na borda inferior do header */}
         <TabsList className="-mb-px h-auto w-full gap-0 rounded-none bg-transparent p-0">
           <TabsTrigger
             value="login"
@@ -383,7 +366,6 @@ function ConteudoAuth({
         </TabsList>
       </div>
 
-      {/* Corpo dos formulários */}
       <TabsContent value="login" className="mt-0 px-8 pb-8 pt-6">
         <FormLogin onSuccess={onClose} />
         <div className="mt-5 flex items-center gap-3">
@@ -425,8 +407,6 @@ function ConteudoAuth({
   )
 }
 
-// ─── Modal principal (Dialog desktop · Drawer mobile) ────────────────────────
-
 export function ModalAuth({ open, onOpenChange, defaultTab = 'login' }: ModalAuthProps) {
   const [tab, setTab] = useState<'login' | 'cadastro'>(defaultTab)
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -455,7 +435,6 @@ export function ModalAuth({ open, onOpenChange, defaultTab = 'login' }: ModalAut
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerContent className="overflow-hidden rounded-t-2xl border-x-0 border-t border-outline-100 dark:border-outline-900">
-        {/* Handle bar */}
         <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-background-200 dark:bg-background-700" />
         {conteudo}
       </DrawerContent>
