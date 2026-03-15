@@ -52,6 +52,7 @@ leading/*
 ###< lexik/jwt-authentication-bundle ###
 
 ###> produção ###
+/.env
 /.env.prod
 ###< produção ###
 
