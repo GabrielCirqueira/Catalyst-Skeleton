@@ -2,9 +2,9 @@ import * as React from "react";
 import { cn } from "@shadcn/lib/utils";
 
 export interface VStackProps extends React.HTMLAttributes<HTMLDivElement> {
-  gap?: string; // Tailwind gap class (e.g. 'gap-2')
-  align?: string; // Tailwind alignment (e.g. 'items-center')
-  justify?: string; // Tailwind justify (e.g. 'justify-center')
+  gap?: string;
+  align?: string;
+  justify?: string;
 }
 
 export const VStack = React.forwardRef<HTMLDivElement, VStackProps>(

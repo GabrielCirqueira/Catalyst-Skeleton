@@ -3,8 +3,36 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+
   body {
-    @apply text-gray-700 dark:text-gray-300;
-    @apply bg-white dark:bg-brand-950;
+    @apply font-body antialiased;
+    @apply text-typography-950 dark:text-white;
+    @apply bg-white dark:bg-background-950;
+  }
+
+  h1, h2, h3 {
+    @apply font-heading;
+  }
+
+  * {
+    @apply border-outline-100 dark:border-outline-900;
+  }
+
+  /* Scrollbar customizada */
+  ::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-outline-200 dark:bg-outline-800 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-outline-300 dark:bg-outline-700;
   }
 }
+

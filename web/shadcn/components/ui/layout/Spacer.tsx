@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface SpacerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: string; // tailwind width/height classes like 'w-4' or 'h-4'
+  size?: string;
 }
 
 export const Spacer = React.forwardRef<HTMLDivElement, SpacerProps>(

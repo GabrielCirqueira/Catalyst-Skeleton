@@ -10,9 +10,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Lato', 'Poppins', 'system-ui', 'sans-serif'],
-        heading: ['Poppins', 'Lato', 'system-ui', 'sans-serif'],
-        body: ['Lato', 'Poppins', 'system-ui', 'sans-serif'],
+        sans: ['Lato', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+        body: ['Lato', 'system-ui', 'sans-serif'],
+        poppins: ['Poppins', 'system-ui', 'sans-serif'],
+        lato: ['Lato', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         normal: '400',
@@ -33,9 +35,15 @@ module.exports = {
         '4xl': '2.25rem',
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        none: '0',
+        sm: 'calc(var(--radius) - 4px)',    // ~0.25rem
+        DEFAULT: 'var(--radius)',             // ~0.5rem
+        md: 'var(--radius)',                  // ~0.5rem
+        lg: 'calc(var(--radius) + 2px)',      // ~0.625rem
+        xl: 'calc(var(--radius) + 6px)',      // ~0.875rem  (cards, dropdowns)
+        '2xl': 'calc(var(--radius) + 12px)',  // ~1.25rem   (modais, hero)
+        '3xl': '1.5rem',
+        full: '9999px',
       },
       colors: {
         brand: {
