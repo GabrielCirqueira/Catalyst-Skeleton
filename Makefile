@@ -12,7 +12,7 @@ EXEC_BACKEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 EXEC_FRONTEND = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) vite-react
 EXEC_SCHEDULER = $(COMPOSE_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 
-.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage
+.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-tsx fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage
 
 help: ## List available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-24s %s\n", $$1, $$2}'
@@ -56,16 +56,19 @@ update-backend: ## Update pentatrion/vite-bundle lock to match composer.json (^8
 npm: ## Run an arbitrary npm command (ARGS="run build")
 	$(COMPOSE_CMD) run --rm vite-react npm $(if $(ARGS),$(ARGS),run build)
 
-lint-php: ## Fix PHP code style using PHP-CS-Fixer inside the symfony container
-	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix
+lint-php: ## Check PHP code style (PHP-CS-Fixer) inside the symfony container
+	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix --dry-run --diff
 
-lint-tsx: ## Fix React/TypeScript lint issues inside the vite-react container
-	$(EXEC_FRONTEND) npx eslint web --ext .tsx,.ts,.jsx,.js --fix
+lint-tsx: ## Lint and format TypeScript/React files with Biome
+	$(EXEC_FRONTEND) npx biome check web
 
 lint-all: lint-php lint-tsx ## Run all linters
 
 fix-php: ## Auto-fix PHP CS issues in src and tests
 	./cli/phpcbf.sh
+
+fix-tsx: ## Auto-fix TypeScript/React issues with Biome
+	$(EXEC_FRONTEND) npx biome check --write web
 
 auto-fix-diff: ## Auto-fix PHP CS issues only for files changed vs HEAD (override with ARGS="--cached", etc.)
 	./cli/phpcbf-diff.sh $(ARGS)

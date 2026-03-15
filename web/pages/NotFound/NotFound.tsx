@@ -1,10 +1,10 @@
-import { AppContainer } from "@layouts";
-import { Button } from "@shadcn/button";
-import { Icon } from "@shadcn/icon";
-import { Box, VStack } from "@shadcn/layout";
-import { Text, Title } from "@shadcn/typography";
-import { AlertCircle, ArrowLeft, Home } from "lucide-react";
-import { Link } from "react-router-dom";
+import { AppContainer } from '@layouts'
+import { Button } from '@shadcn/button'
+import { Icon } from '@shadcn/icon'
+import { Box, VStack } from '@shadcn/layout'
+import { Text, Title } from '@shadcn/typography'
+import { AlertCircle, ArrowLeft, Home } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export function Component() {
   return (
@@ -47,5 +47,5 @@ export function Component() {
         <Text className="text-typography-400 text-sm mt-8">Erro 404 · React Skeleton</Text>
       </VStack>
     </AppContainer>
-  );
+  )
 }

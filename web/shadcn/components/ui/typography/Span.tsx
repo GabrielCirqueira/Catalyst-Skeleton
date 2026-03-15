@@ -1,14 +1,14 @@
-import { cn } from "@shadcn/lib/utils";
-import * as React from "react";
+import { cn } from '@shadcn/lib/utils'
+import * as React from 'react'
 
 export interface SpanProps extends React.HTMLAttributes<HTMLSpanElement> {
-  as?: "span";
+  as?: 'span'
 }
 
 export const Span = React.forwardRef<HTMLSpanElement, SpanProps>(({ className, ...props }, ref) => {
-  return <span ref={ref} className={cn(className)} {...props} />;
-});
+  return <span ref={ref} className={cn(className)} {...props} />
+})
 
-Span.displayName = "Span";
+Span.displayName = 'Span'
 
-export default Span;
+export default Span

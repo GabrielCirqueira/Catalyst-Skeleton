@@ -1,5 +1,5 @@
-import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '@/stores'
+import { Navigate, Outlet } from 'react-router-dom'
 
 /**
  * Guarda de rota totalmente protegida.

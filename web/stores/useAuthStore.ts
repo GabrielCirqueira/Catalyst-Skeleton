@@ -1,6 +1,6 @@
+import type { Usuario } from '@/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Usuario } from '@/shared/types'
 
 interface AuthStore {
   usuario: Usuario | null

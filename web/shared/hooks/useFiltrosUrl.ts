@@ -21,13 +21,13 @@ export function useFiltrosUrl() {
     setParams((prev) => {
       const next = new URLSearchParams(prev)
 
-      Object.entries(novos).forEach(([k, v]) => {
+      for (const [k, v] of Object.entries(novos)) {
         if (v !== undefined && v !== '') {
           next.set(k, String(v))
         } else {
           next.delete(k)
         }
-      })
+      }
 
       if (!('pagina' in novos)) {
         next.set('pagina', '1')

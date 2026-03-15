@@ -1,6 +1,6 @@
-import axios from 'axios'
-import { useAuthStore } from '@stores'
 import type { RespostaRefresh } from '@features/auth/types'
+import { useAuthStore } from '@stores'
+import axios from 'axios'
 
 /**
  * Instância centralizada do Axios.
@@ -33,10 +33,10 @@ let isRefreshing = false
 let failedQueue: QueueEntry[] = []
 
 function drainQueue(error: unknown, token: string | null) {
-  failedQueue.forEach((entry) => {
+  for (const entry of failedQueue) {
     if (error || !token) entry.reject(error)
     else entry.resolve(token)
-  })
+  }
   failedQueue = []
 }
 
@@ -81,7 +81,7 @@ api.interceptors.response.use(
     try {
       const { data } = await axios.post<RespostaRefresh>(
         `${api.defaults.baseURL ?? ''}/api/token/refresh`,
-        { refresh_token: refreshToken },
+        { refresh_token: refreshToken }
       )
 
       useAuthStore.getState().setToken(data.token, data.refresh_token)
@@ -97,5 +97,5 @@ api.interceptors.response.use(
     } finally {
       isRefreshing = false
     }
-  },
+  }
 )

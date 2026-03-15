@@ -1,0 +1,70 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": ["node_modules", "vendor", "public/build", "dist", "*.php"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "es5",
+      "semicolons": "asNeeded",
+      "bracketSpacing": true,
+      "arrowParentheses": "always"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noEmptyBlockStatements": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "warn"
+      }
+    }
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "overrides": [
+    {
+      "include": ["web/shadcn/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noArrayIndexKey": "off"
+          },
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          },
+          "a11y": {
+            "useFocusableInteractive": "off",
+            "useSemanticElements": "off",
+            "noRedundantRoles": "off"
+          },
+          "complexity": {
+            "noForEach": "off"
+          },
+          "correctness": {
+            "useExhaustiveDependencies": "off"
+          }
+        }
+      }
+    }
+  ]
+}

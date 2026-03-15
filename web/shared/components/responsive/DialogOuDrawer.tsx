@@ -1,5 +1,3 @@
-import * as React from 'react'
-import { useMediaQuery } from '@/shared/hooks'
 import {
   Dialog,
   DialogContent,
@@ -14,6 +12,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/shadcn/components/ui/drawer'
+import { useMediaQuery } from '@/shared/hooks'
+import type * as React from 'react'
 
 interface DialogOuDrawerProps {
   aberto: boolean

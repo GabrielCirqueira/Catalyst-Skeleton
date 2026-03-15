@@ -10,31 +10,22 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "eslint": "eslint .",
-    "lint:frontend": "./cli/frontend-lint.sh",
-    "lint:frontend:fix": "./cli/frontend-fix.sh",
-    "lint:tsx": "./cli/frontend-fix.sh",
+    "lint": "biome lint web",
+    "lint:fix": "biome lint --write web",
+    "format": "biome format --write web",
+    "format:check": "biome format web",
+    "check": "biome check web",
+    "check:fix": "biome check --write web",
     "lint:php": "composer lint:php:cs",
     "lint:php:fix": "composer fix:php",
-    "lint:all": "./cli/run-qa.sh",
-    "watch": "vite build --watch --mode development",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
-    "validate": "npm run type-check && npm run lint && npm run format:check",
+    "validate": "npm run type-check && npm run check",
+    "watch": "vite build --watch --mode development",
     "preview": "vite preview",
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,jsx,json,css}": ["biome check --write --no-errors-on-unmatched"]
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -84,7 +75,6 @@
     "deepmerge": "^4.3.1",
     "embla-carousel-react": "^8.6.0",
     "es6-promise": "^4.2.8",
-    "eslint-plugin-prettier": "^5.5.4",
     "framer-motion": "^12.23.22",
     "input-otp": "^1.4.2",
     "jquery": "^3.7.1",
@@ -108,35 +98,22 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@eslint/js": "^9.39.1",
-    "@rocketseat/eslint-config": "^2.2.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.47.0",
-    "@typescript-eslint/parser": "^8.47.0",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
-    "eslint": "^9.39.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "postcss": "^8.5.6",
     "postcss-preset-mantine": "^1.16.0",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^3.4.18",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
     "vite-plugin-symfony": "^8.0.0"
   }

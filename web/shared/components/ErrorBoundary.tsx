@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { VStack } from '@/shadcn/components/ui/layout'
 import { Button } from '@/shadcn/components/ui/button'
+import { VStack } from '@/shadcn/components/ui/layout'
 import { Text } from '@/shadcn/components/ui/text'
 import { AlertTriangle } from 'lucide-react'
+import * as React from 'react'
 
 interface ErrorBoundaryProps {
   fallback?: React.ReactNode

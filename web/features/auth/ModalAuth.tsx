@@ -1,12 +1,14 @@
-import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
+import { Code2, Eye, EyeOff, KeyRound, User, UserPlus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Code2, Eye, EyeOff, KeyRound, User, UserPlus } from 'lucide-react'
 
+import { useMediaQuery } from '@/shared/hooks'
+import { api } from '@config/api'
 import { Button } from '@shadcn/button'
 import { Dialog, DialogContent } from '@shadcn/dialog'
 import { Drawer, DrawerContent } from '@shadcn/drawer'
@@ -15,10 +17,8 @@ import { Input } from '@shadcn/input'
 import { Separator } from '@shadcn/separator'
 import { Spinner } from '@shadcn/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shadcn/tabs'
-import { useMediaQuery } from '@/shared/hooks'
-import { api } from '@config/api'
 import { useAuthStore } from '@stores'
-import type { RespostaLogin, RespostaMe, RespostaCadastro } from './types'
+import type { RespostaCadastro, RespostaLogin, RespostaMe } from './types'
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Informe o nome de usuário.'),

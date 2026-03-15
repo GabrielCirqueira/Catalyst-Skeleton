@@ -4,11 +4,7 @@
  * @example formatarMoeda(1500.50) → 'R$ 1.500,50'
  * @example formatarMoeda(1500.50, 'USD') → 'US$ 1,500.50'
  */
-export function formatarMoeda(
-  valor: number,
-  moeda: string = 'BRL',
-  locale: string = 'pt-BR'
-): string {
+export function formatarMoeda(valor: number, moeda = 'BRL', locale = 'pt-BR'): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: moeda,

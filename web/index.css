@@ -56,7 +56,9 @@
     @apply bg-white dark:bg-background-950;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     @apply font-heading;
   }
 
@@ -78,4 +80,3 @@
     @apply bg-outline-300 dark:bg-outline-700;
   }
 }
-

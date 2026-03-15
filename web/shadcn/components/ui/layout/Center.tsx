@@ -1,8 +1,8 @@
-import * as React from "react";
-import { cn } from "@shadcn/lib/utils";
+import { cn } from '@shadcn/lib/utils'
+import * as React from 'react'
 
 export interface CenterProps extends React.HTMLAttributes<HTMLDivElement> {
-  vertical?: boolean;
+  vertical?: boolean
 }
 
 export const Center = React.forwardRef<HTMLDivElement, CenterProps>(
@@ -10,13 +10,13 @@ export const Center = React.forwardRef<HTMLDivElement, CenterProps>(
     return (
       <div
         ref={ref}
-        className={cn("flex items-center justify-center", vertical ? "min-h-full" : "", className)}
+        className={cn('flex items-center justify-center', vertical ? 'min-h-full' : '', className)}
         {...props}
       />
-    );
+    )
   }
-);
+)
 
-Center.displayName = "Center";
+Center.displayName = 'Center'
 
-export default Center;
+export default Center

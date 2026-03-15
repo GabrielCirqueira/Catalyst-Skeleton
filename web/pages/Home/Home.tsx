@@ -1,13 +1,14 @@
-import { useTheme } from "@/contexts";
-import { AppContainer } from "@/layouts";
-import { Badge } from "@/shadcn/components/ui/badge";
-import { Button } from "@/shadcn/components/ui/button";
-import { Card } from "@/shadcn/components/ui/card";
-import { Dialog, DialogContent } from "@/shadcn/components/ui/dialog";
-import { Icon } from "@/shadcn/components/ui/icon";
-import { Box, Container, Footer, Grid, HStack, VStack } from "@/shadcn/components/ui/layout";
-import { Link } from "@/shadcn/components/ui/link";
-import { Text, Title } from "@/shadcn/components/ui/typography";
+import { useTheme } from '@/contexts'
+import { AppContainer } from '@/layouts'
+import { Badge } from '@/shadcn/components/ui/badge'
+import { Button } from '@/shadcn/components/ui/button'
+import { Card } from '@/shadcn/components/ui/card'
+import { Dialog, DialogContent } from '@/shadcn/components/ui/dialog'
+import { Icon } from '@/shadcn/components/ui/icon'
+import { Box, Container, Footer, Grid, HStack, VStack } from '@/shadcn/components/ui/layout'
+import { Link } from '@/shadcn/components/ui/link'
+import { Text, Title } from '@/shadcn/components/ui/typography'
+import { ModalAuth } from '@features/auth'
 import {
   Award,
   BarChart,
@@ -27,19 +28,18 @@ import {
   Terminal,
   Users,
   Zap,
-} from "lucide-react";
-import { useState } from "react";
-import { ModalAuth } from "@features/auth";
+} from 'lucide-react'
+import { useState } from 'react'
 
 export function Component() {
-  const { theme, toggleTheme } = useTheme();
-  const [showModal, setShowModal] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authTab, setAuthTab] = useState<'login' | 'cadastro'>('login');
+  const { theme, toggleTheme } = useTheme()
+  const [showModal, setShowModal] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authTab, setAuthTab] = useState<'login' | 'cadastro'>('login')
 
   function abrirAuth(tab: 'login' | 'cadastro') {
-    setAuthTab(tab);
-    setShowAuthModal(true);
+    setAuthTab(tab)
+    setShowAuthModal(true)
   }
 
   return (
@@ -72,7 +72,7 @@ export function Component() {
               onClick={toggleTheme}
               className="rounded-full transition-all duration-300"
             >
-              <Icon icon={theme === "light" ? Moon : Sun} className="size-5" />
+              <Icon icon={theme === 'light' ? Moon : Sun} className="size-5" />
             </Button>
             <Button
               className="text-white rounded-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 transition-all duration-300 shadow-hard-2"
@@ -101,7 +101,7 @@ export function Component() {
 
             <VStack className="gap-4">
               <Title size="4xl" className="font-heading font-black leading-tight">
-                Construa aplicações modernas{" "}
+                Construa aplicações modernas{' '}
                 <Text as="span" className="text-brand-600 dark:text-brand-400">
                   mais rápido
                 </Text>
@@ -139,6 +139,7 @@ export function Component() {
               <HStack className="gap-2 items-center">
                 <HStack className="gap-0.5">
                   {[...Array(5)].map((_, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: static decorative icons
                     <Icon key={i} icon={Star} className="size-5" />
                   ))}
                 </HStack>
@@ -160,13 +161,13 @@ export function Component() {
                     <Text className="text-zinc-400">
                       <Text as="span" className="text-green-400">
                         $
-                      </Text>{" "}
+                      </Text>{' '}
                       git clone react-skeleton
                     </Text>
                     <Text className="text-zinc-400">
                       <Text as="span" className="text-green-400">
                         $
-                      </Text>{" "}
+                      </Text>{' '}
                       make setup
                     </Text>
                     <Text className="text-brand-400">✓ Ready in 2s</Text>
@@ -188,12 +189,12 @@ export function Component() {
           </Text>
           <Grid className="grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center w-full">
             {[
-              { name: "React", icon: Code2 },
-              { name: "TypeScript", icon: Code2 },
-              { name: "Vite", icon: Zap },
-              { name: "Tailwind", icon: Palette },
-              { name: "shadcn/ui", icon: Target },
-              { name: "ESLint", icon: CheckCircle },
+              { name: 'React', icon: Code2 },
+              { name: 'TypeScript', icon: Code2 },
+              { name: 'Vite', icon: Zap },
+              { name: 'Tailwind', icon: Palette },
+              { name: 'shadcn/ui', icon: Target },
+              { name: 'ESLint', icon: CheckCircle },
             ].map((tech) => (
               <Badge
                 key={tech.name}
@@ -233,53 +234,53 @@ export function Component() {
             {[
               {
                 icon: Rocket,
-                title: "Performance Otimizada",
-                description: "Vite + React 19 para builds ultra-rápidos e hot reload instantâneo",
-                color: "text-blue-600 dark:text-blue-400",
-                bgColor: "bg-blue-50 dark:bg-blue-950",
+                title: 'Performance Otimizada',
+                description: 'Vite + React 19 para builds ultra-rápidos e hot reload instantâneo',
+                color: 'text-blue-600 dark:text-blue-400',
+                bgColor: 'bg-blue-50 dark:bg-blue-950',
               },
               {
                 icon: Palette,
-                title: "80+ Componentes",
+                title: '80+ Componentes',
                 description:
-                  "Biblioteca completa shadcn/ui com componentes acessíveis e customizáveis",
-                color: "text-purple-600 dark:text-purple-400",
-                bgColor: "bg-purple-50 dark:bg-purple-950",
+                  'Biblioteca completa shadcn/ui com componentes acessíveis e customizáveis',
+                color: 'text-purple-600 dark:text-purple-400',
+                bgColor: 'bg-purple-50 dark:bg-purple-950',
               },
               {
                 icon: Shield,
-                title: "Type-Safe",
+                title: 'Type-Safe',
                 description:
-                  "TypeScript configurado com strict mode para máxima segurança de tipos",
-                color: "text-green-600 dark:text-green-400",
-                bgColor: "bg-green-50 dark:bg-green-950",
+                  'TypeScript configurado com strict mode para máxima segurança de tipos',
+                color: 'text-green-600 dark:text-green-400',
+                bgColor: 'bg-green-50 dark:bg-green-950',
               },
               {
                 icon: Zap,
-                title: "Tailwind CSS",
-                description: "Sistema de design completo com tema dark/light e paleta customizável",
-                color: "text-cyan-600 dark:text-cyan-400",
-                bgColor: "bg-cyan-50 dark:bg-cyan-950",
+                title: 'Tailwind CSS',
+                description: 'Sistema de design completo com tema dark/light e paleta customizável',
+                color: 'text-cyan-600 dark:text-cyan-400',
+                bgColor: 'bg-cyan-50 dark:bg-cyan-950',
               },
               {
                 icon: CheckCircle,
-                title: "Code Quality",
-                description: "ESLint, Prettier, Husky e lint-staged configurados para código limpo",
-                color: "text-orange-600 dark:text-orange-400",
-                bgColor: "bg-orange-50 dark:bg-orange-950",
+                title: 'Code Quality',
+                description: 'ESLint, Prettier, Husky e lint-staged configurados para código limpo',
+                color: 'text-orange-600 dark:text-orange-400',
+                bgColor: 'bg-orange-50 dark:bg-orange-950',
               },
               {
                 icon: GitBranch,
-                title: "Git Hooks",
-                description: "Commitlint e conventional commits para histórico organizado",
-                color: "text-pink-600 dark:text-pink-400",
-                bgColor: "bg-pink-50 dark:bg-pink-950",
+                title: 'Git Hooks',
+                description: 'Commitlint e conventional commits para histórico organizado',
+                color: 'text-pink-600 dark:text-pink-400',
+                bgColor: 'bg-pink-50 dark:bg-pink-950',
               },
             ].map((feature, idx) => (
               <Card
                 key={feature.title}
                 className="p-8 rounded-xl hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-hard-4 transition-all duration-500 hover:scale-105 bg-white dark:bg-zinc-900 animate-in fade-in slide-in-from-bottom"
-                style={{ animationDelay: `${idx * 100}ms`, animationDuration: "700ms" }}
+                style={{ animationDelay: `${idx * 100}ms`, animationDuration: '700ms' }}
               >
                 <VStack className="gap-4">
                   <Box
@@ -306,15 +307,15 @@ export function Component() {
       <Container size="xl" className="py-16">
         <Grid className="grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { value: "80+", label: "Componentes", icon: Target },
-            { value: "2s", label: "Build Time", icon: Zap },
-            { value: "100%", label: "Type-Safe", icon: Shield },
-            { value: "1.2k+", label: "Desenvolvedores", icon: Users },
+            { value: '80+', label: 'Componentes', icon: Target },
+            { value: '2s', label: 'Build Time', icon: Zap },
+            { value: '100%', label: 'Type-Safe', icon: Shield },
+            { value: '1.2k+', label: 'Desenvolvedores', icon: Users },
           ].map((stat, idx) => (
             <Card
               key={stat.label}
               className="p-8 rounded-xl text-center hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-hard-3 transition-all duration-500 hover:scale-110 bg-white dark:bg-zinc-900 animate-in fade-in zoom-in"
-              style={{ animationDelay: `${idx * 100}ms`, animationDuration: "700ms" }}
+              style={{ animationDelay: `${idx * 100}ms`, animationDuration: '700ms' }}
             >
               <VStack className="gap-3 items-center">
                 <Icon icon={stat.icon} className="size-8 text-brand-600 dark:text-brand-400" />
@@ -350,27 +351,27 @@ export function Component() {
               {[
                 {
                   icon: Lightbulb,
-                  title: "Simplicidade",
+                  title: 'Simplicidade',
                   description:
-                    "Arquitetura clara e organizada. Sem complexidade desnecessária, apenas o essencial para você começar.",
+                    'Arquitetura clara e organizada. Sem complexidade desnecessária, apenas o essencial para você começar.',
                 },
                 {
                   icon: Heart,
-                  title: "Developer Experience",
+                  title: 'Developer Experience',
                   description:
-                    "Ferramentas modernas, documentação completa e workflow otimizado para máxima produtividade.",
+                    'Ferramentas modernas, documentação completa e workflow otimizado para máxima produtividade.',
                 },
                 {
                   icon: Award,
-                  title: "Qualidade",
+                  title: 'Qualidade',
                   description:
-                    "Code review automatizado, testes de tipo, e padrões de código que garantem excelência.",
+                    'Code review automatizado, testes de tipo, e padrões de código que garantem excelência.',
                 },
               ].map((value, idx) => (
                 <Card
                   key={value.title}
                   className="p-10 rounded-xl bg-zinc-800 dark:bg-zinc-900 border-2 border-zinc-700 dark:border-zinc-800 hover:border-brand-500 hover:shadow-hard-4 transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom"
-                  style={{ animationDelay: `${idx * 150}ms`, animationDuration: "700ms" }}
+                  style={{ animationDelay: `${idx * 150}ms`, animationDuration: '700ms' }}
                 >
                   <VStack className="gap-6">
                     <Box className="w-16 h-16 rounded-2xl bg-brand-900 flex items-center justify-center">
@@ -633,5 +634,5 @@ export function Component() {
         </DialogContent>
       </Dialog>
     </AppContainer>
-  );
+  )
 }

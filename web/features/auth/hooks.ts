@@ -1,14 +1,14 @@
-import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import axios from 'axios'
 import { api } from '@config/api'
 import { useAuthStore } from '@stores'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import type {
-  LoginInput,
   CadastroInput,
-  RespostaLogin,
+  LoginInput,
   RespostaCadastro,
+  RespostaLogin,
   RespostaMe,
 } from './types'
 

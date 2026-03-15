@@ -2,10 +2,10 @@ import { ThemeProvider } from '@/contexts'
 import { MainLayout } from '@layouts'
 import { RotaProtegida } from '@routes'
 import {
-  createBrowserRouter,
-  createRoutesFromElements,
   Route,
   RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
 } from 'react-router-dom'
 
 const router = createBrowserRouter(
@@ -17,7 +17,7 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<MainLayout />}>
-        <Route element={<RotaProtegida />}></Route>
+        <Route element={<RotaProtegida />} />
       </Route>
     </Route>
   )

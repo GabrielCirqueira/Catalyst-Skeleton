@@ -1,26 +1,26 @@
-import { cn } from "@shadcn/lib/utils";
-import type { LucideIcon } from "lucide-react";
-import * as React from "react";
+import { cn } from '@shadcn/lib/utils'
+import type { LucideIcon } from 'lucide-react'
+import * as React from 'react'
 
 export interface IconProps extends React.SVGAttributes<SVGElement> {
   /**
    * O ícone do Lucide React a ser renderizado
    */
-  icon: LucideIcon;
+  icon: LucideIcon
   /**
    * Tamanho do ícone (em pixels)
    * @default 24
    */
-  size?: number;
+  size?: number
   /**
    * Classes CSS adicionais
    */
-  className?: string;
+  className?: string
   /**
    * Cor do stroke (espessura da linha)
    * @default 2
    */
-  strokeWidth?: number;
+  strokeWidth?: number
 }
 
 /**
@@ -43,11 +43,11 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
         ref={ref}
         size={size}
         strokeWidth={strokeWidth}
-        className={cn("inline-block text-gray-700 dark:text-gray-300 ", className)}
+        className={cn('inline-block text-gray-700 dark:text-gray-300 ', className)}
         {...props}
       />
-    );
+    )
   }
-);
+)
 
-Icon.displayName = "Icon";
+Icon.displayName = 'Icon'
