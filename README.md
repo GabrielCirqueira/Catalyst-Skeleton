@@ -1,199 +1,132 @@
-# Catalyst Skeleton — Symfony 7 + React + Vite
+# 🚀 Catalyst Skeleton — Symfony 7.3 & React 19
 
-<img width="1147" height="836" alt="image" src="https://github.com/user-attachments/assets/28e02cb8-297c-4af7-9ba6-1933e0698a0f" />
+**O ponto de partida definitivo para aplicações empresariais sólidas, escaláveis e resilientes.**
 
+Catalyst Skeleton é uma suite completa de engenharia que impõe padrões de **Clean Architecture**, **DDD** e **SOLID**. Backend PHP 8.4 + Symfony 7.3 com JSON API. Frontend React 19 + TypeScript como SPA. Tudo containerizado, production-ready desde o primeiro commit.
 
-Starter moderno integrando Symfony (backend) e React (frontend), com Vite, Mantine UI e tooling de qualidade (ESLint/Prettier, PHPCS, PHPStan). Projetado para dev ágil com foco em performance e boas práticas.
+> Para documentação técnica detalhada (arquitetura, variáveis de ambiente, DevOps, deploy, logs, etc.) consulte [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).
 
-## ✨ Tecnologias Principais
+---
 
-- Symfony 7.3 (PHP 8.4 no container)
-- React 18 + TypeScript
-- Vite 7 (HMR)
-- Mantine 8 (UI)
-- Lucide (ícones)
-- ESLint + Prettier, PHPCS, PHPStan
+## Pré-requisitos
 
-## 🚀 Instalação
+| Ferramenta | Verificação |
+| :--- | :--- |
+| Docker + Docker Compose v2 | `docker compose version` |
+| Git | `git --version` |
+| OpenSSL | `openssl version` |
 
-### Pré-requisitos (alternativas)
+> Node.js e PHP não precisam estar instalados na máquina host.
 
-- Com Docker: Docker Desktop e Docker Compose (recomendado)
-- Sem Docker: PHP 8.4+, Composer 2.6+, Node.js 18+
+---
 
-### Passo a Passo
+## Setup (execute 1x após clonar)
 
-1. **Clonar o repositório**
-   ```bash
-   git clone https://github.com/GabrielCirqueira/Catalyst-Skeleton.git
-   cd Catalyst-Skeleton
-   ```
-
-2. **Instalar dependências PHP**
-   ```bash
-   composer install
-   ```
-
-3. **Instalar dependências JavaScript**
-   ```bash
-   npm install
-   # ou com yarn
-   yarn
-   ```
-
-4. **Iniciar servidores de desenvolvimento**
-   ```bash
-   # Recomendado: via Docker
-   make up-d
-
-   # Ou localmente
-   npm install && npm run dev
-   php -S localhost:8000 -t public # ou Apache/Nginx local
-   ```
-
-5. **Acessar a aplicação**
-   - Backend: `http://localhost:8000` (configurável via `BACKEND_PORT` em `docker/ports.env`)
-   - Frontend: `http://localhost:5173` (configurável via `FRONTEND_PORT` em `docker/ports.env`)
-
-   > Ajuste os valores em `docker/ports.env` para trocar as portas expostas pela stack.
-
-## 🏗️ Estrutura (high-level)
-
-- `web/` — Frontend React (App, layouts, pages, theme)
-- `templates/base.html.twig` — Shell do SPA com tags Vite
-- `src/` — Backend Symfony (controllers, console, kernel)
-- `config/` — Configurações do framework/bundles/rotas
-- `docker-compose.yaml`, `Dockerfile`, `docker/` — Orquestração
-- `cli/` — Scripts de lint/QA e hooks
-- `Makefile` — Comandos de conveniência
-
-## 🔍 Principais Funcionalidades
-
-### Linting e Formatação
-
-- Frontend: `npm run lint:frontend` (ou `lint:frontend:fix`)
-- Backend: `composer lint:php:cs` (ou `composer fix:php`)
-- Tudo: `./cli/run-qa.sh` (ou `npm run lint:all`)
-
-### Frontend
-
-- Componentes funcionais com Hooks
-- Lazy routes (React Router)
-- Tema centralizado (Mantine)
-- Ícones Lucide
-
-## 🛠️ Comandos Úteis
-
-- `make up-d` — sobe a stack Docker
-- `npm run dev` — Vite em modo dev (local)
-- `npm run build` — build de produção
-- `./cli/run-qa.sh` — roda todos os linters
-- `make help` — lista todos os comandos do Makefile
-
-## 📚 Documentação
-
-Para uma visão mais detalhada, consulte:
-
-- Frontend: documentation/frontend.md
-- Backend (Symfony): documentation/backend.md
-- Makefile (comandos): documentation/makefile.md
-- Scripts CLI: documentation/cli.md
-- Lint e formatação: documentation/formatting.md
-- Docker e orquestração: documentation/docker.md
-
-## 🎨 Tema
-
-O tema Mantine inclui uma paleta personalizada `brand` definida em `web/themes/theme.ts`.
-
-```ts
-colors: {
-  brand: {
-      50: '#E6F6F7',
-      100: '#B3E1E4',
-      200: '#80CCCC',
-      300: '#4DB7B3',
-      400: '#26A3A0',
-      500: '#1F8C89',
-      600: '#186F6E',
-      700: '#125355',
-      800: '#0B393B',
-      900: '#041F20',
-  }
-}
+```bash
+bash setup.sh
 ```
 
-### Como usar as cores brand:
-```tsx
-// Exemplo de uso
-<Box bg="brand.100" color="brand.700">
-  <Text>Texto com cor brand</Text>
-</Box>
+O script faz tudo automaticamente: renomeia o projeto, gera segredos (`APP_SECRET`, `JWT_PASSPHRASE`, senhas do banco), cria o `.env`, faz o build dos containers, instala dependências PHP e JS, gera as chaves JWT e roda as migrations.
 
-<Button colorScheme="brand">Botão Primário</Button>
+---
+
+## Serviços após o setup
+
+| Serviço | URL padrão |
+| :--- | :--- |
+| API Symfony | http://localhost:1010 |
+| Frontend Vite (HMR) | http://localhost:1012 |
+| MySQL (host) | localhost:1013 |
+| Supervisor (painel) | http://localhost:1011 |
+
+> As portas são configuradas em `ports.env`. Altere lá para mudar tudo de uma vez.
+
+---
+
+## Comandos do dia a dia
+
+```bash
+make up-d          # sobe tudo em background
+make down          # para tudo
+make restart       # down + up-d
+make install       # instala deps PHP e JS nos containers
+make migrate       # roda migrations pendentes
+make new-migration # gera migration a partir do diff do schema
+make test          # roda PHPUnit (Unit + Integration)
+make lint-all      # PHP-CS + Biome
+make fix-php       # auto-fix PHP
+make fix-tsx       # auto-fix TypeScript/React
+make bash-backend  # shell no container symfony
+make logs-backend  # tail dos logs do backend
 ```
 
-**Dica profissional:** Use `useColorModeValue` para alternar entre cores em light/dark mode:
-```tsx
-const color = useColorModeValue('brand.600', 'brand.300')
+---
+
+## Arquitetura (visão rápida)
+
+**Backend** — cada camada tem uma única responsabilidade:
+
+| Camada | Pasta | Regra |
+| :--- | :--- | :--- |
+| Entidades | `src/Entity/` | PK UUID v7, sem getters/setters anêmicos |
+| Repositórios | `src/Repository/` | Único lugar onde se usa o `EntityManager` |
+| Services | `src/Service/` | Um service = uma ação — método `executar()` |
+| DTOs | `src/DataObject/` | Entrada validada antes de chegar no domínio |
+| Serializers | `src/Serializer/` | Contrato JSON de saída — protege o frontend |
+| Controllers | `src/Controller/` | Lógica zero — orquestra entrada e saída |
+
+**Frontend** — arquitetura baseada em features:
+
+| Pasta | Responsabilidade |
+| :--- | :--- |
+| `web/features/` | Módulos autossuficientes (ex: `auth/`) |
+| `web/shared/` | Componentes, hooks e utils globais |
+| `web/stores/` | Estado global com Zustand |
+| `web/config/api.ts` | Instância Axios centralizada com auto-refresh JWT |
+| `web/routes/` | Guards de rota (`RotaProtegida`) |
+| `web/shadcn/` | Componentes Shadcn/Radix UI prontos |
+
+---
+
+## Scaffolding
+
+```bash
+./cli/new-feature.sh
 ```
 
-## 🛣️ Sistema de Rotas Avançado
+Informe o nome em PascalCase (ex: `Produto`). Gera automaticamente: Entity, Repository, Controller, DTO, Service e os arquivos de feature no frontend.
 
-### Backend (Symfony)
-```yaml
-# config/routes.yaml
-react_frontend:
-  path: /{reactRouting}
-  controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
-  defaults:
-    template: 'base.html.twig'
-  requirements:
-    reactRouting: ".+"
+---
+
+## Qualidade de código
+
+```bash
+./cli/run-qa.sh    # PHPStan + PHPCS + Biome em sequência
+composer qa        # mesmo comando
 ```
 
-Esta configuração permite que:
-- Todas as rotas sejam manipuladas pelo React Router
-- O Symfony sirva apenas o template base para o frontend
-- URLs amigáveis e limpas
+Git hooks automáticos via Husky: **lint-staged** no pre-commit e **Commitlint** validando a mensagem. Formato obrigatório:
 
-### Frontend (React Router)
-Estrutura moderna com lazy loading:
-
-```tsx
-// Exemplo de roteamento lazy-loaded
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route element={<AppLayout />}>
-      <Route 
-        path="/" 
-        lazy={() => import('@app/pages/Home')} 
-      />
-      <Route 
-        path="/about" 
-        lazy={() => import('@app/pages/About')} 
-      />
-      <Route 
-        path="*" 
-        lazy={() => import('@app/pages/NotFound')} 
-      />
-    </Route>
-  )
-)
+```
+feat: descrição curta
+fix: corrige algo
+refactor: melhora sem mudar comportamento
 ```
 
-**Vantagens:**
-- Carregamento sob demanda (melhor performance)
-- Código dividido automaticamente pelo Vite
-- Fácil manutenção e adição de novas rotas
+---
 
-## 🤝 Contribuição
+## Produção
 
-1. Faça um fork do projeto
-2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+```bash
+bash devops/deploy.sh    # primeiro deploy (build do zero + rollback automático)
+bash devops/update.sh    # updates (rebuild inteligente + rollback automático)
+bash devops/backup.sh    # backup do banco com rotação de 7 dias
+bash devops/monitor.sh   # verifica containers e alerta no Slack/Discord
+bash devops/logs-prod.sh # visualizador interativo de logs de produção
+```
 
-## 📄 Licença
+Stack de produção: **Nginx** (TLS 1.2/1.3) → **PHP-FPM** (imagem Alpine sem Xdebug, OPcache ativo) → **MySQL 8.3** + **Certbot** para SSL automático.
 
-Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+---
+
+*Para detalhes completos sobre stack, variáveis de ambiente, autenticação, mensageria, segurança, DevOps e padrões de nomenclatura, veja [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).*

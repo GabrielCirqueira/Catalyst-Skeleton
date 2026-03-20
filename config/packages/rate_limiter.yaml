@@ -1,0 +1,11 @@
+framework:
+    rate_limiter:
+        login_throttling:
+            policy: 'token_bucket'
+            limit: 5
+            rate: { interval: '1 minute' }
+        
+        api_standard:
+            policy: 'token_bucket'
+            limit: 60
+            rate: { interval: '1 minute' }

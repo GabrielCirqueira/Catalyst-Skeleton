@@ -63,3 +63,6 @@ if [[ -f /var/www/html/bin/console ]]; then
 fi
 
 log "Bootstrap sequence finished."
+
+# Repassa o controle ao processo principal (CMD do Dockerfile, ex: php-fpm)
+exec "$@"

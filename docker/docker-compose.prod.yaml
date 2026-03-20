@@ -1,0 +1,66 @@
+name: catalyst-skeleton-prod
+
+services:
+  symfony:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile
+      target: prod
+    container_name: skeleton_symfony_prod
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+    env_file: ../.env
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [app_net]
+
+  database:
+    image: mysql:8.3
+    container_name: skeleton_database_prod
+    restart: unless-stopped
+    env_file: ../.env
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [app_net]
+
+  nginx:
+    image: nginx:alpine
+    container_name: skeleton_nginx_prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ../public:/var/www/public:ro
+      - certbot_data:/etc/letsencrypt:ro
+    depends_on:
+      - symfony
+    networks: [app_net]
+
+  certbot:
+    image: certbot/certbot
+    container_name: skeleton_certbot_prod
+    volumes:
+      - certbot_data:/etc/letsencrypt
+      - ../public:/var/www/public
+
+volumes:
+  db_data_prod:
+  certbot_data:
+
+networks:
+  app_net:
+    driver: bridge

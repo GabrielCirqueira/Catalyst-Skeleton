@@ -2,8 +2,8 @@ import { Button } from '@/shadcn/components/ui/button'
 import { VStack } from '@/shadcn/components/ui/layout'
 import { Text } from '@/shadcn/components/ui/text'
 import { AlertTriangle } from 'lucide-react'
+import * as Sentry from '@sentry/react'
 import * as React from 'react'
-
 interface ErrorBoundaryProps {
   fallback?: React.ReactNode
   children: React.ReactNode
@@ -34,6 +34,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(erro: Error, info: React.ErrorInfo) {
     console.error('[ErrorBoundary]', erro, info.componentStack)
+    Sentry.captureException(erro, {
+      contexts: {
+        react: { componentStack: info.componentStack },
+      },
+    })
   }
 
   reiniciar = () => {

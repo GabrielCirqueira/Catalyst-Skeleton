@@ -15,60 +15,37 @@ services:
 
   symfony:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/php/Dockerfile
+      target: dev
     container_name: skeleton_symfony
     restart: always
     env_file:
-      - ports.env
+      - ../ports.env
     ports:
       - "${BACKEND_PORT:-8000}:80"
       - "${SUPERVISOR_PORT:-9001}:9001"
     volumes:
-      - .:/var/www/html
+      - ..:/var/www/html
     depends_on:
       - database
-      # - redis
 
   vite-react:
     build:
-      context: .
-      dockerfile: docker/vite.Dockerfile
+      context: ..
+      dockerfile: docker/vite/Dockerfile
     container_name: skeleton_vite_react
     working_dir: /app
     user: "${DEV_UID:-1000}:${DEV_GID:-1000}"
     volumes:
-      - .:/app
+      - ..:/app
     command: sh -c "npm install --legacy-peer-deps && npm run dev"
     env_file:
-      - ports.env
+      - ../ports.env
     ports:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
     depends_on:
       - symfony
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: redis
-  #   restart: always
-  #   command: redis-server --appendonly yes
-  #   volumes:
-  #     - redis_data:/data
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 10s
-  #     timeout: 3s
-  #     retries: 10
-
-  # redisinsight:
-  #   image: redis/redisinsight:latest
-  #   container_name: redisinsight
-  #   restart: always
-  #   ports:
-  #     - "5540:5540"
-  #   depends_on:
-  #     - redis
-
 volumes:
   db_data:
-  # redis_data:

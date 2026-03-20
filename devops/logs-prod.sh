@@ -6,7 +6,8 @@
 #   bash devops/logs-prod.sh <opção>  vai direto para a opção (ex: bash devops/logs-prod.sh 3)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE="docker compose -f $SCRIPT_DIR/docker-compose.prod.yml"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.prod.yaml"
 SYMFONY="skeleton_symfony_prod"
 DATABASE="skeleton_database_prod"
 TAIL="${LOG_TAIL:-100}"          # linhas iniciais (sobrescreva: LOG_TAIL=500 bash devops/logs-prod.sh)

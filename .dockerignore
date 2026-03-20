@@ -19,7 +19,7 @@ public/assets/
 # Ambiente local (nunca deve entrar na imagem)
 .env.local
 .env.*.local
-.env.prod
+.env
 
 # Devops e documentação (não precisam estar na imagem da aplicação)
 devops/

@@ -45,15 +45,12 @@ yarn-error.log
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
-leading/*
-
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
 ###> produção ###
 /.env
-/.env.prod
 ###< produção ###
 
 ###> gerados automaticamente ###

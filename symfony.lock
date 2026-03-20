@@ -68,6 +68,18 @@
             "config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "nelmio/cors-bundle": {
+        "version": "2.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.5",
+            "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
+        },
+        "files": [
+            "config/packages/nelmio_cors.yaml"
+        ]
+    },
     "pentatrion/vite-bundle": {
         "version": "7.1",
         "recipe": {
@@ -100,6 +112,18 @@
             "tests/bootstrap.php"
         ]
     },
+    "sentry/sentry-symfony": {
+        "version": "5.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "12f504985eb24e3b20a9e41e0ec7e398798d18f0"
+        },
+        "files": [
+            "config/packages/sentry.yaml"
+        ]
+    },
     "squizlabs/php_codesniffer": {
         "version": "4.0",
         "recipe": {
@@ -108,6 +132,18 @@
             "version": "3.6",
             "ref": "1019e5c08d4821cb9b77f4891f8e9c31ff20ac6f"
         }
+    },
+    "symfony/apache-pack": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "5d454ec6cc4c700ed3d963f3803e1d427d9669fb"
+        },
+        "files": [
+            "public/.htaccess"
+        ]
     },
     "symfony/asset-mapper": {
         "version": "7.2",
@@ -288,6 +324,15 @@
             "config/packages/routing.yaml",
             "config/routes.yaml"
         ]
+    },
+    "symfony/scheduler": {
+        "version": "7.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "7.2",
+            "ref": "caea3c928ee9e1b21288fd76aef36f16ea355515"
+        }
     },
     "symfony/security-bundle": {
         "version": "7.2",
