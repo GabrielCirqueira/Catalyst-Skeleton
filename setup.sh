@@ -329,7 +329,7 @@ $COMPOSE run --rm --entrypoint "" --user "${USER_ID}:${GROUP_ID}" --env HOME=/tm
   || die "Falha ao instalar dependências PHP."
 
 info "Instalando dependências JS (NPM)..."
-$COMPOSE run --rm --entrypoint "" vite-react sh -lc "rm -rf node_modules package-lock.json && npm install --legacy-peer-deps" \
+$COMPOSE run --rm --entrypoint "" vite-react sh -lc "rm -rf node_modules package-lock.json 2>/dev/null || true; npm install --legacy-peer-deps" \
   || die "Falha ao instalar dependências JS."
 
 ok "Dependências instaladas"
