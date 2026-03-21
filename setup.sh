@@ -287,6 +287,13 @@ if [[ -f "docker/docker-compose.yaml" ]]; then
   NEW_DB_URL="mysql://${PROJECT_NAME_SLUG}:${DB_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
   # Escapa o '&' para não ser interpretado pelo sed como o match completo
   sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_DB_URL//&/\\&}\"|" .env
+  
+  if [[ -f ".env.test" ]]; then
+    NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
+    sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
+    ok "DATABASE_URL atualizado no .env.test com credenciais de root"
+  fi
+  
   ok "docker/docker-compose.yaml atualizado com novas senhas e nomes"
   ok "DATABASE_URL atualizado no .env"
 fi
@@ -322,7 +329,7 @@ $COMPOSE run --rm --entrypoint "" --user "${USER_ID}:${GROUP_ID}" --env HOME=/tm
   || die "Falha ao instalar dependências PHP."
 
 info "Instalando dependências JS (NPM)..."
-$COMPOSE run --rm --entrypoint "" vite-react sh -lc "npm install --legacy-peer-deps" \
+$COMPOSE run --rm --entrypoint "" vite-react sh -lc "rm -rf node_modules package-lock.json && npm install --legacy-peer-deps" \
   || die "Falha ao instalar dependências JS."
 
 ok "Dependências instaladas"
