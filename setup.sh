@@ -392,15 +392,18 @@ fi
 
 ok "Container Symfony está rodando"
 
-# Gera chaves JWT (se o bootstrap.sh ainda não gerou)
+# Gera chaves JWT (Garante que funcionam com a Passphrase atual do .env)
 info "Verificando chaves JWT..."
-if ! docker exec "$SYMFONY_CONTAINER" test -f /var/www/html/config/jwt/private.pem 2>/dev/null; then
-  info "Gerando chaves JWT..."
-  docker exec "$SYMFONY_CONTAINER" php bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction \
+# Testa se a chave privada consegue ser lida com a senha atual
+JWT_VALID=$(docker exec "$SYMFONY_CONTAINER" php -r "try { echo openssl_pkey_get_private('file:///var/www/html/config/jwt/private.pem', getenv('JWT_PASSPHRASE')) ? '1' : '0'; } catch(Exception \$e) { echo '0'; }" 2>/dev/null)
+
+if [[ "$JWT_VALID" != "1" ]]; then
+  info "Chaves JWT ausentes ou inválidas para a senha atual. (Re)gerando..."
+  docker exec "$SYMFONY_CONTAINER" php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction \
     || die "Falha ao gerar chaves JWT."
-  ok "Chaves JWT geradas"
+  ok "Chaves JWT (re)geradas com sucesso"
 else
-  ok "Chaves JWT já existem"
+  ok "Chaves JWT já existem e são válidas"
 fi
 
 # Executa migrations
