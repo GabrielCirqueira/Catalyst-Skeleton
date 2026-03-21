@@ -63,8 +63,9 @@ fi
 if [[ -f /var/www/html/bin/console ]]; then
   if [[ "${APP_ENV:-dev}" == "prod" ]]; then
     log "Warming up Symfony cache (prod)."
-    php /var/www/html/bin/console cache:warmup \
+    su -s /bin/sh www-data -c "php /var/www/html/bin/console cache:warmup" \
       || { log "FATAL: Cache warmup failed."; exit 1; }
+    chown -R www-data:www-data /var/www/html/var 2>/dev/null || true
     log "Cache warmup complete."
   else
     log "Skipping cache warmup for APP_ENV=${APP_ENV:-dev}."
