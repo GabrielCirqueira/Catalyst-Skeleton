@@ -23,12 +23,23 @@ services:
     env_file:
       - ../ports.env
     ports:
-      - "${BACKEND_PORT:-8000}:80"
       - "${SUPERVISOR_PORT:-9001}:9001"
     volumes:
       - ..:/var/www/html
     depends_on:
       - database
+
+  nginx:
+    image: nginx:alpine
+    container_name: financas_eletron_nginx
+    restart: always
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
+      - ..:/var/www/html:ro
+    depends_on:
+      - symfony
 
   vite-react:
     build:
