@@ -1,14 +1,14 @@
-# --- Estágio base ---
 FROM php:8.4-fpm-alpine AS base
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Dependências do sistema (incluindo o que é necessário para extensões PHP)
 RUN apk add --no-cache \
-    libzip-dev icu-dev oniguruma-dev \
+    git bash libzip-dev icu-dev oniguruma-dev \
     && docker-php-ext-install pdo_mysql zip intl opcache
 
 # --- Estágio de desenvolvimento ---
 FROM base AS dev
-RUN apk add --no-cache $PHPIZE_DEPS \
+RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug
 

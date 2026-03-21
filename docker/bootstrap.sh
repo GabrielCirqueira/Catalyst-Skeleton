@@ -39,11 +39,20 @@ else
 fi
 
 # ── 3. Migrations ────────────────────────────────────────────────────────────
-# NOTA: doctrine:migrations:diff NÃO é executado aqui propositalmente.
-# Gerar migrations automaticamente em runtime é arriscado — pode apagar colunas
-# ou tabelas se houver divergência no mapeamento de entidades.
-# O diff deve ser feito manualmente em desenvolvimento: php bin/console doctrine:migrations:diff
 if [[ -f /var/www/html/bin/console ]]; then
+  # Aguarda o banco ficar realmente acessível via Doctrine
+  log "Waiting for Database to be ready for connections..."
+  count=0
+  until php /var/www/html/bin/console dbal:run-sql "SELECT 1" >/dev/null 2>&1 || [ $count -gt 30 ]; do
+    sleep 1
+    ((count++))
+  done
+
+  if [ $count -gt 30 ]; then
+     log "FATAL: Database connection timeout."
+     exit 1
+  fi
+
   log "Running database migrations..."
   php /var/www/html/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration \
     || { log "FATAL: Migrations failed."; exit 1; }

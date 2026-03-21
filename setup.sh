@@ -11,8 +11,8 @@
 #   4. Verifica pré-requisitos (Docker, docker compose)
 #   5. Builda e sobe todos os containers
 #   6. Instala dependências PHP e JS (já dentro dos containers)
-#   7. Gera as chaves JWT
-#   8. Executa as migrations do banco de dados
+#   7. Aguarda o banco de dados ficar pronto
+#   8. Gera as chaves JWT e executa migrations
 #   9. Confirma que tudo está rodando
 
 set -euo pipefail
@@ -66,7 +66,7 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # PASSO 1 — Nome do projeto
 # ═══════════════════════════════════════════════════════════════
-step "1/8 — Nome do projeto"
+step "1/9 — Nome do projeto"
 
 echo "  Qual é o nome do seu projeto?"
 echo "  (Deixe em branco para manter 'Catalyst Skeleton')"
@@ -106,7 +106,7 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # PASSO 2 — Pré-requisitos
 # ═══════════════════════════════════════════════════════════════
-step "2/8 — Verificando pré-requisitos"
+step "2/9 — Verificando pré-requisitos"
 
 check_cmd() {
   if command -v "$1" &>/dev/null; then
@@ -123,10 +123,10 @@ check_cmd git
 # Docker Compose (plugin v2 ou standalone v1)
 if docker compose version &>/dev/null 2>&1; then
   ok "docker compose (plugin v2)"
-  COMPOSE="docker compose"
+  COMPOSE="docker compose --env-file ports.env -f docker/docker-compose.yaml"
 elif docker-compose version &>/dev/null 2>&1; then
   ok "docker-compose (standalone)"
-  COMPOSE="docker-compose"
+  COMPOSE="docker-compose --env-file ports.env -f docker/docker-compose.yaml"
 else
   die "docker compose não encontrado. Instale o Docker Desktop ou o plugin compose."
 fi
@@ -140,7 +140,7 @@ ok "Docker daemon ativo"
 # ═══════════════════════════════════════════════════════════════
 # PASSO 3 — Substituição de nomes em todo o projeto
 # ═══════════════════════════════════════════════════════════════
-step "3/8 — Substituindo nomes no projeto"
+step "3/9 — Substituindo nomes no projeto"
 
 # Arquivos onde o nome do projeto aparece (excluindo vendor, node_modules, .git, build, cache)
 RENAME_FILES=$(find . \
@@ -182,25 +182,35 @@ for file in $RENAME_FILES; do
 
   # ── Substituições ordenadas (mais específico → menos específico) ────────────
 
-  # "Catalyst Skeleton" → nome de exibição (titulo, HTML, twig)
-  if grep -qi "catalyst skeleton" "$file" 2>/dev/null; then
+  # 1. "Catalyst Skeleton" → nome de exibição (mais específico)
+  if grep -qi "Catalyst Skeleton" "$file" 2>/dev/null; then
     replace_in_file "$file" "Catalyst Skeleton" "$PROJECT_NAME_DISPLAY"
-    replace_in_file "$file" "catalyst skeleton" "$PROJECT_NAME_SLUG"
+  fi
+
+  # 2. "catalyst-skeleton" → slug ou kebab (usado em package.json, docker-compose)
+  if grep -q "catalyst-skeleton" "$file" 2>/dev/null; then
     replace_in_file "$file" "catalyst-skeleton" "$PROJECT_NAME_KEBAB"
-    CHANGED_FILE=true
   fi
 
-  # "catalyst" solto (minúsculo) → slug ou display conforme contexto
-  # aparece em AuthLayout.tsx, useSEO.ts, ModalAuth.tsx como nome da marca
+  # 3. "catalyst skeleton" (separado)
+  if grep -qi "catalyst skeleton" "$file" 2>/dev/null; then
+    replace_in_file "$file" "catalyst skeleton" "$PROJECT_NAME_SLUG"
+  fi
+
+  # 4. "catalyst" solto (BRANDING)
+  # Aparece em layouts como nome da marca
   if grep -q "Catalyst" "$file" 2>/dev/null; then
-    replace_in_file "$file" "Catalyst" "$PROJECT_NAME_DISPLAY"
-    CHANGED_FILE=true
+     # Só substitui se não for parte de uma classe ou import (heurística simples)
+     replace_in_file "$file" "Catalyst" "$PROJECT_NAME_DISPLAY"
   fi
 
-  # "skeleton" como identificador técnico (banco, docker, env, URLs)
+  # 5. "skeleton" técnico (BD, docker, env, caminhos internos)
+  # AVISO: Não pode trocar @shadcn/skeleton ou componente Skeleton da UI!
   if grep -q "skeleton" "$file" 2>/dev/null; then
-    replace_in_file "$file" "skeleton" "$PROJECT_NAME_SLUG"
-    CHANGED_FILE=true
+    # Pula arquivos de UI conhecidos
+    if [[ "$file" != *"shadcn/"* ]] && [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
+       replace_in_file "$file" "skeleton" "$PROJECT_NAME_SLUG"
+    fi
   fi
 
   # "Skeleton" com maiúscula (texto de UI como "React Skeleton")
@@ -227,10 +237,10 @@ ok "$CHANGED arquivo(s) atualizado(s)"
 # ═══════════════════════════════════════════════════════════════
 # PASSO 4 — Gerar segredos e criar .env
 # ═══════════════════════════════════════════════════════════════
-step "4/8 — Gerando segredos e criando .env"
+step "4/9 — Gerando segredos e criando .env"
 
-if [[ ! -f ".env.dev" ]]; then
-  die "Arquivo .env.dev não encontrado. O repositório pode estar corrompido."
+if [[ ! -f ".env.example" ]]; then
+  die "Arquivo .env.example não encontrado. O repositório pode estar corrompido."
 fi
 
 # Gera valores aleatórios seguros
@@ -247,8 +257,8 @@ info "JWT_PASSPHRASE gerado:   ${JWT_PASSPHRASE:0:16}..."
 info "DB_PASSWORD gerado:      ${DB_PASSWORD:0:8}..."
 info "DB_ROOT_PASSWORD gerado: ${DB_ROOT_PASSWORD:0:8}..."
 
-# Copia .env.dev → .env e substitui os placeholders
-cp .env.dev .env
+# Copia .env.example → .env e substitui os placeholders
+cp .env.example .env
 
 # Substitui ou adiciona APP_SECRET
 if grep -q "^APP_SECRET=" .env; then
@@ -266,26 +276,29 @@ fi
 
 ok ".env criado com segredos gerados"
 
-# Atualiza docker-compose.yaml com a nova senha do banco
-# (o compose usa MYSQL_PASSWORD=skeleton que precisa bater com DATABASE_URL)
-if [[ -f "docker-compose.yaml" ]]; then
-  sed -i "s|MYSQL_ROOT_PASSWORD:.*|MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}|" docker-compose.yaml
-  sed -i "s|MYSQL_PASSWORD:.*|MYSQL_PASSWORD: ${DB_PASSWORD}|" docker-compose.yaml
-  # Atualiza DATABASE_URL no .env para usar a nova senha
+# Atualiza docker/docker-compose.yaml com a nova senha do banco
+if [[ -f "docker/docker-compose.yaml" ]]; then
+  sed -i "s|MYSQL_ROOT_PASSWORD:.*|MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}|" docker/docker-compose.yaml
+  sed -i "s|MYSQL_PASSWORD:.*|MYSQL_PASSWORD: ${DB_PASSWORD}|" docker/docker-compose.yaml
+  sed -i "s|MYSQL_USER:.*|MYSQL_USER: ${PROJECT_NAME_SLUG}|" docker/docker-compose.yaml
+  sed -i "s|MYSQL_DATABASE:.*|MYSQL_DATABASE: ${PROJECT_NAME_SLUG}|" docker/docker-compose.yaml
+  
+  # Atualiza DATABASE_URL no .env para usar a nova senha e o host 'database'
   NEW_DB_URL="mysql://${PROJECT_NAME_SLUG}:${DB_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
-  sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_DB_URL}\"|" .env
-  ok "docker-compose.yaml atualizado com novas senhas"
+  # Escapa o '&' para não ser interpretado pelo sed como o match completo
+  sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_DB_URL//&/\\&}\"|" .env
+  ok "docker/docker-compose.yaml atualizado com novas senhas e nomes"
   ok "DATABASE_URL atualizado no .env"
 fi
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 5 — Build e subida dos containers
 # ═══════════════════════════════════════════════════════════════
-step "5/8 — Buildando e subindo containers"
+step "5/9 — Buildando e subindo containers"
 
-# Para containers antigos se existirem (evita conflito de portas / nome)
-info "Parando containers anteriores (se houver)..."
-$COMPOSE down --remove-orphans 2>/dev/null || true
+# Para containers antigos se existirem (evita conflito de portas / nome / volumes sujos)
+info "Parando containers anteriores e limpando volumes (se houver)..."
+$COMPOSE down --volumes --remove-orphans 2>/dev/null || true
 
 info "Buildando imagens (isso pode levar alguns minutos na primeira vez)..."
 $COMPOSE build --no-cache || die "Falha no build dos containers."
@@ -296,9 +309,28 @@ $COMPOSE up -d || die "Falha ao subir os containers."
 ok "Containers rodando"
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 6 — Aguardar banco de dados ficar pronto
+# PASSO 6 — Instalando dependências
 # ═══════════════════════════════════════════════════════════════
-step "6/8 — Aguardando banco de dados"
+step "6/9 — Instalando dependências (PHP e JS)"
+
+# Detecta UID/GID para evitar problemas de permissão com volumes
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+info "Instalando dependências PHP (Composer)..."
+$COMPOSE run --rm --entrypoint "" --user "${USER_ID}:${GROUP_ID}" --env HOME=/tmp/git-home symfony sh -lc 'mkdir -p "$HOME" && git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist' \
+  || die "Falha ao instalar dependências PHP."
+
+info "Instalando dependências JS (NPM)..."
+$COMPOSE run --rm --entrypoint "" vite-react sh -lc "npm install --legacy-peer-deps" \
+  || die "Falha ao instalar dependências JS."
+
+ok "Dependências instaladas"
+
+# ═══════════════════════════════════════════════════════════════
+# PASSO 7 — Aguardar banco de dados ficar pronto
+# ═══════════════════════════════════════════════════════════════
+step "7/9 — Aguardando banco de dados"
 
 DB_CONTAINER="${PROJECT_NAME_SLUG}_database"
 # Tenta detectar o nome real do container
@@ -328,7 +360,7 @@ done
 # ═══════════════════════════════════════════════════════════════
 # PASSO 7 — Dependências e configuração dentro do container Symfony
 # ═══════════════════════════════════════════════════════════════
-step "7/8 — Configurando aplicação Symfony"
+step "8/9 — Configurando aplicação Symfony"
 
 # Detecta o container Symfony
 SYMFONY_CONTAINER=$(docker ps --format '{{.Names}}' | grep -E "symfony|php|app" | grep -v "database\|vite\|redis" | head -1)
@@ -378,7 +410,7 @@ ok "Cache limpo"
 # ═══════════════════════════════════════════════════════════════
 # PASSO 8 — Verificação final
 # ═══════════════════════════════════════════════════════════════
-step "8/8 — Verificação final"
+step "9/9 — Verificação final"
 
 # Lê as portas configuradas no ports.env
 BACKEND_PORT=$(grep "^BACKEND_PORT=" ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
