@@ -31,7 +31,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: financas_eletron_nginx
+    container_name: skeleton_nginx
     restart: always
     ports:
       - "${BACKEND_PORT:-8000}:80"

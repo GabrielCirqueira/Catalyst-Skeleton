@@ -9,7 +9,7 @@ RUN apk add --no-cache \
 # --- Estágio de desenvolvimento ---
 FROM base AS dev
 RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
-    && pecl install xdebug \
+    && (pecl install xdebug || pecl install xdebug || pecl install xdebug) \
     && docker-php-ext-enable xdebug
 
 # Configurações de dev
