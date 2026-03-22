@@ -35,9 +35,11 @@ final class AppSeedCommand extends Command
             $this->criarUsuarios($io);
 
             $io->success('Banco de dados populado com sucesso!');
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $io->error('Erro durante o seeding: ' . $e->getMessage());
+            $io->error('Erro durante o seeding: '.$e->getMessage());
+
             return Command::FAILURE;
         }
     }
@@ -46,6 +48,7 @@ final class AppSeedCommand extends Command
     {
         if ($this->usuarioRepository->usernameJaExiste('admin@projeto.com')) {
             $io->note('Usuários de exemplo já existem. Pulando...');
+
             return;
         }
 
@@ -59,6 +62,6 @@ final class AppSeedCommand extends Command
         $user->setRoles(['ROLE_USER']);
         $this->usuarioRepository->salvar($user, true);
 
-        $io->writeln('   ✓ Criados usuários padões: admin@projeto.com e user@projeto.com (senha: senha123)');
+        $io->writeln('   ✓ Criados usuários padrões: admin@projeto.com e user@projeto.com (senha: senha123)');
     }
 }

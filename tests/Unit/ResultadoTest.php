@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ResultadoTest extends TestCase
 {
-
     public function testSucessoSemDados(): void
     {
         $resultado = Resultado::sucesso();

@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class UsuarioTest extends TestCase
 {
-
     public function testConstrutorDefinePropiedadesBasicas(): void
     {
         $usuario = new Usuario('Gabriel Silva', 'gabriel');
@@ -37,7 +36,7 @@ final class UsuarioTest extends TestCase
         $this->assertNull($usuario->getId());
     }
 
-    public function testGetRolesSempreInclui_ROLE_USER(): void
+    public function testGetRolesSempreIncluiROLEUSER(): void
     {
         $usuario = new Usuario('Teste', 'teste');
 
@@ -55,7 +54,7 @@ final class UsuarioTest extends TestCase
         $this->assertContains('ROLE_ADMIN', $roles);
     }
 
-    public function testGetRolesNaoDuplicaROLE_USER(): void
+    public function testGetRolesNaoDuplicaROLEUSER(): void
     {
         $usuario = new Usuario('Dup', 'dup');
         $usuario->setRoles(['ROLE_USER']);

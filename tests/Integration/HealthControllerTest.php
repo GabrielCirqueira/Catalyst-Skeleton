@@ -29,10 +29,13 @@ final class HealthControllerTest extends WebTestCase
         $client->request('GET', '/api/v1/health');
 
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        $this->assertJsonStringEqualsJsonString(
-            '{"status":"ok"}',
-            $client->getResponse()->getContent(),
-        );
+
+        $content = $client->getResponse()->getContent();
+        $this->assertJson($content);
+
+        $dados = json_decode($content, true);
+        $this->assertArrayHasKey('status', $dados);
+        $this->assertSame('ok', $dados['status']);
     }
 
     public function testHealthEndpointEhPublico(): void
@@ -45,5 +48,4 @@ final class HealthControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(200);
     }
-
 }

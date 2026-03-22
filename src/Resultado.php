@@ -26,7 +26,8 @@ final class Resultado
         private readonly bool $sucesso,
         private readonly mixed $dados,
         private readonly ?string $erro = null,
-    ) {}
+    ) {
+    }
 
     public static function sucesso(mixed $dados = null): self
     {

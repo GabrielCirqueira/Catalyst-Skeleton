@@ -22,7 +22,8 @@ final class AuthController extends AbstractController
         private readonly UsuarioRepository $usuarioRepository,
         private readonly UserPasswordHasherInterface $hasher,
         private readonly ValidatorInterface $validator,
-    ) {}
+    ) {
+    }
 
     /**
      * Registra um novo usuário.
@@ -41,8 +42,8 @@ final class AuthController extends AbstractController
         }
 
         $nomeCompleto = trim((string) ($dados['nomeCompleto'] ?? ''));
-        $username     = mb_strtolower(trim((string) ($dados['username'] ?? '')));
-        $senha        = (string) ($dados['senha'] ?? '');
+        $username = mb_strtolower(trim((string) ($dados['username'] ?? '')));
+        $senha = (string) ($dados['senha'] ?? '');
 
         if ($this->usuarioRepository->usernameJaExiste($username)) {
             return $this->json(
@@ -74,16 +75,16 @@ final class AuthController extends AbstractController
         $usuario = $this->getUser();
 
         return $this->json([
-            'id'          => $usuario->getId(),
+            'id' => $usuario->getId(),
             'nomeCompleto' => $usuario->getNomeCompleto(),
-            'username'    => $usuario->getUsername(),
-            'roles'       => $usuario->getRoles(),
-            'criadoEm'    => $usuario->getCriadoEm()->format(\DateTimeInterface::ATOM),
+            'username' => $usuario->getUsername(),
+            'roles' => $usuario->getRoles(),
+            'criadoEm' => $usuario->getCriadoEm()->format(\DateTimeInterface::ATOM),
         ]);
     }
 
     /** @param array<string, mixed> $dados
-     *  @return array<string, string>
+     * @return array<string, string>
      */
     private function validarRegistro(array $dados): array
     {
@@ -96,8 +97,8 @@ final class AuthController extends AbstractController
                 new Assert\NotBlank(message: 'O nome de usuário é obrigatório.'),
                 new Assert\Length(min: 3, max: 100, minMessage: 'O usuário deve ter ao menos 3 caracteres.'),
                 new Assert\Regex(
-                    pattern: '/^[a-zA-Z0-9._-]+$/',
-                    message: 'O usuário só pode conter letras, números, pontos, hífens e underscores.',
+                    pattern: '/^[a-zA-Z0-9._%+-@]+$/',
+                    message: 'O usuário só pode conter letras, números, pontos, hífens, underscores e o símbolo @.',
                 ),
             ],
             'senha' => [

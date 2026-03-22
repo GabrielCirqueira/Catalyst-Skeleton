@@ -18,7 +18,8 @@ final class KernelExceptionListener
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function __invoke(ExceptionEvent $event): void
     {
@@ -41,18 +42,18 @@ final class KernelExceptionListener
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
             $mensagem = 'Dados de formulário inválidos.';
             $detalhes = [];
-            
+
             foreach ($exception->getViolations() as $violation) {
                 $detalhes[$violation->getPropertyPath()] = $violation->getMessage();
             }
         } elseif ($exception instanceof \DomainException) {
             $code = $exception->getCode();
-            $statusCode = (in_array($code, [400, 401, 403, 404, 409, 422], true)) 
-                ? (int) $code 
+            $statusCode = (in_array($code, [400, 401, 403, 404, 409, 422], true))
+                ? (int) $code
                 : Response::HTTP_BAD_REQUEST;
-                
+
             $mensagem = $exception->getMessage();
-            
+
             $this->logger->warning('Domain Exception capturada', [
                 'message' => $mensagem,
                 'code' => $statusCode,
@@ -72,8 +73,8 @@ final class KernelExceptionListener
 
         $data = [
             'sucesso' => false,
-            'erro'    => $mensagem,
-            'codigo'  => $statusCode,
+            'erro' => $mensagem,
+            'codigo' => $statusCode,
         ];
 
         if ($detalhes) {

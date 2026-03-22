@@ -41,6 +41,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->nomeCompleto = $nomeCompleto;
         $this->username = $username;
+        $this->password = '';
         $this->criadoEm = new \DateTimeImmutable();
         $this->atualizadoEm = new \DateTimeImmutable();
     }
@@ -59,6 +60,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->nomeCompleto = $nomeCompleto;
         $this->atualizadoEm = new \DateTimeImmutable();
+
         return $this;
     }
 
@@ -77,6 +79,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->username = $username;
         $this->atualizadoEm = new \DateTimeImmutable();
+
         return $this;
     }
 
@@ -89,6 +92,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
         $this->atualizadoEm = new \DateTimeImmutable();
+
         return $this;
     }
 
@@ -97,6 +101,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
+
         return array_unique($roles);
     }
 
@@ -104,10 +109,13 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
         return $this;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function getCriadoEm(): \DateTimeImmutable
     {

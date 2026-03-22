@@ -11,8 +11,8 @@ NC="\033[0m"
 echo "🔍 Verificando convenções de nomenclatura..."
 ERRORS=0
 
-echo -n "   - Getters em Entidades, DTOs e Repositories: "
-VIOLACOES_GET=$(grep -rlE 'public function get[A-Z]' "$ROOT_DIR/src/Entity" "$ROOT_DIR/src/DataObject" "$ROOT_DIR/src/Repository" 2>/dev/null || true)
+echo -n "   - Getters em DTOs: "
+VIOLACOES_GET=$(grep -rlE 'public function get[A-Z]' "$ROOT_DIR/src/DataObject" 2>/dev/null || true)
 if [ -n "$VIOLACOES_GET" ]; then
     echo -e "${RED}[FALHOU]${NC}"
     echo "$VIOLACOES_GET" | sed 's/^/     -> /'

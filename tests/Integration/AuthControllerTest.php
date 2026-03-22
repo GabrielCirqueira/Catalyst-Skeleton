@@ -30,8 +30,8 @@ final class AuthControllerTest extends WebTestCase
         $em = static::getContainer()->get('doctrine')->getManager();
 
         $connection = $em->getConnection();
-        $params     = $connection->getParams();
-        $dbName     = $params['dbname'];
+        $params = $connection->getParams();
+        $dbName = $params['dbname'];
 
         $tmpParams = $params;
         unset($tmpParams['dbname'], $tmpParams['url']);
@@ -44,14 +44,13 @@ final class AuthControllerTest extends WebTestCase
         $tmpConn->close();
 
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $metadata   = $em->getMetadataFactory()->getAllMetadata();
+        $metadata = $em->getMetadataFactory()->getAllMetadata();
         $schemaTool->dropSchema($metadata);
         $schemaTool->createSchema($metadata);
     }
 
     public function testRegistroComDadosValidosRetorna201(): void
     {
-
         $this->client->request(
             'POST',
             '/api/auth/registro',
@@ -60,8 +59,8 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'nomeCompleto' => 'Gabriel Silva',
-                'username'     => 'gabriel_silva',
-                'senha'        => 'SenhaSegura123',
+                'username' => 'gabriel_silva',
+                'senha' => 'SenhaSegura123',
             ]),
         );
 
@@ -72,11 +71,10 @@ final class AuthControllerTest extends WebTestCase
 
     public function testRegistroDuplicadoRetorna409(): void
     {
-
         $payload = json_encode([
             'nomeCompleto' => 'Usuario Duplicado',
-            'username'     => 'duplicado',
-            'senha'        => 'SenhaSegura123',
+            'username' => 'duplicado',
+            'senha' => 'SenhaSegura123',
         ]);
 
         $headers = ['CONTENT_TYPE' => 'application/json'];
@@ -94,7 +92,6 @@ final class AuthControllerTest extends WebTestCase
 
     public function testRegistroSemCamposObrigatoriosRetorna422(): void
     {
-
         $this->client->request(
             'POST',
             '/api/auth/registro',
@@ -112,7 +109,6 @@ final class AuthControllerTest extends WebTestCase
 
     public function testRegistroComSenhaCurtaRetorna422(): void
     {
-
         $this->client->request(
             'POST',
             '/api/auth/registro',
@@ -121,8 +117,8 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'nomeCompleto' => 'Usuario Teste',
-                'username'     => 'usuario_curto',
-                'senha'        => '123',
+                'username' => 'usuario_curto',
+                'senha' => '123',
             ]),
         );
 
@@ -133,7 +129,6 @@ final class AuthControllerTest extends WebTestCase
 
     public function testRegistroComUsernameInvalidoRetorna422(): void
     {
-
         $this->client->request(
             'POST',
             '/api/auth/registro',
@@ -142,8 +137,8 @@ final class AuthControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'nomeCompleto' => 'Usuario',
-                'username'     => 'usuario com espaço!',
-                'senha'        => 'SenhaSegura123',
+                'username' => 'usuario com espaço!',
+                'senha' => 'SenhaSegura123',
             ]),
         );
 
@@ -152,7 +147,6 @@ final class AuthControllerTest extends WebTestCase
 
     public function testMeSemAutenticacaoRetorna401(): void
     {
-
         $this->client->request('GET', '/api/auth/me');
 
         $this->assertResponseStatusCodeSame(401);
@@ -160,7 +154,6 @@ final class AuthControllerTest extends WebTestCase
 
     public function testMeComTokenInvalidoRetorna401(): void
     {
-
         $this->client->request('GET', '/api/auth/me', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer token_invalido_12345',
         ]);

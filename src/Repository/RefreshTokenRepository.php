@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\RefreshToken;
-use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Gesdinet\JWTRefreshTokenBundle\Doctrine\RefreshTokenRepositoryInterface;
-use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenInterface;
 
 /**
  * @extends ServiceEntityRepository<RefreshToken>
+ *
  * @implements RefreshTokenRepositoryInterface<RefreshToken>
  */
 class RefreshTokenRepository extends ServiceEntityRepository implements RefreshTokenRepositoryInterface
@@ -23,7 +22,8 @@ class RefreshTokenRepository extends ServiceEntityRepository implements RefreshT
     }
 
     /**
-     * @param DateTimeInterface|null $datetime
+     * @param \DateTimeInterface|null $datetime
+     *
      * @return RefreshToken[]
      */
     public function findInvalid($datetime = null): array

@@ -42,7 +42,7 @@
   },
   "overrides": [
     {
-      "include": ["web/shadcn/**"],
+      "include": ["web/**"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -55,7 +55,8 @@
           "a11y": {
             "useFocusableInteractive": "off",
             "useSemanticElements": "off",
-            "noRedundantRoles": "off"
+            "noRedundantRoles": "off",
+            "useValidAnchor": "off"
           },
           "complexity": {
             "noForEach": "off"

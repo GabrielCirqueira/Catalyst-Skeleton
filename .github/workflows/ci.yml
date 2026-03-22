@@ -9,13 +9,27 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.3
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: skeleton_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    env:
+      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/skeleton_test?serverVersion=8.3"
+      APP_ENV: test
+
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, xml, ctype, iconv, mysql, zip
+          extensions: mbstring, xml, ctype, iconv, pdo_mysql, zip
       - name: Cache Composer
         uses: actions/cache@v4
         with:
@@ -24,6 +38,10 @@ jobs:
           restore-keys: composer-
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist
+      - name: Create Test Database
+        run: bin/console doctrine:database:create --env=test || true
+      - name: Run Migrations
+        run: bin/console doctrine:migrations:migrate --no-interaction --env=test
       - name: PHPCS Check
         run: vendor/bin/phpcs
       - name: PHPStan

@@ -87,10 +87,18 @@ fi
 #   PROJECT_NAME_PASCAL   = "RotaFacil"                (futuro uso em classes)
 #   PROJECT_NAME_UPPER    = "ROTA_FACIL"               (prefixos em maiúsculo)
 
-PROJECT_NAME_DISPLAY="$PROJECT_NAME_RAW"
-PROJECT_NAME_SLUG=$(echo "$PROJECT_NAME_RAW" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g' | sed 's/__*/_/g' | sed 's/^_//;s/_$//')
-PROJECT_NAME_KEBAB=$(echo "$PROJECT_NAME_RAW" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
-PROJECT_NAME_PASCAL=$(echo "$PROJECT_NAME_RAW" | sed 's/[^a-zA-Z0-9 ]//g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2); print}' | tr -d ' ')
+if [[ "$PROJECT_NAME_RAW" == "Catalyst Skeleton" ]]; then
+  # Se mantiver o nome padrão, usa os slugs legados para manter compatibilidade com volumes Docker
+  PROJECT_NAME_DISPLAY="Catalyst Skeleton"
+  PROJECT_NAME_SLUG="skeleton"
+  PROJECT_NAME_KEBAB="catalyst-skeleton"
+  PROJECT_NAME_PASCAL="CatalystSkeleton"
+else
+  PROJECT_NAME_DISPLAY="$PROJECT_NAME_RAW"
+  PROJECT_NAME_SLUG=$(echo "$PROJECT_NAME_RAW" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g' | sed 's/__*/_/g' | sed 's/^_//;s/_$//')
+  PROJECT_NAME_KEBAB=$(echo "$PROJECT_NAME_RAW" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+  PROJECT_NAME_PASCAL=$(echo "$PROJECT_NAME_RAW" | sed 's/[^a-zA-Z0-9 ]//g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2); print}' | tr -d ' ')
+fi
 
 echo ""
 echo -e "  ${CYAN}Nome de exibição:${RESET}  ${PROJECT_NAME_DISPLAY}"

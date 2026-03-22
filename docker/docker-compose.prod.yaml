@@ -13,6 +13,7 @@ services:
       APP_DEBUG: "0"
     env_file: ../.env
     healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 3

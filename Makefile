@@ -70,7 +70,6 @@ composer: ## Run an arbitrary composer command (ARGS="update")
 npm: ## Run an arbitrary npm command (ARGS="run build")
 	$(COMPOSE_DEV_CMD) run --rm vite-react npm $(if $(ARGS),$(ARGS),run build)
 
-# --- QUALIDADE DE CÓDIGO ---
 lint-php: ## Check PHP code style
 	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix --dry-run --diff
 
