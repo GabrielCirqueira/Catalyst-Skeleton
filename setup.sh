@@ -142,7 +142,11 @@ ok "Docker daemon ativo"
 # ═══════════════════════════════════════════════════════════════
 step "3/9 — Substituindo nomes no projeto"
 
-# Arquivos onde o nome do projeto aparece (excluindo vendor, node_modules, .git, build, cache)
+# Se o nome for o padrão, pula as substituições para evitar bugs de Recursividade/Duplicação
+if [[ "$PROJECT_NAME_RAW" == "Catalyst Skeleton" ]]; then
+  info "Mantendo Catalyst Skeleton: Substituições de texto ignoradas."
+else
+  # Arquivos onde o nome do projeto aparece (excluindo vendor, node_modules, .git, build, cache)
 RENAME_FILES=$(find . \
   -not -path "./.git/*" \
   -not -path "./vendor/*" \
@@ -233,6 +237,7 @@ for file in $RENAME_FILES; do
 done
 
 ok "$CHANGED arquivo(s) atualizado(s)"
+fi
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 4 — Gerar segredos e criar .env
