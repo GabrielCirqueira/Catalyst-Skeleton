@@ -333,11 +333,12 @@ info "Instalando dependências PHP (Composer)..."
 $COMPOSE run --rm --entrypoint "" --user "${USER_ID}:${GROUP_ID}" --env HOME=/tmp/git-home symfony sh -lc 'mkdir -p "$HOME" && git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist' \
   || die "Falha ao instalar dependências PHP."
 
-info "Instalando dependências JS (NPM)..."
-$COMPOSE run --rm --entrypoint "" vite-react sh -lc "rm -rf node_modules package-lock.json 2>/dev/null || true; npm install --legacy-peer-deps" \
-  || die "Falha ao instalar dependências JS."
+# Se as dependências JS não existem, o próprio container 'vite-react' irá instalá-las no Passo 5 (via command)
+# Remover o 'docker compose run' aqui para evitar conflitos de leitura/escrita simultânea no volume
+info "Aguardando containers estabilizarem dependências..."
+sleep 5
 
-ok "Dependências instaladas"
+ok "Setup de dependências encaminhado"
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 7 — Aguardar banco de dados ficar pronto
