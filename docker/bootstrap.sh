@@ -31,11 +31,35 @@ JWT_PUBLIC=/var/www/html/config/jwt/public.pem
 if [[ ! -f "$JWT_PRIVATE" ]] || [[ ! -f "$JWT_PUBLIC" ]]; then
   log "JWT keys not found — generating..."
   mkdir -p /var/www/html/config/jwt
-  JWT_OUTPUT=$(php /var/www/html/bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction 2>&1) || {
-    log "FATAL: JWT keypair generation failed. Detalhes:"
-    echo "$JWT_OUTPUT" | while IFS= read -r line; do log "  $line"; done
-    exit 1
-  }
+
+  # Tenta via comando Symfony (requer openssl CLI na imagem)
+  if command -v openssl &>/dev/null; then
+    log "openssl CLI disponível — usando lexik:jwt:generate-keypair"
+    JWT_OUTPUT=$(php /var/www/html/bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction 2>&1) || {
+      log "FATAL: JWT keypair generation failed. Detalhes:"
+      echo "$JWT_OUTPUT" | while IFS= read -r line; do log "  $line"; done
+      exit 1
+    }
+  else
+    # Fallback: gera via PHP puro (extensão openssl do PHP está sempre disponível)
+    log "openssl CLI não encontrado — gerando chaves via PHP openssl extension"
+    PASSPHRASE="${JWT_PASSPHRASE:-}"
+    if [[ -z "$PASSPHRASE" ]]; then
+      log "FATAL: JWT_PASSPHRASE não definido no ambiente."
+      exit 1
+    fi
+    php -r "
+      \$config = ['digest_alg' => 'sha512', 'private_key_bits' => 4096, 'private_key_type' => OPENSSL_KEYTYPE_RSA];
+      \$res = openssl_pkey_new(\$config);
+      if (!\$res) { fwrite(STDERR, 'openssl_pkey_new falhou: ' . openssl_error_string() . PHP_EOL); exit(1); }
+      openssl_pkey_export(\$res, \$privKey, '$PASSPHRASE');
+      \$pubKey = openssl_pkey_get_details(\$res)['key'];
+      file_put_contents('$JWT_PRIVATE', \$privKey);
+      file_put_contents('$JWT_PUBLIC', \$pubKey);
+      echo 'JWT keys generated via PHP openssl extension.' . PHP_EOL;
+    " || { log "FATAL: Falha ao gerar JWT keys via PHP."; exit 1; }
+  fi
+  chown www-data:www-data /var/www/html/config/jwt/*.pem 2>/dev/null || true
   log "JWT keys generated."
 else
   log "JWT keys already present."
