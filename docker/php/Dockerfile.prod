@@ -25,6 +25,15 @@ RUN composer install --no-dev --no-scripts --optimize-autoloader --no-interactio
 COPY . .
 RUN composer dump-autoload --optimize
 
+# --- Frontend builder: compila assets Vite/React para public/build/ ---
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+RUN npm run build
+
 # --- Imagem final de produção ---
 FROM php:8.4-fpm-alpine
 
@@ -50,6 +59,9 @@ COPY docker/php/supervisord-prod.conf /etc/supervisord-prod.conf
 
 # Copia a aplicação compilada pelo builder
 COPY --from=builder --chown=www-data:www-data /app /var/www/html
+
+# Copia os assets do frontend (Vite build → public/build/)
+COPY --from=frontend-builder --chown=www-data:www-data /app/public/build /var/www/html/public/build
 
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
     && chown -R www-data:www-data /var/www/html/var
