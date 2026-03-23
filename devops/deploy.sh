@@ -14,13 +14,11 @@
 #   2.  Verifica pré-requisitos (Docker, git, openssl, curl)
 #   3.  Atualiza o código (git pull na branch atual)
 #   4.  Configura o .env de produção com segredos gerados automaticamente
-#   5.  Configura o Nginx para o domínio informado
-#   6.  Builda os assets do React via container node:20 (sem npm no host)
-#   7.  Builda a imagem Docker de produção (--no-cache)
-#   8.  Sobe o banco de dados e aguarda ficar pronto
-#   9.  Sobe o container PHP-FPM (bootstrap.sh: JWT, migrations, cache warmup)
-#   10. Sobe o Nginx e aguarda resposta
-#   11. Emite certificado SSL via Certbot (Let's Encrypt) com verificação de DNS
+#   5.  Builda os assets do React via container node:20 (sem npm no host)
+#   6.  Builda a imagem Docker de produção (--no-cache)
+#   7.  Sobe o banco de dados e aguarda ficar pronto
+#   8.  Sobe o container Symfony (nginx + PHP-FPM): JWT, migrations, cache warmup
+#   9.  Verificação final + configuração opcional do Nginx do host
 #
 # Retomada automática: se o script falhar, ao rodar novamente ele continua
 # de onde parou graças ao arquivo .deploy-progress.
@@ -164,13 +162,14 @@ fi
 # PASSO 1 — Configuração do projeto (domínio, banco, e-mail)
 # ═══════════════════════════════════════════════════════════════
 if is_step_done "1" && [[ -n "${DEPLOY_DOMAIN:-}" ]]; then
-  step "1/11 — Configuração (Restaurado)"
+  step "1/9 — Configuração (Restaurado)"
   ok "Domínio:         $DEPLOY_DOMAIN"
   ok "E-mail SSL:      $DEPLOY_EMAIL"
   ok "Banco (nome):    $DEPLOY_DB_NAME"
   ok "Banco (usuário): $DEPLOY_DB_USER"
+  ok "Porta HTTP:      $DEPLOY_PORT"
 else
-  step "1/11 — Configuração do projeto"
+  step "1/9 — Configuração do projeto"
   echo ""
   echo "  Informe os dados de produção abaixo."
   echo "  Os segredos (senhas, tokens) serão gerados automaticamente."
@@ -199,6 +198,13 @@ else
   read -rp "  Branch para deploy [$DETECTED_BRANCH]: " DEPLOY_BRANCH
   DEPLOY_BRANCH=${DEPLOY_BRANCH:-$DETECTED_BRANCH}
 
+  # Porta HTTP do container
+  echo ""
+  echo "  Porta HTTP interna do container (deve ser única por app na VPS):"
+  read -rp "    Porta [8080]: " DEPLOY_PORT
+  DEPLOY_PORT=${DEPLOY_PORT:-8080}
+  [[ "$DEPLOY_PORT" =~ ^[0-9]+$ ]] || die "Porta inválida: $DEPLOY_PORT"
+
   echo ""
   echo -e "  ${CYAN}Resumo da configuração:${RESET}"
   echo -e "  Domínio:          ${BOLD}$DEPLOY_DOMAIN${RESET}"
@@ -206,6 +212,7 @@ else
   echo -e "  E-mail SSL:       $DEPLOY_EMAIL"
   echo -e "  Banco (nome):     $DEPLOY_DB_NAME"
   echo -e "  Banco (usuário):  $DEPLOY_DB_USER"
+  echo -e "  Porta HTTP:       $DEPLOY_PORT"
   echo -e "  Branch:           $DEPLOY_BRANCH"
   echo ""
   read -rp "  Confirmar? [S/n]: " CONFIRM
@@ -219,16 +226,18 @@ else
   save_state "DEPLOY_DB_NAME"  "$DEPLOY_DB_NAME"
   save_state "DEPLOY_DB_USER"  "$DEPLOY_DB_USER"
   save_state "DEPLOY_BRANCH"   "$DEPLOY_BRANCH"
+  save_state "DEPLOY_PORT"     "$DEPLOY_PORT"
   mark_step "1"
 fi
 
-# Garante que DEPLOY_BRANCH esteja definido mesmo em restauração
+# Garante que DEPLOY_BRANCH e DEPLOY_PORT estejam definidos mesmo em restauração
 DEPLOY_BRANCH=${DEPLOY_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")}
+DEPLOY_PORT=${DEPLOY_PORT:-8080}
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 2 — Pré-requisitos
 # ═══════════════════════════════════════════════════════════════
-step "2/11 — Verificando pré-requisitos"
+step "2/9 — Verificando pré-requisitos"
 
 check_cmd() {
   if command -v "$1" &>/dev/null; then
@@ -256,7 +265,7 @@ ok "Docker daemon ativo"
 # ═══════════════════════════════════════════════════════════════
 # PASSO 3 — Atualizar código
 # ═══════════════════════════════════════════════════════════════
-step "3/11 — Atualizando código"
+step "3/9 — Atualizando código"
 
 info "git pull origin $DEPLOY_BRANCH..."
 if ! git pull origin "$DEPLOY_BRANCH"; then
@@ -268,7 +277,7 @@ ok "Commit: $(git rev-parse --short HEAD) — $(git log -1 --format='%s')"
 # PASSO 4 — Configurar .env de produção
 # ═══════════════════════════════════════════════════════════════
 if is_step_done "4" && [[ -f "$ENV_FILE" ]]; then
-  step "4/11 — .env (Restaurado)"
+  step "4/9 — .env (Restaurado)"
   ok ".env já configurado."
   # Carrega segredos do state para uso no resumo final
   APP_SECRET=${DEPLOY_APP_SECRET:-$(grep "^APP_SECRET=" "$ENV_FILE" 2>/dev/null | cut -d= -f2 || echo "")}
@@ -276,7 +285,7 @@ if is_step_done "4" && [[ -f "$ENV_FILE" ]]; then
   DB_ROOT_PASSWORD=${DEPLOY_DB_ROOT_PASSWORD:-""}
   JWT_PASSPHRASE=${DEPLOY_JWT_PASSPHRASE:-$(grep "^JWT_PASSPHRASE=" "$ENV_FILE" 2>/dev/null | cut -d= -f2 || echo "")}
 else
-  step "4/11 — Configurando .env de produção"
+  step "4/9 — Configurando .env de produção"
 
   # Gera segredos
   APP_SECRET=$(gen_hex 32)
@@ -319,9 +328,6 @@ MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 # ── Mailer ────────────────────────────────────────────────────────────────────
 MAILER_DSN=null://null
 
-# ── Certbot ───────────────────────────────────────────────────────────────────
-CERTBOT_DOMAIN=${DEPLOY_DOMAIN}
-CERTBOT_EMAIL=${DEPLOY_EMAIL}
 ENV
 
   ok ".env criado"
@@ -347,31 +353,13 @@ ENV
 fi
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 5 — Configurar Nginx para o domínio
+# PASSO 5 — Build dos assets do React (via container Docker)
 # ═══════════════════════════════════════════════════════════════
-step "5/11 — Configurando Nginx"
-
-NGINX_CONF="$PROJECT_ROOT/docker/nginx/prod.conf"
-[[ -f "$NGINX_CONF" ]] || die "docker/nginx/prod.conf não encontrado."
-
-NGINX_CURRENT_DOMAIN=$(grep -E "^\s*server_name\s" "$NGINX_CONF" 2>/dev/null | head -1 | awk '{print $2}' | tr -d ';' || echo "")
-
-if [[ "$NGINX_CURRENT_DOMAIN" != "$DEPLOY_DOMAIN" ]]; then
-  info "Atualizando server_name: '$NGINX_CURRENT_DOMAIN' → '$DEPLOY_DOMAIN'..."
-  sed -i "s|server_name .*;|server_name ${DEPLOY_DOMAIN};|g" "$NGINX_CONF"
-  ok "Nginx configurado para: $DEPLOY_DOMAIN"
-else
-  ok "Nginx já configurado para: $DEPLOY_DOMAIN"
-fi
-
-# ═══════════════════════════════════════════════════════════════
-# PASSO 6 — Build dos assets do React (via container Docker)
-# ═══════════════════════════════════════════════════════════════
-if is_step_done "6" && [[ -d "$PROJECT_ROOT/public/build" ]] && [[ -n "$(ls -A "$PROJECT_ROOT/public/build" 2>/dev/null)" ]]; then
-  step "6/11 — Build React (Restaurado)"
+if is_step_done "5" && [[ -d "$PROJECT_ROOT/public/build" ]] && [[ -n "$(ls -A "$PROJECT_ROOT/public/build" 2>/dev/null)" ]]; then
+  step "5/9 — Build React (Restaurado)"
   ok "Assets já buildados em public/build/"
 else
-  step "6/11 — Buildando assets do React (container node:20 — sem npm no host)"
+  step "5/9 — Buildando assets do React (container node:20 — sem npm no host)"
 
   VITE_API_URL_VAL=$(grep "^VITE_API_URL=" "$ENV_FILE" | cut -d= -f2 | xargs 2>/dev/null || echo "https://$DEPLOY_DOMAIN")
   info "VITE_API_URL=$VITE_API_URL_VAL"
@@ -395,20 +383,20 @@ else
     || die "public/build não foi gerado após o build. Verifique o vite.config.js."
 
   ok "Assets gerados em public/build/"
-  mark_step "6"
+  mark_step "5"
 fi
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 7 — Build da imagem Docker de produção
+# PASSO 6 — Build da imagem Docker de produção
 # ═══════════════════════════════════════════════════════════════
-if is_step_done "7"; then
-  step "7/11 — Imagem Docker (Restaurado)"
+if is_step_done "6"; then
+  step "6/9 — Imagem Docker (Restaurado)"
   ok "Imagem já construída."
 else
-  step "7/11 — Buildando imagem Docker de produção"
+  step "6/9 — Buildando imagem Docker de produção"
 
   info "Pre-pull de imagens base..."
-  for img in "php:8.4-fpm-alpine" "nginx:alpine" "mysql:8.3" "certbot/certbot"; do
+  for img in "php:8.4-fpm-alpine" "mysql:8.3"; do
     info "  Baixando $img..."
     retry_cmd docker pull "$img" --quiet
   done
@@ -417,13 +405,13 @@ else
   retry_cmd $COMPOSE build --no-cache symfony
 
   ok "Imagem de produção construída"
-  mark_step "7"
+  mark_step "6"
 fi
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 8 — Banco de dados
+# PASSO 7 — Banco de dados
 # ═══════════════════════════════════════════════════════════════
-step "8/11 — Subindo banco de dados"
+step "7/9 — Subindo banco de dados"
 
 $COMPOSE up -d database
 
@@ -451,9 +439,9 @@ fi
 ok "MySQL pronto"
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 9 — Container Symfony (PHP-FPM)
+# PASSO 8 — Container Symfony (nginx + PHP-FPM)
 # ═══════════════════════════════════════════════════════════════
-step "9/11 — Subindo container Symfony"
+step "8/9 — Subindo container Symfony"
 
 $COMPOSE up -d --force-recreate symfony
 
@@ -500,96 +488,30 @@ fi
 ok "Container Symfony saudável"
 
 # ═══════════════════════════════════════════════════════════════
-# PASSO 10 — Nginx
+# PASSO 9 — Verificação final
 # ═══════════════════════════════════════════════════════════════
-step "10/11 — Subindo Nginx"
+step "9/9 — Verificação final"
 
-$COMPOSE up -d nginx
-
-info "Aguardando Nginx (máx 30s)..."
-NGINX_OK=false
-for i in $(seq 1 6); do
-  if curl -sf -o /dev/null --max-time 5 "http://localhost" 2>/dev/null; then
-    NGINX_OK=true; ok "Nginx respondendo em http://localhost"; break
-  fi
-  sleep 5
-done
-[[ "$NGINX_OK" == "true" ]] || warn "Nginx pode não estar respondendo. Verifique: $COMPOSE logs nginx"
-
-# ═══════════════════════════════════════════════════════════════
-# PASSO 11 — Certificado SSL (Let's Encrypt)
-# ═══════════════════════════════════════════════════════════════
-step "11/11 — Certificado SSL (Let's Encrypt)"
-
-# Verifica se o DNS aponta para esta VPS
-SERVER_IP=$(curl -sf --max-time 5 "https://api.ipify.org" 2>/dev/null || echo "")
-DOMAIN_IP=$(getent hosts "$DEPLOY_DOMAIN" 2>/dev/null | awk '{print $1}' | head -1 || echo "")
-TRY_SSL=true
-
-if [[ -n "$SERVER_IP" ]] && [[ -n "$DOMAIN_IP" ]] && [[ "$SERVER_IP" != "$DOMAIN_IP" ]]; then
-  warn "DNS de $DEPLOY_DOMAIN aponta para $DOMAIN_IP, mas este servidor é $SERVER_IP."
-  warn "O certificado SSL irá falhar se o DNS não estiver propagado."
-  echo ""
-  read -rp "  Tentar emitir o certificado mesmo assim? [y/N]: " TRY_SSL_INPUT
-  if [[ ! "${TRY_SSL_INPUT,,}" =~ ^y$ ]]; then
-    TRY_SSL=false
-    warn "SSL pulado."
-    echo ""
-    echo -e "  Quando o DNS estiver propagado, rode manualmente:"
-    echo -e "  ${CYAN}$COMPOSE run --rm certbot certonly --webroot --webroot-path=/var/www/public \\${RESET}"
-    echo -e "  ${CYAN}  --email $DEPLOY_EMAIL --agree-tos --no-eff-email -d $DEPLOY_DOMAIN${RESET}"
-    echo ""
-    echo -e "  Depois recarregue o Nginx:"
-    echo -e "  ${CYAN}$COMPOSE exec nginx nginx -s reload${RESET}"
-  fi
-fi
-
-if [[ "$TRY_SSL" == "true" ]]; then
-  # Verifica se já existe certificado válido
-  if $COMPOSE run --rm --entrypoint "" certbot certbot certificates 2>/dev/null | grep -q "$DEPLOY_DOMAIN"; then
-    ok "Certificado já existe para $DEPLOY_DOMAIN"
-  else
-    info "Solicitando certificado para $DEPLOY_DOMAIN..."
-    if $COMPOSE run --rm certbot certonly \
-        --webroot \
-        --webroot-path=/var/www/public \
-        --email "$DEPLOY_EMAIL" \
-        --agree-tos \
-        --no-eff-email \
-        -d "$DEPLOY_DOMAIN"; then
-      ok "Certificado SSL emitido para $DEPLOY_DOMAIN"
-      $COMPOSE exec nginx nginx -s reload 2>/dev/null && info "Nginx recarregado com HTTPS" || true
-    else
-      warn "Falha ao emitir certificado. Isso não impede o funcionamento via HTTP."
-      warn "Tente manualmente após verificar o DNS:"
-      echo "    $COMPOSE run --rm certbot certonly --webroot --webroot-path=/var/www/public --email $DEPLOY_EMAIL --agree-tos --no-eff-email -d $DEPLOY_DOMAIN"
-    fi
-  fi
-fi
-
-# ─── Verificação final ────────────────────────────────────────────────────────
-log "── Verificação final ──"
-
-PROTO="https"
-$COMPOSE ps certbot &>/dev/null && \
-  $COMPOSE run --rm --entrypoint "" certbot certbot certificates 2>/dev/null | grep -q "$DEPLOY_DOMAIN" \
-  || PROTO="http"
-
-APP_URL="${PROTO}://${DEPLOY_DOMAIN}"
-APP_OK=false
-info "Testando $APP_URL/api/v1/health..."
-for i in $(seq 1 8); do
-  HTTP_CODE=$(curl -sk -o /dev/null -w "%{http_code}" --max-time 8 "$APP_URL/api/v1/health" 2>/dev/null || echo "000")
+# Verifica se o container HTTP está respondendo na porta $DEPLOY_PORT
+HTTP_OK=false
+for i in $(seq 1 12); do
+  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "http://127.0.0.1:${DEPLOY_PORT}/api/v1/health" 2>/dev/null || echo "000")
   if [[ "$HTTP_CODE" =~ ^(200|204|302)$ ]]; then
-    APP_OK=true; break
+    HTTP_OK=true; break
   fi
-  log "  Tentativa $i/8 — HTTP $HTTP_CODE"
+  log "  Tentativa $i/12 — HTTP $HTTP_CODE na porta $DEPLOY_PORT..."
   sleep 5
 done
 
-[[ "$APP_OK" == "true" ]] \
-  && ok "Aplicação respondendo em $APP_URL (HTTP $HTTP_CODE)" \
-  || warn "Aplicação ainda não respondendo — pode precisar de mais tempo. Verifique: docker logs $APP_CONTAINER"
+if [[ "$HTTP_OK" == "true" ]]; then
+  ok "Container respondendo em http://127.0.0.1:${DEPLOY_PORT}/api/v1/health (HTTP $HTTP_CODE)"
+else
+  warn "Container não respondeu na porta $DEPLOY_PORT em 60s."
+  warn "Verifique: docker logs $APP_CONTAINER"
+fi
+
+info "Status dos containers:"
+$COMPOSE ps
 
 # ─── Limpeza ──────────────────────────────────────────────────────────────────
 docker image prune -f --filter "until=24h" 2>/dev/null || true
@@ -602,13 +524,129 @@ docker image prune -f --filter "until=24h" 2>/dev/null || true
   echo "log=$LOG_FILE"
 } > "$PROJECT_ROOT/.deploy-done"
 
+# ═══════════════════════════════════════════════════════════════
+# OPCIONAL — Configurar Nginx do HOST
+# ═══════════════════════════════════════════════════════════════
+echo ""
+echo -e "${BOLD}${CYAN}━━ Configuração do Nginx do HOST (opcional) ${RESET}"
+echo ""
+echo -e "  O container expõe HTTP em ${BOLD}127.0.0.1:${DEPLOY_PORT}${RESET}."
+echo -e "  O Nginx do host precisa ser configurado como proxy reverso."
+echo ""
+read -rp "  Deseja configurar o Nginx do host agora? [S/n]: " CONFIGURE_NGINX
+CONFIGURE_NGINX="${CONFIGURE_NGINX:-S}"
+
+if [[ "${CONFIGURE_NGINX,,}" =~ ^s$ ]]; then
+
+  # ── Verifica pré-requisitos ──
+  NGINX_OK_HOST=true
+  command -v nginx &>/dev/null || { warn "nginx não instalado no host. Instale com: apt install nginx"; NGINX_OK_HOST=false; }
+  command -v certbot &>/dev/null || { warn "certbot não instalado no host. Instale com: apt install certbot python3-certbot-nginx"; NGINX_OK_HOST=false; }
+
+  if [[ "$NGINX_OK_HOST" != "true" ]]; then
+    warn "Instale os pacotes acima e rode este bloco manualmente:"
+    echo ""
+    echo -e "  ${CYAN}DOMAIN=${DEPLOY_DOMAIN}${RESET}"
+    echo -e "  ${CYAN}PORT=${DEPLOY_PORT}${RESET}"
+    echo -e "  ${CYAN}sed -e \"s|__DOMAIN__|\${DOMAIN}|g\" -e \"s|__PORT__|\${PORT}|g\" \\${RESET}"
+    echo -e "  ${CYAN}    docker/nginx/prod.conf > /etc/nginx/sites-available/\$DOMAIN${RESET}"
+    echo -e "  ${CYAN}ln -sf /etc/nginx/sites-available/\$DOMAIN /etc/nginx/sites-enabled/\$DOMAIN${RESET}"
+    echo -e "  ${CYAN}nginx -t && systemctl reload nginx${RESET}"
+    echo -e "  ${CYAN}certbot --nginx -d \$DOMAIN --email ${DEPLOY_EMAIL} --agree-tos --no-eff-email${RESET}"
+  else
+
+    NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
+    NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
+    NGINX_DEST="${NGINX_SITES_AVAILABLE}/${DEPLOY_DOMAIN}"
+
+    info "Aplicando template docker/nginx/prod.conf..."
+    sed \
+      -e "s|__DOMAIN__|${DEPLOY_DOMAIN}|g" \
+      -e "s|__PORT__|${DEPLOY_PORT}|g" \
+      "$PROJECT_ROOT/docker/nginx/prod.conf" \
+      > "$NGINX_DEST"
+    ok "Config gerado: $NGINX_DEST"
+
+    # Symlink em sites-enabled
+    if [[ ! -L "${NGINX_SITES_ENABLED}/${DEPLOY_DOMAIN}" ]]; then
+      ln -sf "$NGINX_DEST" "${NGINX_SITES_ENABLED}/${DEPLOY_DOMAIN}"
+      ok "Symlink criado em sites-enabled"
+    else
+      ok "Symlink já existe em sites-enabled"
+    fi
+
+    # Testa config nginx
+    info "Testando configuração do Nginx..."
+    if nginx -t 2>&1; then
+      ok "Configuração do Nginx válida"
+      systemctl reload nginx && ok "Nginx recarregado"
+    else
+      warn "Configuração do Nginx inválida. Corrija $NGINX_DEST antes de recarregar."
+    fi
+
+    # ── Verifica DNS antes do Certbot ──
+    SERVER_IP=$(curl -sf --max-time 5 "https://api.ipify.org" 2>/dev/null || echo "")
+    DOMAIN_IP=$(getent hosts "$DEPLOY_DOMAIN" 2>/dev/null | awk '{print $1}' | head -1 || echo "")
+
+    echo ""
+    info "IP desta VPS:      ${SERVER_IP:-desconhecido}"
+    info "IP do domínio:     ${DOMAIN_IP:-não resolvido}"
+    echo ""
+
+    DNS_OK=false
+    [[ -n "$SERVER_IP" && -n "$DOMAIN_IP" && "$SERVER_IP" == "$DOMAIN_IP" ]] && DNS_OK=true
+
+    if [[ "$DNS_OK" == "true" ]]; then
+      ok "DNS propagado — $DEPLOY_DOMAIN aponta para este servidor"
+    else
+      warn "DNS ainda não propagado (ou $DEPLOY_DOMAIN não aponta para $SERVER_IP)."
+      warn "O certbot falha se o DNS não estiver resolvendo para este IP."
+      echo ""
+      read -rp "  Tentar emitir o certificado mesmo assim? [s/N]: " TRY_CERT_INPUT
+      [[ ! "${TRY_CERT_INPUT,,}" =~ ^s$ ]] && DNS_OK="skip"
+    fi
+
+    if [[ "$DNS_OK" != "skip" ]]; then
+      info "Emitindo certificado SSL via Let's Encrypt..."
+      if certbot --nginx \
+          -d "$DEPLOY_DOMAIN" \
+          --email "$DEPLOY_EMAIL" \
+          --agree-tos \
+          --no-eff-email \
+          --non-interactive; then
+        ok "Certificado SSL emitido para $DEPLOY_DOMAIN"
+        systemctl reload nginx && ok "Nginx recarregado com HTTPS"
+      else
+        warn "Certbot falhou. Tente manualmente após confirmar o DNS:"
+        echo "    certbot --nginx -d $DEPLOY_DOMAIN --email $DEPLOY_EMAIL --agree-tos --no-eff-email"
+      fi
+    else
+      warn "Certificado SSL pulado. Quando o DNS estiver propagado, rode:"
+      echo -e "  ${CYAN}certbot --nginx -d $DEPLOY_DOMAIN --email $DEPLOY_EMAIL --agree-tos --no-eff-email${RESET}"
+    fi
+
+    echo ""
+    echo -e "  ${BOLD}Arquivo de config gerado:${RESET}"
+    echo "  ────────────────────────────────────────────────────────────"
+    cat "$NGINX_DEST"
+    echo "  ────────────────────────────────────────────────────────────"
+    echo ""
+    warn "Lembrete: o arquivo docker/nginx/prod.conf no repositório é o"
+    warn "template original (com placeholders). O arquivo gerado acima"
+    warn "($NGINX_DEST) é a versão final para este servidor."
+    warn "Não commite o arquivo gerado — ele contém caminhos absolutos."
+
+  fi  # nginx + certbot instalados
+fi  # configurar nginx
+
 # ─── Resumo final ─────────────────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}${GREEN}  ╔══════════════════════════════════════════════════╗${RESET}"
 echo -e "${BOLD}${GREEN}  ║          ✅  Deploy concluído com sucesso!        ║${RESET}"
 echo -e "${BOLD}${GREEN}  ╚══════════════════════════════════════════════════╝${RESET}"
 echo ""
-echo -e "  ${BOLD}URL:${RESET}            https://$DEPLOY_DOMAIN"
+echo -e "  ${BOLD}Domínio:${RESET}        $DEPLOY_DOMAIN"
+echo -e "  ${BOLD}Container HTTP:${RESET} 127.0.0.1:${DEPLOY_PORT} (nginx+fpm dentro do container)"
 echo -e "  ${BOLD}Banco:${RESET}          $DEPLOY_DB_NAME (usuário: $DEPLOY_DB_USER)"
 echo -e "  ${BOLD}Commit:${RESET}         $(git rev-parse --short HEAD)"
 echo -e "  ${BOLD}Log salvo em:${RESET}   $LOG_FILE"
@@ -617,6 +655,9 @@ echo -e "  ${YELLOW}Credenciais (também salvas no .env — não commite!):${RES
 echo -e "  APP_SECRET:       ${APP_SECRET:0:16}..."
 echo -e "  JWT_PASSPHRASE:   ${JWT_PASSPHRASE:0:16}..."
 echo -e "  DB_PASSWORD:      ${DB_PASSWORD:-<ver .env>}"
+echo ""
+echo -e "  ${BOLD}${CYAN}Arquitetura em produção:${RESET}"
+echo -e "  Internet → Nginx do host (80/443) → container HTTP (127.0.0.1:${DEPLOY_PORT})"
 echo ""
 echo -e "  ${CYAN}Próximas atualizações:${RESET}  bash devops/update.sh"
 echo -e "  ${CYAN}Logs:${RESET}                   bash devops/logs-prod.sh"
