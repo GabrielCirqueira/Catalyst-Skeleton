@@ -11,6 +11,8 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 3. [Variáveis de Ambiente](#3-variáveis-de-ambiente)
 4. [Gestão de Portas](#4-gestão-de-portas)
 5. [Arquitetura Backend](#5-arquitetura-backend)
+   - [Padrão Resultado](#5-2-padrão-resultado)
+   - [Regras de Ouro do Backend](#5-9-regras-de-ouro-do-backend)
 6. [Arquitetura Frontend](#6-arquitetura-frontend)
 7. [Banco de Dados e Migrations](#7-banco-de-dados-e-migrations)
 8. [Mensageria Assíncrona](#8-mensageria-assíncrona)
@@ -448,6 +450,35 @@ return $this->json($produto); // expõe estrutura interna da entidade
 
 ---
 
+## 5.9 Regras de Ouro do Backend
+
+### 1. Early Return e Complexidade de Condições
+
+Sempre ordene as suas **Guard Clauses** (cláusulas de guarda) pelo custo de processamento. Verificações de variáveis locais ou flags simples devem vir **antes** de chamadas a outros Services ou Repositories.
+
+**O que fazer:**
+```php
+public function executar(int $filialId, bool $isAfastado): Resultado 
+{
+    // ✅ CORRETO: Checagem local primeiro (baixo custo)
+    if ($isAfastado) {
+        return Resultado::falha('usuario_afastado');
+    }
+
+    // Só chama o serviço secundário ou banco se passar pelas checagens básicas
+    $permissaoFilial = $this->filialService->verificarAcesso($filialId);
+    // ...
+}
+```
+
+**Por que?** Evita processamento desnecessário, economiza recursos do banco de dados e torna o fluxo de execução mais limpo e previsível.
+
+### 2. Services Atômicos e Resultado
+- Um Service deve representar uma única ação de negócio (`executar()`).
+- O retorno deve ser sempre via objeto `Resultado`, nunca lançando exceções para fluxo normal de negócio (ex: 'usuário não encontrado').
+
+---
+
 ## 6. Arquitetura Frontend
 
 ### 6.1 Estrutura de Módulos (Feature-based)
@@ -555,7 +586,7 @@ const queryClient = new QueryClient({
 
 Este é o ponto mais crítico da integração. O fluxo completo — login, proteção de rotas e logout — envolve três peças trabalhando juntas.
 
-**1. Login (`web/features/auth/api/authApi.ts`)**
+#### 1. Login (`web/features/auth/api/authApi.ts`)
 
 ```ts
 import { api } from '@config/api';
@@ -575,7 +606,7 @@ export async function logout(): Promise<void> {
 }
 ```
 
-**2. Hook de formulário de login (`web/features/auth/hooks/useLogin.ts`)**
+#### 2. Hook de formulário de login (`web/features/auth/hooks/useLogin.ts`)
 
 ```ts
 import { useMutation } from '@tanstack/react-query';
@@ -594,11 +625,11 @@ export function useLogin() {
 }
 ```
 
-**3. Refresh automático (`web/config/api.ts`)**
+#### 3. Refresh automático (`web/config/api.ts`)
 
 O interceptor já cuida do refresh — **não é necessário tratar 401 manualmente** em nenhum hook ou página. Se o refresh falhar, `limpar()` é chamado e o usuário cai em `/login` via `RotaProtegida`.
 
-**4. Configuração das rotas (`web/App.tsx`)**
+#### 4. Configuração das rotas (`web/App.tsx`)
 
 ```tsx
 <Routes>
@@ -611,7 +642,8 @@ O interceptor já cuida do refresh — **não é necessário tratar 401 manualme
 ```
 
 **Resumo do fluxo:**
-```
+
+```text
 Usuário submete form
   → useLogin.mutate()
     → authApi.login()
@@ -625,6 +657,31 @@ Token expira (401)
     → sucesso: setToken(novoToken), drena fila
     → falha:   limpar() → RotaProtegida redireciona para /login
 ```
+
+---
+
+## 6.9 Regras de Ouro do Frontend
+
+### 1. O Banimento do `useEffect`
+
+No Catalyst, o uso direto do `useEffect` é proibido. Efeitos colaterais descontrolados são a fonte número 1 de loops infinitos, race conditions e bugs de dessincronização.
+
+**O que fazer em vez disso?**
+
+- **Estado Derivado**: Se você precisa calcular algo baseado em outro estado, faça-o diretamente no corpo do componente (sem hooks extras) ou use `useMemo`.
+- **Event Handlers**: Lógica de "quando isso acontecer" deve estar sempre em funções como `onClick`, `onSubmit` ou similar.
+- **Data Fetching**: Use os hooks do **TanStack Query** (`useQuery`, `useMutation`).
+- **Sincronização com Sistemas Externos (exclusivamente na montagem)**: Use `useMountEffect(() => { ... })`.
+
+**Por que?** Banning o hook força a lógica a ser declarativa e previsível e desacoplada do ciclo de renderização, facilitando a manutenção tanto por humanos quanto por agentes de IA.
+
+> [!TIP]
+> Para efeitos que devem rodar quando dependências mudam, crie um hook nomeado em `web/shared/hooks/` que esconda a complexidade e dê um nome semântico à ação (ex: `useSyncCartWithLocalStorage`).
+
+### 2. Imutabilidade e Estado
+
+- Sempre trate o estado como imutável.
+- Use Zod para validar dados vindos da API antes de guardá-los no estado global.
 
 ---
 

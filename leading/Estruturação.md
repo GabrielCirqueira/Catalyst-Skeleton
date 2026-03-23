@@ -109,6 +109,17 @@ shared/                 ← tudo que é global e sem feature
 * **É uma página isolada simples?**
   * Sim → `pages/{NomeDaPagina}/`
 
+#### 3.4 O Banimento do `useEffect`
+
+No Catalyst, o uso direto do `useEffect` em páginas e features é **proibido**.
+
+*   **Estado Derivado:** Calcule diretamente no corpo do componente ou use `useMemo`.
+*   **Event Handlers:** Toda lógica de "quando isso acontecer" deve estar em funções de evento (`onClick`, `onSubmit`).
+*   **Data Fetching:** Use os hooks do **TanStack Query**.
+*   **Sincronização com o DOM/Montagem:** Use hooks abstraídos como `useSEO` ou `useMountEffect`.
+
+**Motivo:** Evita loops infinitos e race conditions, tornando o código previsível para humanos e IAs.
+
 ---
 
 ## 4) Regras de Rotas
@@ -597,9 +608,19 @@ Regra:
 * não retornar entidade “crua”
 * sempre garantir que o retorno do backend esteja completo e padronizado
 
-### 13.10 Outbox Pattern
-
 Para garantir que eventos assíncronos não sejam perdidos, persistimos o evento no banco na mesma transação da entidade e um worker separado o publica no Messenger. Use para fluxos críticos de negócio.
+
+#### 13.11 Early Return e Custo de Condições
+
+Sempre ordene as condições de guarda (**Guard Clauses**) pelo custo de processamento.
+
+1.  **Variáveis locais/Flags:** Primeiro (custo zero).
+2.  **Dados em memória/Zustand:** Segundo.
+3.  **Services secundários:** Terceiro.
+4.  **Banco de Dados (Repositories):** Quarto.
+5.  **APIs Externas:** Por último.
+
+**Regra:** Nunca chame um serviço custoso antes de validar pre-condições simples que poderiam resultar em um `early return`.
 
 ---
 
