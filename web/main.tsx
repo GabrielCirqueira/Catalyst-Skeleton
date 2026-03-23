@@ -12,6 +12,11 @@ import '@fontsource/poppins/900.css'
 import '@fontsource/lato/400.css'
 import '@fontsource/lato/700.css'
 
+window.addEventListener('vite:preloadError', (event) => {
+  console.warn('Vite preload error detected, reloading page...', event)
+  window.location.reload()
+})
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

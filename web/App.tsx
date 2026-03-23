@@ -8,12 +8,14 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 
+import { lazyWithRetry } from '@/shared/utils/lazyWithRetry'
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route element={<MainLayout />}>
-        <Route index lazy={() => import('@pages/Home/Home')} />
-        <Route path="*" lazy={() => import('@pages/NotFound/NotFound')} />
+        <Route index lazy={() => lazyWithRetry(() => import('@pages/Home/Home'))} />
+        <Route path="*" lazy={() => lazyWithRetry(() => import('@pages/NotFound/NotFound'))} />
       </Route>
 
       <Route element={<MainLayout />}>

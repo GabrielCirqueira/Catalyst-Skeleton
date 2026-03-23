@@ -92,6 +92,11 @@ api.interceptors.response.use(
       return api(originalRequest)
     } catch (refreshError) {
       drainQueue(refreshError, null)
+
+      if (axios.isAxiosError(refreshError) && refreshError.response?.status === 429) {
+        return Promise.reject(refreshError)
+      }
+
       useAuthStore.getState().limpar()
       return Promise.reject(refreshError)
     } finally {
