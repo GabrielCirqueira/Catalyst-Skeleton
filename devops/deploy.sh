@@ -385,11 +385,10 @@ else
     -w /app \
     -e VITE_API_URL="$VITE_API_URL_VAL" \
     -e VITE_API_BASE_URL="$VITE_API_URL_VAL" \
-    -e NODE_ENV=production \
     -e CI=true \
     -e HUSKY=0 \
     node:20 \
-    sh -c "npm ci && npm run build" \
+    sh -c "HUSKY=0 npm ci && NODE_ENV=production npm run build" \
     || die "Build do React falhou. Verifique os logs acima."
 
   [[ -d "$PROJECT_ROOT/public/build" ]] \
