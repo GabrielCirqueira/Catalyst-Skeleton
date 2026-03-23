@@ -70,8 +70,11 @@ PREVIOUS_IMAGE=$(docker inspect "$APP_CONTAINER" --format='{{.Config.Image}}' 2>
 log "── [1/4] Atualizando código ──"
 
 BEFORE_HASH=$(git rev-parse HEAD)
-info "git pull origin main..."
-git pull origin main
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+read -rp "  Branch para pull [$CURRENT_BRANCH]: " INPUT_BRANCH
+DEPLOY_BRANCH="${INPUT_BRANCH:-$CURRENT_BRANCH}"
+info "git pull origin $DEPLOY_BRANCH..."
+git pull origin "$DEPLOY_BRANCH"
 AFTER_HASH=$(git rev-parse HEAD)
 
 if [[ "$BEFORE_HASH" == "$AFTER_HASH" ]]; then
