@@ -10,34 +10,20 @@ Scripts de operações para o ambiente de **produção**. Todos devem ser execut
 LOCALMENTE                          NA VPS (primeira vez)       NA VPS (atualizações)
 ─────────────────────               ─────────────────────────   ─────────────────────
 1. bash setup.sh          →         git clone <repo> /opt/app
-2. bash devops/pre-deploy.sh        cd /opt/app
-3. git commit && git push  →        bash devops/deploy.sh   →   bash devops/update.sh
+2. (código pronto)                  cd /opt/app
+3. git push                →        bash devops/deploy.sh   →   bash devops/update.sh
 ```
+
+> Não é necessário nenhum script local antes do deploy. O `deploy.sh` é **totalmente interativo** — coleta domínio, e-mail e nome do banco na VPS e configura tudo automaticamente.
 
 ---
 
 ## Scripts
 
-### `pre-deploy.sh` — Configuração pré-deploy (execute **localmente**)
-
-Wizard interativo que coleta as informações de produção (domínio, VPS, banco de dados) e as aplica localmente nos arquivos de configuração:
-
-- Substitui o domínio em `docker/nginx/prod.conf`
-- Preenche `devops/.env.prod.example` com DB_NAME, DB_USER, VITE_API_BASE_URL, etc.
-- Salva dados de acesso SSH em `devops/.pre-deploy.conf` (ignorado pelo git)
-- Opcionalmente conecta na VPS via SSH e executa `deploy.sh` automaticamente
-
-```bash
-bash devops/pre-deploy.sh
-```
-
-Após executar, faça commit e push das alterações antes de rodar o deploy na VPS.
-
----
-
 ### `deploy.sh` — Primeiro deploy completo (execute **na VPS**)
 
 Configura tudo do zero na VPS. Execute uma única vez após clonar o repositório.
+Se o script falhar em algum passo, basta rodá-lo novamente — ele retoma de onde parou (estado salvo em `.deploy-progress`).
 
 ```bash
 # Na VPS:
@@ -45,16 +31,25 @@ git clone <url-do-repo> /opt/app && cd /opt/app
 bash devops/deploy.sh
 ```
 
-**O que faz:**
-1. Verifica pré-requisitos (Docker, Node.js, git, openssl)
-2. `git pull origin main`
-3. Cria `.env` a partir de `devops/.env.prod.example` e **gera todos os segredos automaticamente** (APP_SECRET, JWT_PASSPHRASE, DB_PASSWORD, DB_ROOT_PASSWORD)
-4. `npm ci && npm run build` — build do React (assets servidos pelo Nginx via volume)
-5. `docker compose build --no-cache symfony` — build da imagem PHP de produção
-6. Sobe o banco de dados e aguarda healthcheck
-7. Sobe o container Symfony (executa `bootstrap.sh`: chaves JWT, migrations, cache warmup)
-8. Sobe o Nginx
-9. Emite certificado SSL via Certbot (Let's Encrypt)
+**Pré-requisitos na VPS (apenas):** `docker` (com plugin compose), `git`, `openssl`, `curl`.
+Node.js **não é necessário** — o build do React roda dentro de um container `node:20`.
+
+**O que faz (11 passos):**
+1. **Configuração interativa** — pergunta domínio, e-mail SSL, nome e usuário do banco, branch git. Salva no `.deploy-progress` para retomada.
+2. **Pré-requisitos** — verifica Docker, git, openssl, curl
+3. **`git pull`** — atualiza o código na branch escolhida
+4. **`.env` de produção** — gera automaticamente todos os segredos (APP_SECRET, JWT_PASSPHRASE, DB_PASSWORD, DB_ROOT_PASSWORD) e monta o `.env` completo
+5. **Nginx** — atualiza o `server_name` no `prod.conf` para o domínio informado
+6. **Build React** — via `docker run node:20` (sem npm no host): `npm ci && npm run build`
+7. **Build Docker** — `docker compose build --no-cache symfony` com pre-pull das imagens base
+8. **Banco de dados** — sobe MySQL e aguarda ficar pronto (máx 90s)
+9. **Container Symfony** — sobe PHP-FPM; o `bootstrap.sh` executa: chaves JWT, migrations, cache warmup. Aguarda healthcheck (máx 120s).
+10. **Nginx** — sobe e aguarda resposta HTTP
+11. **SSL** — verifica DNS e emite certificado Let's Encrypt via Certbot
+
+**Retomada automática:** se o script falhar, ao rodar novamente ele pula os passos já concluídos.
+
+**Reset total:** se algo estiver muito errado, o script oferece a opção de reset — remove `.env`, `public/build`, chaves JWT e derruba os containers para recomeçar do zero.
 
 ---
 
@@ -132,5 +127,5 @@ bash devops/logs-prod.sh 4       # vai direto para Symfony prod.log
 | `SLACK_WEBHOOK_URL`  | Webhook do Slack para alertas do `monitor.sh`                       |
 | `LOG_TAIL`           | Linhas iniciais nos viewers de log (padrão: `100`)                  |
 | `RETENTION_DAYS`     | Dias de retenção de backups (padrão: `7`)                           |
-| `CERTBOT_EMAIL`      | E-mail para certificados Let's Encrypt (definido pelo `pre-deploy.sh`) |
-| `CERTBOT_DOMAIN`     | Domínio para o certificado SSL (definido pelo `pre-deploy.sh`)      |
+| `CERTBOT_EMAIL`      | E-mail para certificados Let's Encrypt (configurado pelo `deploy.sh`) |
+| `CERTBOT_DOMAIN`     | Domínio para o certificado SSL (configurado pelo `deploy.sh`)       |

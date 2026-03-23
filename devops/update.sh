@@ -96,14 +96,19 @@ if [[ -n "$FRONTEND_CHANGED" ]] || [[ "$BEFORE_HASH" == "$AFTER_HASH" ]]; then
     info "Forçando rebuild do React (sem mudanças detectadas no git)..."
   fi
 
-  # Exporta variável de ambiente para o build
+  # Lê variável de ambiente para o build
+  VITE_API_BASE_URL_VAL=""
   if grep -q "^VITE_API_BASE_URL=" "$PROJECT_ROOT/.env"; then
-    VITE_API_BASE_URL=$(grep "^VITE_API_BASE_URL=" "$PROJECT_ROOT/.env" | cut -d= -f2 | xargs)
-    export VITE_API_BASE_URL
+    VITE_API_BASE_URL_VAL=$(grep "^VITE_API_BASE_URL=" "$PROJECT_ROOT/.env" | cut -d= -f2 | xargs)
   fi
 
-  npm ci --prefer-offline 2>/dev/null || npm ci
-  npm run build
+  info "Buildando assets via container node:20 (sem npm no host)..."
+  docker run --rm \
+    -v "$PROJECT_ROOT":/app \
+    -w /app \
+    -e VITE_API_BASE_URL="$VITE_API_BASE_URL_VAL" \
+    node:20 \
+    sh -c "npm ci --prefer-offline 2>/dev/null || npm ci && npm run build"
   ok "Assets do React atualizados em public/build/"
 else
   ok "Nenhum arquivo de frontend alterado — build React pulado."
