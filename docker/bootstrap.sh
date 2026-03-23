@@ -31,8 +31,11 @@ JWT_PUBLIC=/var/www/html/config/jwt/public.pem
 if [[ ! -f "$JWT_PRIVATE" ]] || [[ ! -f "$JWT_PUBLIC" ]]; then
   log "JWT keys not found — generating..."
   mkdir -p /var/www/html/config/jwt
-  php /var/www/html/bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction \
-    || { log "FATAL: JWT keypair generation failed."; exit 1; }
+  JWT_OUTPUT=$(php /var/www/html/bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction 2>&1) || {
+    log "FATAL: JWT keypair generation failed. Detalhes:"
+    echo "$JWT_OUTPUT" | while IFS= read -r line; do log "  $line"; done
+    exit 1
+  }
   log "JWT keys generated."
 else
   log "JWT keys already present."

@@ -472,8 +472,10 @@ for i in $(seq 1 24); do
     healthy)
       HEALTHY=true; break ;;
     unhealthy)
-      docker logs --tail 60 "$APP_CONTAINER" 2>&1 || true
-      die "Container ficou unhealthy. Veja os logs acima." ;;
+      docker logs --tail 80 "$APP_CONTAINER" 2>&1 || true
+      # Limpa cache da imagem para forçar rebuild na próxima tentativa
+      sed -i '/^export STEP_6_DONE=/d' "$STATE_FILE" 2>/dev/null || true
+      die "Container ficou unhealthy. Imagem será reconstruída na próxima execução." ;;
     *)
       log "  Tentativa $i/24 — healthcheck: $STATUS" ;;
   esac
