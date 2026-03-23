@@ -107,6 +107,9 @@ if [[ -n "$FRONTEND_CHANGED" ]] || [[ "$BEFORE_HASH" == "$AFTER_HASH" ]]; then
     -v "$PROJECT_ROOT":/app \
     -w /app \
     -e VITE_API_BASE_URL="$VITE_API_BASE_URL_VAL" \
+    -e NODE_ENV=production \
+    -e CI=true \
+    -e HUSKY=0 \
     node:20 \
     sh -c "npm ci --prefer-offline 2>/dev/null || npm ci && npm run build"
   ok "Assets do React atualizados em public/build/"
