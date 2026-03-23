@@ -233,6 +233,7 @@ fi
 # Garante que DEPLOY_BRANCH e DEPLOY_PORT estejam definidos mesmo em restauração
 DEPLOY_BRANCH=${DEPLOY_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")}
 DEPLOY_PORT=${DEPLOY_PORT:-8080}
+export DEPLOY_PORT  # necessário para o docker compose ler ${DEPLOY_PORT} no compose file
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 2 — Pré-requisitos
