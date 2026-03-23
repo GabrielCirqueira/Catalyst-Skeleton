@@ -1,9 +1,9 @@
 # Padrões Arquiteturais e Boas Práticas (Cultura de Engenharia)
 
-O projeto Subflow é orientado por princípios de **Clean Code**, **SOLID** e **DRY**, aplicados de forma pragmática para ambientes Symfony e React.
+O projeto Catalyst Skeleton é orientado por princípios de **Clean Code**, **SOLID** e **DRY**, aplicados de forma pragmática para ambientes Symfony e React.
 
 ## 1. Padrão `Resultado` (Operation Result)
-A lógica central do Subflow é expressa através de objetos de resultado unificados (`src/Resultado.php`).
+A lógica central do Catalyst Skeleton é expressa através de objetos de resultado unificados (`src/Resultado.php`).
 - **Objetivo**: Evitar o uso de exceções (`try/catch`) para reger o fluxo normal de negócio (ex: 'usuário já cadastrado').
 - **Como usar**:
   ```php
@@ -36,10 +36,10 @@ Sempre que um tipo primitivo (`string`, `int`) carregar uma regra de validação
 - A validação ocorre no construtor. Se o objeto foi instanciado, ele é válido por definição.
 
 ## 5. Services Atômicos (Single Action)
-Um Service no Subflow deve representar uma única intenção de negócio.
+Um Service no Catalyst Skeleton deve representar uma única intenção de negócio.
 - Utilize o método `executar()` para centralizar a lógica.
 - Evite "God Services" com dezenas de métodos. Se uma classe estiver crescendo demais, decomponha em múltiplos Services injetados.
 
 ## 6. Frontend: Imutabilidade e Declaratividade
-- **Sem `useEffect`**: O frontend do Subflow deve ser orientado a eventos e handlers. Sincronização direta com o browser é permitida apenas em hooks dedicados (`web/shared/hooks/`).
+- **Sem `useEffect`**: O frontend do Catalyst Skeleton deve ser orientado a eventos e handlers. Sincronização direta com o browser é permitida apenas em hooks dedicados (`web/shared/hooks/`).
 - **Single Source of Truth**: O estado do servidor deve viver no **TanStack Query**, e o estado local no **Zustand**. Evite duplicar dados entre os dois.

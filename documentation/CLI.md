@@ -1,6 +1,6 @@
 # Scripts de Produtividade (cli/)
 
-O diretório `cli/` contém ferramentas fundamentais para automação e garantia de qualidade (QA) do projeto Subflow. Todos os scripts são executáveis e operam primariamente via Docker para isolamento.
+O diretório `cli/` contém ferramentas fundamentais para automação e garantia de qualidade (QA) do projeto Catalyst Skeleton. Todos os scripts são executáveis e operam primariamente via Docker para isolamento.
 
 ## Automação de Features
 - **`cli/new-feature.sh`**: Script interativo de scaffolding. Gera automaticamente a estrutura completa (Entidade, DTO, Service, Controller, Serializer e Repository no backend; Pages, Hook e API no frontend).

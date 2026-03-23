@@ -319,6 +319,9 @@ JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
 JWT_PASSPHRASE=${JWT_PASSPHRASE}
 JWT_TTL=3600
 
+# ── CORS ─────────────────────────────────────────────────────────────────────
+CORS_ALLOW_ORIGIN=https://${DEPLOY_DOMAIN}
+
 # ── Frontend ──────────────────────────────────────────────────────────────────
 VITE_API_URL=https://${DEPLOY_DOMAIN}
 VITE_API_BASE_URL=https://${DEPLOY_DOMAIN}

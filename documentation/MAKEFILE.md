@@ -1,6 +1,6 @@
 # Makefile — Guia de Produtividade
 
-Este documento resume as principais receitas do `Makefile` para gerenciar a stack Subflow localmente. Todos os comandos são executados através do `docker compose` para garantir isolamento e consistência entre máquinas.
+Este documento resume as principais receitas do `Makefile` para gerenciar a stack Catalyst Skeleton localmente. Todos os comandos são executados através do `docker compose` para garantir isolamento e consistência entre máquinas.
 
 ## Gerenciamento da Stack
 - `make build`: reconstrói as imagens dos serviços Docker.

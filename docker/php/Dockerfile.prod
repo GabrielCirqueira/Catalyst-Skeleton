@@ -39,6 +39,9 @@ WORKDIR /var/www/html
 # Configurações PHP de produção
 COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/php.ini
 
+# Pool PHP-FPM: clear_env=no para que os workers herdem as variáveis do container
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Nginx interno: escuta na 80 e passa para php-fpm em 127.0.0.1:9000
 COPY docker/php/nginx-internal.conf /etc/nginx/http.d/default.conf
 

@@ -1,6 +1,6 @@
 # Testes Automatizados (PHPUnit)
 
-O Subflow privilegia a estabilidade do código através de uma bateria rigorosa de testes unitários e de integração utilizando o **PHPUnit 9.x**.
+O Catalyst Skeleton privilegia a estabilidade do código através de uma bateria rigorosa de testes unitários e de integração utilizando o **PHPUnit 9.x**.
 
 ## Estrutura de Testes (`tests/`)
 Divididos em duas suites principais no `phpunit.xml.dist`:

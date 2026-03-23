@@ -1,6 +1,6 @@
 # Backend (src/)
 
-Este documento descreve a API/backend Symfony. O Subflow segue uma arquitetura orientada a serviços e lógica de negócio desacoplada.
+Este documento descreve a API/backend Symfony. O Catalyst Skeleton segue uma arquitetura orientada a serviços e lógica de negócio desacoplada.
 
 ## Tecnologias e Stack
 - **PHP 8.4** (no container) + **Symfony 7.3** (framework principal)

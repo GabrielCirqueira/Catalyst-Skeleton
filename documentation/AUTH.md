@@ -1,6 +1,6 @@
 # Autenticação e Segurança (JWT)
 
-O Subflow utiliza uma estratégia de autenticação **stateless** baseada em **JWT (JSON Web Tokens)** com assinatura assimétrica **RS256** (RSA com SHA-256).
+O Catalyst Skeleton utiliza uma estratégia de autenticação **stateless** baseada em **JWT (JSON Web Tokens)** com assinatura assimétrica **RS256** (RSA com SHA-256).
 
 ## Subsistema Backend
 A segurança é garantida por dois bundles principais:

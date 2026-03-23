@@ -1,6 +1,6 @@
 # Formatação e Lint (QA)
 
-O projeto Subflow mantém um alto rigor de qualidade de código através de ferramentas de lint e análise estática unificadas para PHP e TypeScript.
+O projeto Catalyst Skeleton mantém um alto rigor de qualidade de código através de ferramentas de lint e análise estática unificadas para PHP e TypeScript.
 
 ## Frontend (Biome 1.9)
 Utilizamos o **Biome** como substituto moderno para ESLint, Prettier e organizador de imports. O Biome é radicalmente mais rápido e unifica toda a análise em um único binário.

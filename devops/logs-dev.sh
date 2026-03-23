@@ -1,15 +1,29 @@
 #!/bin/bash
 # devops/logs-dev.sh — Visualizador de logs do ambiente de desenvolvimento
 #
+# Arquitetura de logs em dev:
+#   - skeleton_nginx      → container Nginx separado (proxy reverso HTTP)
+#   - skeleton_symfony    → PHP-FPM + Supervisord (workers/cron)
+#   - skeleton_database   → MySQL
+#   - skeleton_vite_react → Vite dev server
+#
+#   Symfony/Monolog dev   → /var/www/html/var/log/dev.log (arquivo, volume montado)
+#   Nginx access/error    → docker logs skeleton_nginx
+#   PHP-FPM eventos       → docker logs skeleton_symfony (stderr)
+#
 # Uso:
 #   bash devops/logs-dev.sh          menu interativo
-#   bash devops/logs-dev.sh <opção>  vai direto para a opção (ex: bash devops/logs-dev.sh 3)
+#   bash devops/logs-dev.sh <opção>  vai direto para a opção
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.yaml"
 SYMFONY="skeleton_symfony"
+NGINX="skeleton_nginx"
 DATABASE="skeleton_database"
 VITE="skeleton_vite_react"
-TAIL="${LOG_TAIL:-100}"          # linhas iniciais (sobrescreva: LOG_TAIL=500 bash devops/logs-dev.sh)
-FOLLOW="-f"                      # todas as opções seguem em tempo real por padrão
+TAIL="${LOG_TAIL:-100}"
+FOLLOW="-f"
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -23,25 +37,12 @@ _header() {
   echo ""
 }
 
-_docker_exec_log() {
-  # $1 = container  $2 = caminho do arquivo de log
-  local container="$1"
-  local path="$2"
-  if docker exec "$container" test -f "$path" 2>/dev/null; then
-    docker exec -it "$container" tail -n "$TAIL" $FOLLOW "$path"
-  else
-    echo "  ⚠️  Arquivo não encontrado: $path"
-    echo "  Verifique se o container está rodando: docker ps"
-    read -rp "  [Enter para voltar]"
-  fi
-}
-
 _check_container() {
   local name="$1"
   if ! docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
     echo ""
     echo "  ⚠️  Container '$name' não está rodando."
-    echo "  Inicie com: docker compose up -d"
+    echo "  Inicie com: make dev  (ou: docker compose -f docker/docker-compose.yaml up -d)"
     echo ""
     read -rp "  [Enter para voltar]"
     return 1
@@ -52,139 +53,142 @@ _check_container() {
 # ─── Opções de log ────────────────────────────────────────────────────────────
 
 log_todos_containers() {
-  _header "Todos os containers (symfony + database + vite)"
-  docker compose logs --tail="$TAIL" $FOLLOW
+  _header "Todos os containers (symfony + nginx + database + vite)"
+  $COMPOSE logs --tail="$TAIL" $FOLLOW
 }
 
 log_symfony_container() {
-  _header "Container symfony — saída completa do Docker"
+  _header "Container symfony — stdout + stderr (PHP-FPM + Supervisord)"
   docker logs --tail="$TAIL" $FOLLOW "$SYMFONY"
 }
 
+log_nginx_container() {
+  _header "Container nginx — access + error logs"
+  docker logs --tail="$TAIL" $FOLLOW "$NGINX"
+}
+
 log_database_container() {
-  _header "Container database (MySQL) — saída completa do Docker"
+  _header "Container database (MySQL)"
   docker logs --tail="$TAIL" $FOLLOW "$DATABASE"
 }
 
 log_vite_container() {
-  _header "Container vite-react — saída completa do Docker"
+  _header "Container vite-react — Vite dev server"
   docker logs --tail="$TAIL" $FOLLOW "$VITE"
 }
 
 log_symfony_app() {
+  # Em dev, Monolog escreve em arquivo (volume montado no host)
   _check_container "$SYMFONY" || return
   _header "Symfony — var/log/dev.log (erros da aplicação)"
-  _docker_exec_log "$SYMFONY" "/var/www/html/var/log/dev.log"
-}
-
-log_apache_access() {
-  _check_container "$SYMFONY" || return
-  _header "Apache — access.log (todas as requisições HTTP)"
-  _docker_exec_log "$SYMFONY" "/var/log/apache2/access.log"
-}
-
-log_apache_error() {
-  _check_container "$SYMFONY" || return
-  _header "Apache — error.log (erros do servidor web)"
-  _docker_exec_log "$SYMFONY" "/var/log/apache2/error.log"
-}
-
-log_supervisor() {
-  _check_container "$SYMFONY" || return
-  _header "Supervisord — log principal (status dos processos)"
-  _docker_exec_log "$SYMFONY" "/var/log/supervisord.log"
-}
-
-log_supervisor_apache_stdout() {
-  _check_container "$SYMFONY" || return
-  _header "Supervisor → Apache stdout"
-  _docker_exec_log "$SYMFONY" "/var/log/supervisor/apache2-stdout.log"
-}
-
-log_supervisor_apache_stderr() {
-  _check_container "$SYMFONY" || return
-  _header "Supervisor → Apache stderr"
-  _docker_exec_log "$SYMFONY" "/var/log/supervisor/apache2-stderr.log"
-}
-
-log_supervisor_cron_stdout() {
-  _check_container "$SYMFONY" || return
-  _header "Supervisor → Cron stdout"
-  _docker_exec_log "$SYMFONY" "/var/log/supervisor/cron-stdout.log"
-}
-
-log_supervisor_cron_stderr() {
-  _check_container "$SYMFONY" || return
-  _header "Supervisor → Cron stderr"
-  _docker_exec_log "$SYMFONY" "/var/log/supervisor/cron-stderr.log"
-}
-
-log_cron() {
-  _check_container "$SYMFONY" || return
-  _header "Cron — jobs executados (/var/log/cron/)"
-  if docker exec "$SYMFONY" test -d "/var/log/cron" 2>/dev/null; then
-    docker exec -it "$SYMFONY" sh -c "ls -lh /var/log/cron/ && echo '' && tail -n $TAIL $FOLLOW /var/log/cron/*.log 2>/dev/null || echo '  (sem arquivos de log ainda)'"
+  if docker exec "$SYMFONY" test -f "/var/www/html/var/log/dev.log" 2>/dev/null; then
+    docker exec -it "$SYMFONY" tail -n "$TAIL" $FOLLOW "/var/www/html/var/log/dev.log"
   else
-    echo "  ⚠️  Diretório /var/log/cron não encontrado."
+    echo "  ℹ️  var/log/dev.log ainda não existe (nenhuma requisição feita?)."
+    echo "  Faça uma requisição para a API e tente novamente."
     read -rp "  [Enter para voltar]"
   fi
 }
 
+log_nginx_access() {
+  _check_container "$NGINX" || return
+  _header "Nginx — access log (requisições HTTP — stdout do container nginx)"
+  docker logs --tail="$TAIL" $FOLLOW "$NGINX" 2>/dev/null
+}
+
+log_nginx_error() {
+  _check_container "$NGINX" || return
+  _header "Nginx — error log (stderr do container nginx)"
+  docker logs --tail="$TAIL" $FOLLOW "$NGINX" 2>&1 1>/dev/null
+}
+
 log_php_errors() {
   _check_container "$SYMFONY" || return
-  _header "PHP — erros (php_errors.log)"
-  # PHP em modo CLI/Apache normalmente redireciona para o Apache error.log ou stderr
-  if docker exec "$SYMFONY" test -f "/var/log/php_errors.log" 2>/dev/null; then
-    _docker_exec_log "$SYMFONY" "/var/log/php_errors.log"
-  else
-    echo "  ℹ️  /var/log/php_errors.log não encontrado."
-    echo "  Erros PHP costumam ir para o Apache error.log (opção 7) em dev."
+  _header "PHP-FPM — erros de runtime (stderr do container symfony)"
+  docker logs --tail="$TAIL" $FOLLOW "$SYMFONY" 2>&1 1>/dev/null
+}
+
+log_supervisor() {
+  _check_container "$SYMFONY" || return
+  _header "Supervisord — eventos (stdout do container symfony)"
+  docker logs --tail="$TAIL" $FOLLOW "$SYMFONY" 2>/dev/null | grep -i "supervisor\|started\|stopped\|spawned\|exited\|process"
+}
+
+log_cron() {
+  _check_container "$SYMFONY" || return
+  _header "Cron / Workers — eventos (docker logs symfony)"
+  if ! docker logs --tail="$TAIL" "$SYMFONY" 2>&1 | grep -qi "cron\|worker\|messenger\|consumer"; then
+    echo "  ℹ️  Nenhuma entrada de cron/worker encontrada nos últimos $TAIL logs."
     read -rp "  [Enter para voltar]"
+  else
+    docker logs --tail="$TAIL" $FOLLOW "$SYMFONY" 2>&1 | grep -i "cron\|worker\|messenger\|consumer"
   fi
 }
 
 log_bootstrap() {
   _check_container "$SYMFONY" || return
-  _header "Bootstrap — últimas execuções (logs do bootstrap.sh)"
-  echo "  ℹ️  O bootstrap.sh roda no início do container e aparece nos logs do Docker."
+  _header "Bootstrap — logs de inicialização do container"
   echo ""
-  docker logs "$SYMFONY" 2>&1 | grep "\[bootstrap\]" | tail -n "$TAIL"
+  local output
+  output=$(docker logs "$SYMFONY" 2>&1 | grep "\[bootstrap\]" | tail -n "$TAIL")
+  if [[ -z "$output" ]]; then
+    echo "  ℹ️  Nenhuma entrada de bootstrap encontrada."
+    echo "  Use a opção 2 para ver os logs completos do container."
+  else
+    echo "$output"
+  fi
   read -rp "  [Enter para voltar]"
 }
 
 log_mysql_slow() {
   _check_container "$DATABASE" || return
   _header "MySQL — slow query log"
-  _docker_exec_log "$DATABASE" "/var/lib/mysql/slow.log"
+  if docker exec "$DATABASE" test -f "/var/lib/mysql/slow.log" 2>/dev/null; then
+    docker exec -it "$DATABASE" tail -n "$TAIL" $FOLLOW "/var/lib/mysql/slow.log"
+  else
+    echo "  ℹ️  Slow query log não ativado."
+    echo "  Para ativar: SET GLOBAL slow_query_log = 'ON';"
+    read -rp "  [Enter para voltar]"
+  fi
 }
 
 log_mysql_general() {
   _check_container "$DATABASE" || return
   _header "MySQL — general query log (todas as queries)"
-  echo "  ⚠️  O general log pode ser muito volumoso. Ativado só se configurado."
-  _docker_exec_log "$DATABASE" "/var/lib/mysql/general.log"
+  if docker exec "$DATABASE" test -f "/var/lib/mysql/general.log" 2>/dev/null; then
+    echo "  ⚠️  O general log pode ser muito volumoso."
+    docker exec -it "$DATABASE" tail -n "$TAIL" $FOLLOW "/var/lib/mysql/general.log"
+  else
+    echo "  ℹ️  General log não ativado (desabilitado por padrão)."
+    read -rp "  [Enter para voltar]"
+  fi
 }
 
-log_tudo_arquivos() {
+log_tudo() {
   _check_container "$SYMFONY" || return
-  _header "Dump completo — todos os arquivos de log do container symfony"
+  _header "Dump completo — todos os logs relevantes"
+
+  echo "  ════ $SYMFONY (docker logs — PHP-FPM/Supervisor) ════"
   echo ""
-  docker exec "$SYMFONY" sh -c "
-    for f in \
-      /var/log/apache2/access.log \
-      /var/log/apache2/error.log \
-      /var/log/supervisord.log \
-      /var/log/supervisor/apache2-stdout.log \
-      /var/log/supervisor/apache2-stderr.log \
-      /var/log/supervisor/cron-stdout.log \
-      /var/log/supervisor/cron-stderr.log \
-      /var/www/html/var/log/dev.log; do
-      if [ -f \"\$f\" ]; then
-        echo ''; echo '════ '\$f' ════'; echo ''
-        tail -n 50 \"\$f\"
-      fi
-    done
-  "
+  docker logs --tail="50" "$SYMFONY" 2>&1
+  echo ""
+
+  if docker ps --format '{{.Names}}' | grep -q "^${NGINX}$"; then
+    echo "  ════ $NGINX (docker logs — Nginx access/error) ════"
+    echo ""
+    docker logs --tail="50" "$NGINX" 2>&1
+    echo ""
+  fi
+
+  echo "  ════ Symfony var/log/dev.log ════"
+  echo ""
+  if docker exec "$SYMFONY" test -f "/var/www/html/var/log/dev.log" 2>/dev/null; then
+    docker exec "$SYMFONY" tail -n 50 "/var/www/html/var/log/dev.log"
+  else
+    echo "  (arquivo não encontrado)"
+  fi
+  echo ""
+
   read -rp "  [Enter para voltar]"
 }
 
@@ -199,35 +203,30 @@ show_menu() {
   echo ""
   echo "  ── Docker ────────────────────────────────"
   echo "   1) Todos os containers (follow)"
-  echo "   2) Container symfony (Docker logs)"
-  echo "   3) Container database / MySQL (Docker logs)"
-  echo "   4) Container vite-react (Docker logs)"
+  echo "   2) Container symfony — PHP-FPM + Supervisor"
+  echo "   3) Container nginx"
+  echo "   4) Container database — MySQL"
+  echo "   5) Container vite-react"
   echo ""
   echo "  ── Symfony / PHP ─────────────────────────"
-  echo "   5) Symfony var/log/dev.log"
-  echo "   6) PHP erros (php_errors.log)"
-  echo "   7) Bootstrap.sh (logs de inicialização)"
+  echo "   6) Symfony — var/log/dev.log (arquivo)"
+  echo "   7) PHP-FPM — erros de runtime"
+  echo "   8) Bootstrap — logs de inicialização"
   echo ""
-  echo "  ── Apache ────────────────────────────────"
-  echo "   8) Apache access.log"
-  echo "   9) Apache error.log"
+  echo "  ── Nginx ─────────────────────────────────"
+  echo "   9) Nginx — access log (requisições HTTP)"
+  echo "  10) Nginx — error log"
   echo ""
-  echo "  ── Supervisor ────────────────────────────"
-  echo "  10) Supervisord log principal"
-  echo "  11) Supervisor → Apache stdout"
-  echo "  12) Supervisor → Apache stderr"
-  echo "  13) Supervisor → Cron stdout"
-  echo "  14) Supervisor → Cron stderr"
-  echo ""
-  echo "  ── Cron ──────────────────────────────────"
-  echo "  15) Cron jobs (/var/log/cron/)"
+  echo "  ── Supervisor / Workers ──────────────────"
+  echo "  11) Supervisord — eventos"
+  echo "  12) Cron / Workers — eventos"
   echo ""
   echo "  ── MySQL ─────────────────────────────────"
-  echo "  16) MySQL slow query log"
-  echo "  17) MySQL general query log"
+  echo "  13) MySQL slow query log"
+  echo "  14) MySQL general query log"
   echo ""
   echo "  ── Tudo ──────────────────────────────────"
-  echo "  18) Dump de todos os arquivos de log"
+  echo "  15) Dump completo (docker logs + dev.log)"
   echo ""
   echo "   0) Sair"
   echo ""
@@ -237,22 +236,19 @@ run_option() {
   case "$1" in
     1)  log_todos_containers ;;
     2)  log_symfony_container ;;
-    3)  log_database_container ;;
-    4)  log_vite_container ;;
-    5)  log_symfony_app ;;
-    6)  log_php_errors ;;
-    7)  log_bootstrap ;;
-    8)  log_apache_access ;;
-    9)  log_apache_error ;;
-    10) log_supervisor ;;
-    11) log_supervisor_apache_stdout ;;
-    12) log_supervisor_apache_stderr ;;
-    13) log_supervisor_cron_stdout ;;
-    14) log_supervisor_cron_stderr ;;
-    15) log_cron ;;
-    16) log_mysql_slow ;;
-    17) log_mysql_general ;;
-    18) log_tudo_arquivos ;;
+    3)  log_nginx_container ;;
+    4)  log_database_container ;;
+    5)  log_vite_container ;;
+    6)  log_symfony_app ;;
+    7)  log_php_errors ;;
+    8)  log_bootstrap ;;
+    9)  log_nginx_access ;;
+    10) log_nginx_error ;;
+    11) log_supervisor ;;
+    12) log_cron ;;
+    13) log_mysql_slow ;;
+    14) log_mysql_general ;;
+    15) log_tudo ;;
     0)  echo ""; echo "  Até logo!"; echo ""; exit 0 ;;
     *)  echo "  Opção inválida: $1"; sleep 1 ;;
   esac

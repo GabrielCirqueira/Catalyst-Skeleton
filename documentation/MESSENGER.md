@@ -1,6 +1,6 @@
 # Processamento Assíncrono (Messenger)
 
-O Subflow utiliza o **Symfony Messenger** para desacoplar tarefas pesadas da resposta HTTP imediata, garantindo uma interface rápida e resiliente.
+O Catalyst Skeleton utiliza o **Symfony Messenger** para desacoplar tarefas pesadas da resposta HTTP imediata, garantindo uma interface rápida e resiliente.
 
 ## Infraestrutura
 

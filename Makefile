@@ -28,7 +28,7 @@ EXEC_BACKEND  = $(COMPOSE_DEV_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 EXEC_FRONTEND = $(COMPOSE_DEV_CMD) exec --user $(DEV_UID):$(DEV_GID) vite-react
 PROD_SYMFONY  = $(COMPOSE_PROD_CMD) exec -T symfony
 
-.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-tsx fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage
+.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-tsx fix-all fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage db-reset cache-clear check-status db-restore db-shell docker-clean system-info dev-logs prod-logs-all monitor update-prod
 
 help: ## List available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-24s %s\n", $$1, $$2}'
@@ -84,6 +84,9 @@ fix-php: ## Auto-fix PHP CS issues
 fix-tsx: ## Auto-fix TypeScript/React issues
 	$(EXEC_FRONTEND) npx biome check --write web
 
+fix-all: ## Run all auto-fixers (PHP and TSX)
+	bash $(CLI_DIR)/fix-lint.sh
+
 logs-backend: ## Tail backend logs
 	$(COMPOSE_DEV_CMD) logs -f symfony
 
@@ -116,12 +119,41 @@ migrate: ## Run Doctrine migrations local
 rollback: ## Revert to previous migration version local
 	$(EXEC_BACKEND) php bin/console doctrine:migrations:migrate prev --no-interaction
 
+db-reset: ## Clear DB, Rebuild and Migrate (Fresh State)
+	bash $(CLI_DIR)/db-reset.sh
+
+db-shell: ## Access MySQL shell inside container
+	bash $(DEVOPS_DIR)/db-shell.sh
+
+db-restore: ## Restore backup (ARGS="file.sql")
+	bash $(DEVOPS_DIR)/db-restore.sh $(if $(ARGS),$(ARGS),"")
+
+# --- MONITORAMENTO E DIAGNÓSTICO ---
+check-status: ## Run health checks on services
+	bash $(CLI_DIR)/check-status.sh
+
+system-info: ## Monitor Docker resources and disk usage
+	bash $(DEVOPS_DIR)/system-info.sh
+
+monitor: ## Detailed monitoring for local environment
+	bash $(DEVOPS_DIR)/monitor.sh
+
+dev-logs: ## View all logs for development environment
+	bash $(DEVOPS_DIR)/logs-dev.sh
+
+# --- MANUTENÇÃO ---
+cache-clear: ## Clear Cache and Logs for dev environment
+	bash $(CLI_DIR)/cache-clear.sh
+
+docker-clean: ## Remove unused Docker resources (Prune)
+	bash $(DEVOPS_DIR)/docker-clean.sh
+
 # --- PRODUÇÃO ---
-deploy: ## Build images and deploy in production
-	$(COMPOSE_PROD_CMD) build
-	$(COMPOSE_PROD_CMD) up -d --remove-orphans
-	$(PROD_SYMFONY) php bin/console doctrine:migrations:migrate --no-interaction --env=prod
-	$(PROD_SYMFONY) php bin/console cache:clear --env=prod
+deploy: ## Build images and deploy in production (alias for devops/deploy.sh)
+	bash $(DEVOPS_DIR)/deploy.sh
+
+update-prod: ## Update production environment
+	bash $(DEVOPS_DIR)/update.sh
 
 migrate-prod: ## Run migrations in production
 	$(PROD_SYMFONY) php bin/console doctrine:migrations:migrate --no-interaction --env=prod
@@ -129,8 +161,11 @@ migrate-prod: ## Run migrations in production
 rollback-prod: ## Revert the last migration in production
 	$(PROD_SYMFONY) php bin/console doctrine:migrations:migrate prev --no-interaction --env=prod
 
-prod-logs: ## Monitor production logs
+prod-logs: ## Monitor production logs (Basic)
 	$(COMPOSE_PROD_CMD) logs -f --tail=100
+
+prod-logs-all: ## Monitor production logs (Full Script)
+	bash $(DEVOPS_DIR)/logs-prod.sh
 
 prod-shell: ## Open shell in production symfony
 	$(COMPOSE_PROD_CMD) exec symfony sh
@@ -138,7 +173,6 @@ prod-shell: ## Open shell in production symfony
 prod-status: ## List production containers health
 	$(COMPOSE_PROD_CMD) ps
 
-# --- MANUTENÇÃO ---
 cache-clear-prod: ## Clear production cache
 	$(PROD_SYMFONY) php bin/console cache:clear --env=prod
 
