@@ -443,7 +443,12 @@ ok "MySQL pronto"
 # ═══════════════════════════════════════════════════════════════
 step "8/9 — Subindo container Symfony"
 
-$COMPOSE up -d --force-recreate symfony
+# Garante que não há container anterior ocupando a porta
+info "Removendo container symfony anterior (se existir)..."
+$COMPOSE stop symfony 2>/dev/null || true
+$COMPOSE rm -f symfony 2>/dev/null || true
+
+$COMPOSE up -d symfony
 
 # Detecta container Symfony
 APP_CONTAINER=$($COMPOSE ps --format '{{.Name}}' symfony 2>/dev/null | head -1 || echo "")
