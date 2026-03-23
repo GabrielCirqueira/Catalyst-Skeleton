@@ -56,4 +56,5 @@ yarn-error.log
 ###> gerados automaticamente ###
 *.tsbuildinfo
 /.setup-done
+/.setup-progress
 ###< gerados automaticamente ###
