@@ -61,6 +61,17 @@ if ! docker info &>/dev/null; then
   die "Docker daemon não está rodando."
 fi
 
+# ── Lê configurações operacionais do .env de produção ────────────────────────
+DEPLOY_PORT=$(grep "^DEPLOY_PORT=" "$PROJECT_ROOT/.env" | cut -d= -f2 | xargs 2>/dev/null || true)
+DEPLOY_DOMAIN=$(grep "^DEPLOY_DOMAIN=" "$PROJECT_ROOT/.env" | cut -d= -f2 | xargs 2>/dev/null || true)
+
+if [[ -z "$DEPLOY_PORT" ]]; then
+  warn "DEPLOY_PORT não encontrado no .env — usando porta padrão 8080."
+  warn "Re-execute devops/deploy.sh para regenerar o .env com a porta correta."
+  DEPLOY_PORT=8080
+fi
+export DEPLOY_PORT  # necessário para o docker compose ler \${DEPLOY_PORT} no compose file
+
 # ── Guarda imagem atual para rollback ─────────────────────────────────────────
 PREVIOUS_IMAGE=$(docker inspect "$APP_CONTAINER" --format='{{.Config.Image}}' 2>/dev/null || echo "")
 

@@ -332,6 +332,13 @@ MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 # ── Mailer ────────────────────────────────────────────────────────────────────
 MAILER_DSN=null://null
 
+# ── Configuração operacional do deploy ───────────────────────────────────────
+# Lidas pelo devops/update.sh para saber a porta e branch sem depender de
+# arquivos temporários (.deploy-progress é apagado após o deploy).
+DEPLOY_PORT=${DEPLOY_PORT}
+DEPLOY_DOMAIN=${DEPLOY_DOMAIN}
+DEPLOY_BRANCH=${DEPLOY_BRANCH}
+
 ENV
 
   ok ".env criado"
