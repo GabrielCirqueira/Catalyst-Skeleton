@@ -20,113 +20,90 @@ Catalyst Skeleton é uma suite completa de engenharia que impõe padrões de **C
 
 ---
 
-## Setup (execute 1x após clonar)
+## 🛠️ Setup Inicial (The Magic Script)
+
+O Catalyst Skeleton possui um orquestrador de setup altamente sofisticado que prepara todo o seu ambiente profissional em minutos.
 
 ```bash
 bash setup.sh
 ```
 
-O script faz tudo automaticamente: renomeia o projeto, gera segredos (`APP_SECRET`, `JWT_PASSPHRASE`, senhas do banco), cria o `.env`, faz o build dos containers, instala dependências PHP e JS, gera as chaves JWT e roda as migrations.
+### O que o setup faz por você:
+
+1. **Personalização**: Renomeia o projeto em todos os arquivos (`package.json`, namespaces, banners).
+2. **Gestão de Portas**: Permite configurar portas customizadas para evitar conflitos locais.
+3. **Segurança Máxima**: Gera segredos aleatórios (`APP_SECRET`, `JWT_PASSPHRASE`) e senhas únicas de banco.
+4. **Ambiente Isolado**: Cria seu arquivo `.env` configurado com DSNs e URLs corretos.
+5. **Orquestração Docker**: Realiza o build multi-stage e sobe os containers de forma resiliente.
+6. **Instalação de Deps**: Instala dependências PHP (Composer) e JS (NPM) dentro do ambiente isolado.
+7. **Criptografia**: Gera o par de chaves **RS256** (pública/privada) para o subsistema de JWT.
+8. **Sincronização**: Aguarda o banco estar pronto e executa as Migrations automaticamente.
+9. **Health Check**: Valida a saúde final da API antes de declarar o sucesso do setup.
 
 ---
 
-## Serviços após o setup
-
-| Serviço | URL padrão |
-| :--- | :--- |
-| API Symfony | http://localhost:1010 |
-| Frontend Vite (HMR) | http://localhost:1012 |
-| MySQL (host) | localhost:1013 |
-| Supervisor (painel) | http://localhost:1011 |
-
-> As portas são configuradas em `ports.env`. Altere lá para mudar tudo de uma vez.
-
----
-
-## Comandos do dia a dia
-
-```bash
-make up-d          # sobe tudo em background
-make down          # para tudo
-make restart       # down + up-d
-make install       # instala deps PHP e JS nos containers
-make migrate       # roda migrations pendentes
-make new-migration # gera migration a partir do diff do schema
-make test          # roda PHPUnit (Unit + Integration)
-make lint-all      # PHP-CS + Biome
-make fix-php       # auto-fix PHP
-make fix-tsx       # auto-fix TypeScript/React
-make bash-backend  # shell no container symfony
-make logs-backend  # tail dos logs do backend
-```
-
----
-
-## Arquitetura (visão rápida)
-
-**Backend** — cada camada tem uma única responsabilidade:
-
-| Camada | Pasta | Regra |
+| Serviço | Porta (Host) | Destino |
 | :--- | :--- | :--- |
-| Entidades | `src/Entity/` | PK UUID v7, sem getters/setters anêmicos |
-| Repositórios | `src/Repository/` | Único lugar onde se usa o `EntityManager` |
-| Services | `src/Service/` | Um service = uma ação — método `executar()` |
-| DTOs | `src/DataObject/` | Entrada validada antes de chegar no domínio |
-| Serializers | `src/Serializer/` | Contrato JSON de saída — protege o frontend |
-| Controllers | `src/Controller/` | Lógica zero — orquestra entrada e saída |
+| **API Symfony** | `BACKEND_PORT` | [http://localhost:4355](http://localhost:4355) |
+| **Frontend Vite** | `FRONTEND_PORT` | [http://localhost:3453](http://localhost:3453) |
+| **MySQL** | `DATABASE_PORT` | `localhost:2345` |
+| **Supervisor** | `SUPERVISOR_PORT` | [http://localhost:1011](http://localhost:1011) |
 
-**Frontend** — arquitetura baseada em features:
+> [!TIP]
+> As portas são centralizadas no arquivo `ports.env`. O setup pergunta quais você deseja usar, mas você pode alterá-las a qualquer momento e rodar `make restart`.
 
-| Pasta | Responsabilidade |
+---
+
+---
+
+## 🛠️ Comandos do dia a dia
+
+| Comando | Descrição |
 | :--- | :--- |
-| `web/features/` | Módulos autossuficientes (ex: `auth/`) |
-| `web/shared/` | Componentes, hooks e utils globais |
-| `web/stores/` | Estado global com Zustand |
-| `web/config/api.ts` | Instância Axios centralizada com auto-refresh JWT |
-| `web/routes/` | Guards de rota (`RotaProtegida`) |
-| `web/shadcn/` | Componentes Shadcn/Radix UI prontos |
+| `make up-d` | Sobe a stack completa em background |
+| `make down` | Para todos os containers |
+| `make restart` | Reinicia todos os serviços |
+| `make install` | Instala dependências (Composer + NPM) |
+| `make migrate` | Executa migrations pendentes |
+| `make test` | Roda suite completa de testes (PHPUnit) |
+| `make lint-all` | Valida estilo (PHP-CS-Fixer + Biome) |
+| `make bash-backend` | Acessa shell do container Symfony |
 
 ---
 
-## Scaffolding
+## 🏗️ Arquitetura (Visão Rápida)
 
-```bash
-./cli/new-feature.sh
-```
+O Catalyst Skeleton impõe uma separação rigorosa de interesses:
 
-Informe o nome em PascalCase (ex: `Produto`). Gera automaticamente: Entity, Repository, Controller, DTO, Service e os arquivos de feature no frontend.
-
----
-
-## Qualidade de código
-
-```bash
-./cli/run-qa.sh    # PHPStan + PHPCS + Biome em sequência
-composer qa        # mesmo comando
-```
-
-Git hooks automáticos via Husky: **lint-staged** no pre-commit e **Commitlint** validando a mensagem. Formato obrigatório:
-
-```
-feat: descrição curta
-fix: corrige algo
-refactor: melhora sem mudar comportamento
-```
+- **Backend**: Baseado em **Services Atômicos** e **DTOs**. A lógica de negócio nunca vaza para o Controller.
+- **Frontend**: Organizado por **Features**. Cada funcionalidade (Auth, User, etc) é um módulo autossucedido.
+- **Padrão Resultado**: Todas as operações de negócio retornam um objeto `Resultado` em vez de lançar exceções.
 
 ---
 
-## Produção
+## 📚 Documentação Detalhada
 
-```bash
-bash devops/deploy.sh    # primeiro deploy (build do zero + rollback automático)
-bash devops/update.sh    # updates (rebuild inteligente + rollback automático)
-bash devops/backup.sh    # backup do banco com rotação de 7 dias
-bash devops/monitor.sh   # verifica containers e alerta no Slack/Discord
-bash devops/logs-prod.sh # visualizador interativo de logs de produção
-```
+Para uma imersão profunda em cada área do projeto, consulte nossos guias específicos:
 
-Stack de produção: **Nginx** (TLS 1.2/1.3) → **PHP-FPM** (imagem Alpine sem Xdebug, OPcache ativo) → **MySQL 8.3** + **Certbot** para SSL automático.
+- [**Guia de Autenticação**](documentation/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
+- [**Guia de Frontend**](documentation/FRONTEND.md): React 19, Shadcn/ui e "No useEffect".
+- [**Guia de Backend**](documentation/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
+- [**Arquitetura e Padrões**](documentation/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
+- [**Testes Automatizados**](documentation/TESTING.md): PHPUnit (Unit & Integration).
+- [**Mensageria (Async)**](documentation/MESSENGER.md): Symfony Messenger e Workers.
+- [**Docker e DevOps**](documentation/DOCKER.md): Infraestrutura e multi-stage builds.
+- [**Makefile e CLI**](documentation/MAKEFILE.md): Comandos de produtividade e Scaffolding.
+- [**Lint e Formatação**](documentation/FORMATTING.md): Biome e PHP-CS-Fixer.
 
 ---
 
-*Para detalhes completos sobre stack, variáveis de ambiente, autenticação, mensageria, segurança, DevOps e padrões de nomenclatura, veja [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).*
+## 🚀 Produção e DevOps
+
+Desenvolvido para ser *Production Ready*:
+- **Deploy**: Script `devops/deploy.sh` com zero-downtime aproximado e healthchecks.
+- **Segurança**: Nginx configurado com TLS 1.3 e headers de segurança (HSTS, CSP).
+- **Monitoramento**: Painel Supervisor para gestão de workers e logs estruturados.
+
+---
+
+*Para uma visão técnica global e variáveis de ambiente, veja [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).*
