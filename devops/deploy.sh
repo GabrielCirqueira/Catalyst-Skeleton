@@ -568,6 +568,8 @@ if [[ "${CONFIGURE_NGINX,,}" =~ ^s$ ]]; then
     NGINX_DEST="${NGINX_SITES_AVAILABLE}/${DEPLOY_DOMAIN}"
 
     info "Aplicando template docker/nginx/prod.conf..."
+    # Remove versão anterior (pode ter SSL hardcoded de tentativas anteriores)
+    rm -f "$NGINX_DEST"
     sed \
       -e "s|__DOMAIN__|${DEPLOY_DOMAIN}|g" \
       -e "s|__PORT__|${DEPLOY_PORT}|g" \
