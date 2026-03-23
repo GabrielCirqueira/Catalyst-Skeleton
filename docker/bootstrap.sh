@@ -70,19 +70,22 @@ if [[ -f /var/www/html/bin/console ]]; then
   # Aguarda o banco ficar realmente acessível via Doctrine
   log "Waiting for Database to be ready for connections..."
   count=0
-  until php /var/www/html/bin/console dbal:run-sql "SELECT 1" >/dev/null 2>&1 || [ $count -gt 30 ]; do
+  until php /var/www/html/bin/console dbal:run-sql "SELECT 1" >/dev/null 2>&1 || [[ $count -gt 30 ]]; do
     sleep 1
-    ((count++))
+    count=$(( count + 1 ))  # ((count++)) mata o script com set -e quando count=0
   done
 
-  if [ $count -gt 30 ]; then
+  if [[ $count -gt 30 ]]; then
      log "FATAL: Database connection timeout."
      exit 1
   fi
 
   log "Running database migrations..."
-  php /var/www/html/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration \
-    || { log "FATAL: Migrations failed."; exit 1; }
+  MIGRATION_OUT=$(php /var/www/html/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1) || {
+    log "FATAL: Migrations failed. Output:"
+    echo "$MIGRATION_OUT" | while IFS= read -r line; do log "  $line"; done
+    exit 1
+  }
   log "Migrations complete."
 fi
 
@@ -90,8 +93,11 @@ fi
 if [[ -f /var/www/html/bin/console ]]; then
   if [[ "${APP_ENV:-dev}" == "prod" ]]; then
     log "Warming up Symfony cache (prod)."
-    su -s /bin/sh www-data -c "php /var/www/html/bin/console cache:warmup" \
-      || { log "FATAL: Cache warmup failed."; exit 1; }
+    WARMUP_OUT=$(su -s /bin/sh www-data -c "php /var/www/html/bin/console cache:warmup" 2>&1) || {
+      log "FATAL: Cache warmup failed. Output:"
+      echo "$WARMUP_OUT" | while IFS= read -r line; do log "  $line"; done
+      exit 1
+    }
     chown -R www-data:www-data /var/www/html/var 2>/dev/null || true
     log "Cache warmup complete."
   else
