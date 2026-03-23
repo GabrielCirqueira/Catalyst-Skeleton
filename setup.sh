@@ -376,7 +376,8 @@ else
       fi
       
       if grep -q "Skeleton" "$file" 2>/dev/null; then
-        if [[ "$file" != *"shadcn/components/ui/skeleton.tsx"* ]]; then
+        # Protege o termo 'Skeleton' em componentes de UI (placeholders) do Shadcn e arquivos TSX/CSS
+        if [[ "$file" != *"shadcn/"* ]] && [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
           replace_in_file "$file" "React Skeleton" "$PROJECT_NAME_DISPLAY"
           replace_in_file "$file" "Skeleton" "$PROJECT_NAME_PASCAL"
           MODIFIED=true

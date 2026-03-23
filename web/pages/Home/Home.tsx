@@ -7,20 +7,28 @@ import { Dialog, DialogContent } from '@/shadcn/components/ui/dialog'
 import { Icon } from '@/shadcn/components/ui/icon'
 import { Box, Container, Footer, Grid, HStack, VStack } from '@/shadcn/components/ui/layout'
 import { Link } from '@/shadcn/components/ui/link'
+import { Separator } from '@/shadcn/components/ui/separator'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shadcn/components/ui/table'
 import { Text, Title } from '@/shadcn/components/ui/typography'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { ModalAuth } from '@features/auth'
 import {
   ArrowRight,
+  Calendar,
   Code2,
-  Cpu,
   FileCode2,
   FolderTree,
   Github,
   Globe2,
   Layers,
   LayoutTemplate,
-  Lock,
   MessageSquare,
   Moon,
   Palette,
@@ -33,215 +41,228 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
-const Navigation = ({ theme, toggleTheme, onOpenAuth, autenticado, usuario, onLogout }: any) => (
-  <Container size="xl" className="py-4">
-    <HStack className="justify-between items-center bg-white dark:bg-background-950 px-6 py-4 rounded-2xl border border-outline-100 dark:border-outline-900 shadow-sm sticky top-4 z-50">
-      <HStack className="gap-3 items-center">
-        <Box className="size-10 rounded-xl bg-brand-500 flex items-center justify-center">
-          <Icon icon={Code2} className="size-6 text-white" strokeWidth={2.5} />
-        </Box>
-        <VStack className="gap-0">
-          <Title
-            size="xl"
-            className="font-heading font-black text-typography-950 dark:text-white leading-tight"
-          >
-            Catalyst
-          </Title>
-        </VStack>
-      </HStack>
+const Navigation = ({ theme, toggleTheme, onOpenAuth, autenticado, usuario, onLogout }: any) => {
+  const [isScrolled, setIsScrolled] = useState(false)
 
-      <HStack className="gap-8 items-center hidden lg:flex">
-        <Link
-          href="#features"
-          className="text-sm font-bold text-typography-600 hover:text-typography-950 dark:hover:text-white transition-colors"
-        >
-          Recursos
-        </Link>
-        <Link
-          href="#architecture"
-          className="text-sm font-bold text-typography-600 hover:text-typography-950 dark:hover:text-white transition-colors"
-        >
-          Arquitetura
-        </Link>
-        <Link
-          href="#tech-stack"
-          className="text-sm font-bold text-typography-600 hover:text-typography-950 dark:hover:text-white transition-colors"
-        >
-          Componentes
-        </Link>
-        <Link
-          href="#faq"
-          className="text-sm font-bold text-typography-600 hover:text-typography-950 dark:hover:text-white transition-colors"
-        >
-          FAQ
-        </Link>
-      </HStack>
+  if (typeof window !== 'undefined') {
+    window.onscroll = () => setIsScrolled(window.scrollY > 20)
+  }
 
-      <HStack className="gap-4 items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="rounded-lg bg-background-50 dark:bg-background-900 border border-outline-100 dark:border-outline-900 text-typography-600 hover:text-typography-950 dark:hover:text-white"
-        >
-          <Icon icon={theme === 'light' ? Moon : Sun} className="size-5" />
-        </Button>
-
-        {autenticado ? (
-          <HStack className="gap-4 items-center">
-            <Text className="text-sm font-bold text-typography-900 dark:text-white hidden md:block">
-              Olá,{' '}
-              <span className="text-brand-600 dark:text-brand-400">
-                {usuario?.username || 'Usuário'}
-              </span>
-            </Text>
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-lg h-10 border-outline-200 dark:border-outline-800 text-typography-950 dark:text-white px-4"
-              onClick={onLogout}
+  return (
+    <Box
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+        isScrolled
+          ? 'bg-white/70 dark:bg-background-950/70 backdrop-blur-xl border-outline-100/50 dark:border-outline-900/50 py-3'
+          : 'bg-transparent border-transparent py-5'
+      }`}
+    >
+      <Container size="xl">
+        <HStack className="justify-between items-center w-full">
+          <Box className="flex-1 flex justify-start">
+            <HStack
+              className="gap-3.5 items-center group cursor-pointer"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              Sair
-            </Button>
-          </HStack>
-        ) : (
-          <Button
-            variant="outline"
-            className="rounded-lg font-bold px-6 border-outline-200 dark:border-outline-800 text-typography-950 dark:text-white hidden md:flex hover:bg-background-50 dark:hover:bg-background-900"
-            onClick={() => onOpenAuth('login')}
-          >
-            Acessar
-          </Button>
-        )}
-      </HStack>
-    </HStack>
-  </Container>
-)
+              <Box className="size-11 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:rotate-6 transition-transform">
+                <Icon icon={Code2} className="size-5.5 text-white" strokeWidth={2.5} />
+              </Box>
+              <VStack className="gap-0.5">
+                <Title
+                  size="lg"
+                  className="font-poppins font-black text-typography-950 dark:text-white leading-none tracking-tighter"
+                >
+                  Catalyst <span className="text-brand-500">Skeleton</span>
+                </Title>
+                <Text className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-600 dark:text-brand-400 leading-none mt-1">
+                  Engineering Suite
+                </Text>
+              </VStack>
+            </HStack>
+          </Box>
+
+          <Box className="flex-none">
+            <HStack className="gap-8 items-center hidden lg:flex">
+              {['Recursos', 'Arquitetura', 'Stack', 'FAQ'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  className="text-sm font-bold text-typography-500 hover:text-brand-600 dark:text-typography-400 dark:hover:text-white transition-all relative group"
+                >
+                  {item}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all group-hover:w-full" />
+                </a>
+              ))}
+            </HStack>
+          </Box>
+
+          <Box className="flex-1 flex justify-end">
+            <HStack className="gap-4 items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-xl size-10 text-typography-500 hover:bg-background-100 dark:hover:bg-background-900 border border-transparent hover:border-outline-100 dark:hover:border-outline-900 transition-all"
+              >
+                <Icon icon={theme === 'light' ? Moon : Sun} className="size-4.5" />
+              </Button>
+
+              <Separator
+                orientation="vertical"
+                className="h-5 bg-outline-100 dark:bg-outline-900 hidden md:block"
+              />
+
+              {autenticado ? (
+                <HStack className="gap-4 items-center">
+                  <Text className="text-sm font-bold text-typography-950 dark:text-white hidden sm:block">
+                    {usuario?.username}
+                  </Text>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl h-10 px-6 font-bold border-outline-100 dark:border-outline-900 hover:bg-background-50 dark:hover:bg-background-900"
+                    onClick={onLogout}
+                  >
+                    Sair
+                  </Button>
+                </HStack>
+              ) : (
+                <HStack className="gap-3">
+                  <Button
+                    variant="ghost"
+                    className="hidden md:flex font-bold text-typography-600 hover:text-typography-950 dark:text-typography-400 dark:hover:text-white"
+                    onClick={() => onOpenAuth('login')}
+                  >
+                    Entrar
+                  </Button>
+                  <Button
+                    size="default"
+                    className="rounded-xl h-10 px-6 font-bold bg-brand-500 text-white hover:bg-brand-600 shadow-xl shadow-brand-500/20 transition-all hover:-translate-y-0.5"
+                    onClick={() => onOpenAuth('cadastro')}
+                  >
+                    Get Started
+                  </Button>
+                </HStack>
+              )}
+            </HStack>
+          </Box>
+        </HStack>
+      </Container>
+    </Box>
+  )
+}
 
 const Hero = ({ onDemo, onOpenAuth, autenticado }: any) => {
   return (
-    <Container size="xl" className="py-24 md:py-32">
-      <Grid className="grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <VStack className="gap-8 relative z-10">
-          <Badge
-            variant="outline"
-            className="w-fit px-4 py-2 rounded-lg border-brand-500/20 bg-brand-500/10 text-brand-700 dark:text-brand-400 font-bold uppercase tracking-widest text-xs animate-in fade-in slide-in-from-bottom duration-700"
-          >
-            Solid & Scalable
-          </Badge>
+    <Container size="xl" className="pt-40 pb-20 md:pt-56 md:pb-32 relative">
+      <div className="absolute top-1/4 -left-20 size-[600px] bg-brand-500/[0.05] rounded-full blur-[120px] pointer-events-none" />
 
-          <VStack className="gap-6 animate-in fade-in slide-in-from-bottom duration-700 delay-100">
-            <Title
-              size="4xl"
-              className="font-heading font-black leading-[1.1] text-typography-950 dark:text-white md:text-6xl lg:text-7xl"
+      <Grid className="grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <VStack className="lg:col-span-7 gap-8 relative z-10">
+          <HStack className="gap-3 items-center">
+            <Badge
+              variant="secondary"
+              className="bg-brand-500/10 text-brand-700 dark:text-brand-400 border-brand-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
             >
-              Software de alto nível. <br className="hidden lg:block" />
-              Lançamento imediato.
-            </Title>
-            <Text className="text-xl leading-relaxed text-typography-600 dark:text-typography-400 font-medium max-w-xl">
-              O Catalyst Skeleton não é só mais uma stack. É uma fundação opinativa construída com
-              Clean Architecture. Pare de configurar Webpack e JWT manualmente.
+              <span className="size-1.5 rounded-full bg-brand-500 mr-2 animate-pulse" />
+              v4.0.0 Stable
+            </Badge>
+            <Text className="text-xs font-bold text-typography-400 dark:text-typography-600 uppercase tracking-widest">
+              PHP 8.4 + React 19
             </Text>
-          </VStack>
+          </HStack>
+
+          <Title
+            size="4xl"
+            className="font-poppins font-extrabold leading-[1.1] text-typography-950 dark:text-white text-4xl md:text-6xl lg:text-7xl tracking-tight"
+          >
+            O ponto de partida <br />
+            para sistemas <br />
+            de <span className="text-brand-500">alto desempenho</span>.
+          </Title>
+          <Text className="text-lg leading-relaxed text-typography-600 dark:text-typography-400 font-medium max-w-xl">
+            O Catalyst Skeleton fornece a infraestrutura profissional necessária para aplicações
+            SaaS modernas. Escalabilidade Horizontal, Clean Architecture e Performance em um só
+            lugar.
+          </Text>
 
           <HStack className="gap-4 flex-wrap pt-4 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
             {autenticado ? (
               <Button
                 size="lg"
-                className="h-16 px-10 text-lg font-bold rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-hard-3 hover:shadow-hard-4 transition-all duration-300 hover:-translate-y-1"
+                className="h-14 px-10 bg-brand-500 text-white hover:bg-brand-600 font-bold shadow-lg shadow-brand-500/20 transition-all hover:-translate-y-1"
               >
-                <HStack className="gap-3 items-center">
-                  <Text>Ir para o Painel</Text>
-                  <Icon icon={ArrowRight} className="size-6" />
-                </HStack>
+                Painel de Controle
+                <Icon icon={ArrowRight} className="size-4 ml-2" />
               </Button>
             ) : (
               <Button
                 size="lg"
-                className="h-16 px-10 text-lg font-bold rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-hard-3 hover:shadow-hard-4 transition-all duration-300 hover:-translate-y-1"
+                className="h-14 px-10 bg-brand-500 text-white hover:bg-brand-600 font-bold shadow-lg shadow-brand-500/20 transition-all hover:-translate-y-1"
                 onClick={() => onOpenAuth('cadastro')}
               >
-                <HStack className="gap-3 items-center">
-                  <Text>Iniciar Projeto Agora</Text>
-                  <Icon icon={ArrowRight} className="size-6" />
-                </HStack>
+                Iniciar Projeto Agora
+                <Icon icon={ArrowRight} className="size-4 ml-2" />
               </Button>
             )}
             <Button
               size="lg"
-              variant="outline"
-              className="h-16 px-10 text-lg font-bold rounded-xl border-2 border-outline-200 dark:border-outline-800 bg-white dark:bg-background-950 text-typography-950 dark:text-white shadow-hard-1 hover:shadow-hard-2 transition-all duration-300 hover:-translate-y-1 hover:border-outline-300 dark:hover:border-outline-700"
+              variant="secondary"
+              className="h-14 px-10 bg-background-100 dark:bg-background-800 text-typography-950 dark:text-white hover:bg-background-200 dark:hover:bg-background-700 font-bold transition-all"
               onClick={onDemo}
             >
-              <HStack className="gap-3 items-center">
-                <Icon icon={PlayCircle} className="size-6" />
-                <Text>Assistir Demonstração</Text>
-              </HStack>
+              <Icon icon={PlayCircle} className="size-5 mr-2 text-brand-500" />
+              Ver Demonstração
             </Button>
           </HStack>
         </VStack>
 
-        <Box className="relative animate-in fade-in slide-in-from-right duration-700 delay-300">
-          <Card className="bg-white dark:bg-background-900 border border-outline-100 dark:border-outline-800 shadow-hard-4 rounded-3xl overflow-hidden p-2">
-            <Box className="bg-background-50 dark:bg-black rounded-2xl overflow-hidden border border-outline-100 dark:border-outline-900">
-              <HStack className="px-5 py-4 border-b border-outline-100 dark:border-outline-900 bg-white dark:bg-background-950 items-center justify-between">
-                <HStack className="gap-2">
-                  <div className="size-3 rounded-full bg-error-500" />
-                  <div className="size-3 rounded-full bg-warning-500" />
-                  <div className="size-3 rounded-full bg-success-500" />
+        <Box className="lg:col-span-5 relative animate-in fade-in slide-in-from-right duration-1000 delay-300">
+          <Card className="bg-white dark:bg-background-900 border border-outline-100 dark:border-outline-900 shadow-2xl rounded-2xl overflow-hidden p-2">
+            <Box className="bg-background-50 dark:bg-background-950 rounded-xl overflow-hidden border border-outline-100 dark:border-outline-900">
+              <HStack className="px-5 py-3 border-b border-outline-100 dark:border-outline-900 bg-white dark:bg-background-900 items-center justify-between">
+                <HStack className="gap-1.5">
+                  <div className="size-2.5 rounded-full bg-error-500/40" />
+                  <div className="size-2.5 rounded-full bg-warning-500/40" />
+                  <div className="size-2.5 rounded-full bg-success-500/40" />
                 </HStack>
-                <Text className="text-xs font-mono font-bold text-typography-500">make setup</Text>
+                <Text className="text-[10px] font-mono font-bold text-typography-400 uppercase tracking-widest">
+                  terminal
+                </Text>
               </HStack>
-              <VStack className="gap-3 p-6 font-mono text-sm">
+              <VStack className="gap-3 p-6 font-mono text-xs leading-relaxed">
                 <HStack className="gap-3">
-                  <Text className="text-brand-500 font-bold">~</Text>
+                  <Text className="text-brand-500">❯</Text>
                   <Text className="text-typography-950 dark:text-typography-300">
-                    $ git clone catalyst-skeleton
+                    git clone catalyst-skeleton
                   </Text>
                 </HStack>
                 <HStack className="gap-3">
-                  <Text className="text-brand-500 font-bold">~</Text>
-                  <Text className="text-typography-950 dark:text-typography-300">$ make setup</Text>
+                  <Text className="text-brand-500">❯</Text>
+                  <Text className="text-typography-950 dark:text-typography-300">
+                    bash setup.sh
+                  </Text>
                 </HStack>
-                <Text className="text-success-600 dark:text-success-400 pl-5">
-                  ✓ Building containers...
-                </Text>
-                <Text className="text-success-600 dark:text-success-400 pl-5">
-                  ✓ Generating JWT Keypair...
-                </Text>
-                <Text className="text-success-600 dark:text-success-400 pl-5">
-                  ✓ Running Doctrine migrations...
-                </Text>
-                <Text className="text-brand-500 font-bold pl-5 mt-2">
-                  API running at localhost:1010
-                </Text>
-                <Text className="text-brand-500 font-bold pl-5">
-                  React Vite running at localhost:1012
-                </Text>
+                <div className="h-px bg-outline-100 dark:bg-outline-900 my-1" />
+                <Text className="text-success-500/80">✓ Modules synchronized</Text>
+                <Text className="text-success-500/80">✓ RS256 Keypair generated</Text>
+                <Text className="text-success-500/80">✓ Database provisioned</Text>
+                <Text className="text-brand-500 font-bold mt-2">Ready to ship.</Text>
               </VStack>
             </Box>
           </Card>
 
-          <Box className="absolute -bottom-8 -left-8 bg-white dark:bg-background-900 border border-outline-100 dark:border-outline-800 p-6 rounded-2xl shadow-hard-3">
-            <HStack className="gap-4 items-center">
-              <Box className="size-14 rounded-xl bg-success-500/10 flex items-center justify-center">
-                <Icon
-                  icon={ShieldCheck}
-                  className="size-7 text-success-600 dark:text-success-500"
-                />
-              </Box>
-              <VStack>
-                <Title
-                  size="xl"
-                  className="font-heading font-black text-typography-950 dark:text-white"
-                >
-                  Prod Ready
+          <Box className="absolute -bottom-6 -left-6 bg-white dark:bg-background-800 border border-outline-100 dark:border-outline-900 p-5 rounded-xl shadow-xl animate-bounce-slow">
+            <VStack className="gap-1">
+              <Text className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">
+                Status
+              </Text>
+              <HStack className="gap-2 items-center">
+                <div className="size-2 rounded-full bg-success-500" />
+                <Title size="lg" className="font-poppins font-black">
+                  PROD READY
                 </Title>
-                <Text className="text-sm font-bold text-typography-500">
-                  Autenticação & Banco 100%
-                </Text>
-              </VStack>
-            </HStack>
+              </HStack>
+            </VStack>
           </Box>
         </Box>
       </Grid>
@@ -249,30 +270,141 @@ const Hero = ({ onDemo, onOpenAuth, autenticado }: any) => {
   )
 }
 
-const FeatureSection = () => {
+const DNASection = () => {
   return (
     <Box
-      id="features"
-      className="bg-background-50 dark:bg-background-900 border-y border-outline-100 dark:border-outline-900 py-32"
+      id="stack"
+      className="bg-background-50 dark:bg-background-950 py-32 border-y border-outline-100 dark:border-outline-900"
     >
       <Container size="xl">
         <VStack className="gap-20">
-          <VStack className="gap-6 text-center max-w-3xl mx-auto">
-            <Badge
-              variant="outline"
-              className="mx-auto rounded-lg border-brand-500/20 bg-brand-500/10 text-brand-700 dark:text-brand-400 font-bold uppercase tracking-widest text-xs"
-            >
-              Tudo que você precisa
-            </Badge>
+          <VStack className="gap-6 text-center max-w-2xl mx-auto ">
+            <Text className="text-xs w-full text-center font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">
+              The Skeleton DNA
+            </Text>
             <Title
               size="4xl"
-              className="font-heading font-black text-typography-950 dark:text-white"
+              className="font-poppins font-black text-center w-full text-typography-950 dark:text-white tracking-tight"
             >
-              Módulo de funcionalidades projetado para escala
+              Catalyst Skeleton Elite
             </Title>
-            <Text className="text-xl text-typography-600 dark:text-typography-400 font-medium">
-              De infraestrutura a estilos, reduzimos meses de decisões técnicas em um repositório
-              maduro.
+            <Text className="text-lg text-typography-600 dark:text-typography-400 font-medium">
+              Escolhemos ferramentas que priorizam a manutenção a longo prazo e a produtividade
+              extrema.
+            </Text>
+          </VStack>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
+            <Card className="md:col-span-8 bg-white dark:bg-background-900 border-outline-100 dark:border-outline-900 group overflow-hidden">
+              <div className="absolute inset-0 bg-brand-500/[0.02] pointer-events-none" />
+              <VStack className="p-10 gap-8 h-full">
+                <HStack className="justify-between items-center">
+                  <Badge
+                    variant="secondary"
+                    className="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                  >
+                    Backend Core
+                  </Badge>
+                  <Icon icon={Code2} className="size-6 text-brand-500" />
+                </HStack>
+                <VStack className="gap-2">
+                  <Title size="3xl" className="font-poppins font-black">
+                    PHP 8.4 + Symfony 7.3
+                  </Title>
+                  <Text className="text-typography-600 dark:text-typography-400 max-w-md">
+                    O motor por trás da escalabilidade. Atributos nativos, Messenger para filas
+                    assíncronas e tipagem rigorosa.
+                  </Text>
+                </VStack>
+              </VStack>
+            </Card>
+
+            <Card className="md:col-span-4 bg-white dark:bg-background-900 border-outline-100 dark:border-outline-900 overflow-hidden group">
+              <VStack className="p-10 gap-8 h-full justify-between">
+                <Badge variant="secondary" className="w-fit bg-blue-500/10 text-blue-600">
+                  Frontend
+                </Badge>
+                <VStack className="gap-2">
+                  <Title size="2xl" className="font-poppins font-black">
+                    React 19
+                  </Title>
+                  <Text className="text-sm text-typography-500">
+                    Renderização ultrarrápida com concurrent mode.
+                  </Text>
+                </VStack>
+                <HStack className="gap-3">
+                  <Badge className="bg-background-50 dark:bg-background-800 text-typography-500 font-bold border-none">
+                    Vite 7
+                  </Badge>
+                  <Badge className="bg-background-50 dark:bg-background-800 text-typography-500 font-bold border-none">
+                    Zustand 5
+                  </Badge>
+                </HStack>
+              </VStack>
+            </Card>
+
+            {[
+              {
+                label: 'Styles',
+                title: 'Tailwind 4.0',
+                desc: 'CSS Zero-runtime com performance máxima.',
+                col: 'md:col-span-4',
+              },
+              {
+                label: 'Database',
+                title: 'MySQL 8.3',
+                desc: 'Sólido e confiável para dados estruturados.',
+                col: 'md:col-span-4',
+              },
+              {
+                label: 'Data Fetching',
+                title: 'TanStack Query',
+                desc: 'Cache e sincronização global de estado.',
+                col: 'md:col-span-4',
+              },
+            ].map((item, i) => (
+              <Card
+                key={i}
+                className={`${item.col} bg-white dark:bg-background-900 border-outline-100 dark:border-outline-900 p-10 hover:shadow-xl transition-all group`}
+              >
+                <VStack className="gap-6">
+                  <Text className="text-xs font-bold text-typography-400 uppercase tracking-widest">
+                    {item.label}
+                  </Text>
+                  <Title
+                    size="xl"
+                    className="font-poppins font-black group-hover:text-brand-500 transition-colors"
+                  >
+                    {item.title}
+                  </Title>
+                  <Text className="text-sm text-typography-500 leading-relaxed">{item.desc}</Text>
+                </VStack>
+              </Card>
+            ))}
+          </div>
+        </VStack>
+      </Container>
+    </Box>
+  )
+}
+
+const FeatureSection = () => {
+  return (
+    <Box id="recursos" className="bg-white dark:bg-background-950 py-32">
+      <Container size="xl">
+        <VStack className="gap-20">
+          <VStack className="gap-6 text-center max-w-3xl mx-auto">
+            <Text className="mx-auto text-xs font-bold uppercase tracking-[0.2em] text-typography-400">
+              Funcionalidades Core
+            </Text>
+            <Title
+              size="4xl"
+              className="font-poppins font-black text-typography-950 dark:text-white tracking-tight"
+            >
+              Arquitetura voltada a alto impacto
+            </Title>
+            <Text className="text-xl text-typography-600 dark:text-typography-400 font-medium leading-relaxed">
+              Elimine o custo de manutenção com uma estrutura que proíbe o código ruim por design.
             </Text>
           </VStack>
 
@@ -280,51 +412,55 @@ const FeatureSection = () => {
             {[
               {
                 icon: Layers,
-                title: 'Backend Limpo (DDD)',
-                desc: 'Entidades com UUID v7, Controllers limitados a rotas API, e Services executando a regra de negócio pura em PHP 8.4.',
+                title: 'Clean Architecture (DDD)',
+                desc: 'Entidades com UUID v7 nativo e Services atômicos. Separação total entre web e domínio.',
               },
               {
-                icon: Lock,
-                title: 'Segurança por Padrão',
-                desc: 'Firewall stateless nas rotas /api/* com verificação rigorosa de JWT. Refresh tokens rodam de maneira invisível.',
+                icon: Shield,
+                title: 'Security RS256',
+                desc: 'Autenticação assimétrica rigorosa. Tokens JWT assinados com chaves RSA de alto nível.',
               },
               {
-                icon: Cpu,
-                title: 'Frontend React 19',
-                desc: 'UI reativa ultra rápida usando Zustand para memória local e TanStack Query lidando com server-state em tempo real.',
+                icon: Rocket,
+                title: 'Concurrent React',
+                desc: 'Performance extrema com React 19 e Zustand lidando com o estado da interface.',
               },
               {
                 icon: LayoutTemplate,
-                title: '80+ Componentes Nativos',
-                desc: 'Esqueça bibliotecas engessadas. Implementamos Shadcn/ui direto no código base para acessibilidade total e redesign fácil.',
+                title: 'Shadcn UI Native',
+                desc: 'Biblioteca de componentes injetada diretamente no seu diretório para customização total.',
               },
               {
-                icon: Code2,
-                title: 'DX Absoluto',
-                desc: 'PHPStan nível 6 e Biome.js rodando nos git hooks. Qualquer subida de código ruim será bloqueada automaticamente.',
+                icon: Zap,
+                title: 'Vite 7 Performance',
+                desc: 'Hot Module Replacement instantâneo e build otimizado para os navegadores modernos.',
               },
               {
                 icon: Globe2,
-                title: 'Deploy Invisível',
-                desc: 'Nginx mapeado com resolutores de Docker interno, scripts bash de deploy zero-downtime já prontos no repositório.',
+                title: 'Ready for Scale',
+                desc: 'Docker Multi-stage preparado para produção com Nginx e certbot automatizados.',
               },
             ].map((item, idx) => (
               <Card
                 key={idx}
-                className="bg-white dark:bg-background-950 border border-outline-100 dark:border-outline-800 p-8 rounded-2xl shadow-sm hover:shadow-hard-2 hover:-translate-y-1 transition-all duration-300"
+                className="group bg-white dark:bg-background-900 border-outline-100 dark:border-outline-900 p-8 rounded-xl transition-all duration-300 hover:border-brand-500/30 hover:-translate-y-1"
               >
                 <VStack className="gap-6">
-                  <Box className="size-14 rounded-xl bg-background-50 dark:bg-background-900 border border-outline-100 dark:border-outline-800 flex items-center justify-center">
-                    <Icon icon={item.icon} className="size-7 text-typography-950 dark:text-white" />
+                  <Box className="size-11 rounded-lg bg-brand-500/10 flex items-center justify-center group-hover:bg-brand-500 transition-colors">
+                    <Icon
+                      icon={item.icon}
+                      className="size-5 text-brand-500 group-hover:text-white"
+                      strokeWidth={2}
+                    />
                   </Box>
-                  <VStack className="gap-3">
+                  <VStack className="gap-2">
                     <Title
-                      size="2xl"
-                      className="font-heading font-black text-typography-950 dark:text-white"
+                      size="xl"
+                      className="font-poppins font-bold text-typography-950 dark:text-white"
                     >
                       {item.title}
                     </Title>
-                    <Text className="text-lg text-typography-600 dark:text-typography-400 leading-relaxed">
+                    <Text className="text-sm text-typography-600 dark:text-typography-400 leading-relaxed">
                       {item.desc}
                     </Text>
                   </VStack>
@@ -542,14 +678,14 @@ const UIComponentsSection = () => {
               </VStack>
               <VStack className="gap-4">
                 <div className="size-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                  <Icon icon={LayoutTemplate} className="size-6 text-brand-400" />
+                  <Icon icon={Globe2} className="size-6 text-brand-400" />
                 </div>
                 <Title size="xl" className="font-heading font-bold text-white">
                   Acessibilidade
                 </Title>
                 <Text className="text-typography-500 leading-relaxed">
                   Componentes que seguem os padrões WAI-ARIA, garantindo inclusão e navegação
-                  perfeita via teclado.
+                  perfeita via teclado em qualquer dispositivo.
                 </Text>
               </VStack>
             </Grid>
@@ -563,59 +699,161 @@ const UIComponentsSection = () => {
 const FAQSection = () => {
   const faqs = [
     {
-      q: 'Hospedagem',
-      a: 'Qualquer VPS serve. O projeto roda inteiro dentro de Docker e o docker-compose.prod.yaml sobe Nginx reverso e SSL com Certbot de maneira rápida.',
+      q: 'Onde hospedar?',
+      a: 'Qualquer VPS Linux. O Catalyst Skeleton vem com Docker pronto para produção, incluindo Nginx reverso e SSL automático.',
     },
     {
-      q: 'Posso usar Tailwind customizado?',
-      a: 'Sim, tudo no frontend reside na sua máquina. O design system foi injetado via `tailwind.config.cjs`. Altere o `brand` e sua aplicação inteira ganha sua cor de marca.',
+      q: 'Stack CSS',
+      a: 'Usamos Tailwind CSS 4.0 nativo. Performance máxima, bundle size mínimo e tokens de design semânticos.',
     },
     {
-      q: 'O PHP e o React são servidos juntos?',
-      a: 'Não. É uma Single Page Application separada que engole uma JSON API rigorosa (via api.ts). Tudo fica isolado com HMR rápido no dev.',
+      q: 'Escalabilidade',
+      a: 'A arquitetura modular permite que você isole serviços pesados em Workers assíncronos configurados nativamente.',
     },
     {
-      q: 'Por que não Laravel/Nextjs?',
-      a: 'O Catalyst prefere as amarrações seguras do SOLID impostas por atributos e tipagens pesadas do Symfony, aliado a renderização em cliente leve e altamente responsiva para SaaS corporativos.',
+      q: 'Suporte a Mobile',
+      a: 'Interface 100% responsiva seguindo UX mobile-first e componentes adaptativos like Drawers.',
     },
   ]
 
   return (
     <Container size="xl" id="faq" className="py-32">
       <VStack className="gap-16 items-center">
-        <VStack className="gap-4 text-center max-w-3xl">
-          <Title size="4xl" className="font-heading font-black text-typography-950 dark:text-white">
-            Dúvidas Frequentes
-          </Title>
-          <Text className="text-xl text-typography-600 dark:text-typography-400 font-medium">
-            As respostas rápidas de quem leu o documento da arquitetura.
+        <VStack className="gap-4 text-center max-w-2xl">
+          <Text className="text-xs font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">
+            Suporte
           </Text>
+          <Title
+            size="4xl"
+            className="font-poppins font-black text-typography-950 dark:text-white tracking-tight"
+          >
+            Perguntas Frequentes
+          </Title>
         </VStack>
 
-        <Grid className="grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 max-w-5xl w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 max-w-5xl w-full">
           {faqs.map((f, i) => (
-            <VStack key={i} className="gap-4">
-              <HStack className="gap-4 items-start">
-                <Box className="size-10 rounded-full bg-background-100 dark:bg-background-800 flex items-center justify-center shrink-0">
-                  <Text className="font-black text-typography-950 dark:text-white">{i + 1}</Text>
-                </Box>
-                <VStack className="gap-2 pt-1">
-                  <Title
-                    size="xl"
-                    className="font-heading font-black text-typography-950 dark:text-white"
-                  >
-                    {f.q}
-                  </Title>
-                  <Text className="text-lg text-typography-600 dark:text-typography-400 leading-relaxed font-medium">
-                    {f.a}
-                  </Text>
-                </VStack>
-              </HStack>
+            <VStack
+              key={i}
+              className="gap-4 p-8 bg-background-50 dark:bg-background-900 rounded-xl border border-outline-100 dark:border-outline-900"
+            >
+              <Title
+                size="xl"
+                className="font-poppins font-bold text-typography-950 dark:text-white"
+              >
+                {f.q}
+              </Title>
+              <Text className="text-base text-typography-600 dark:text-typography-400 leading-relaxed">
+                {f.a}
+              </Text>
             </VStack>
           ))}
-        </Grid>
+        </div>
       </VStack>
     </Container>
+  )
+}
+
+const TimelineSection = () => {
+  const versions = [
+    {
+      v: 'V4',
+      date: '23 Mar 2026',
+      desc: 'Troca de Linters pelo Biome, CORS, Auth JWT, Nova Arquitetura de Features, Testes Unitários e Script setup.sh.',
+    },
+    {
+      v: 'V3',
+      date: '06 Out 2025',
+      desc: 'Introdução de Linters, diretório cli/, Makefile com atalhos. Estreia de subversões em 3 branches: Mantine, Tailwind e Chakra.',
+    },
+    {
+      v: 'V2',
+      date: '01 Jun 2025',
+      desc: 'Integração oficial do Chakra UI, suporte a tema escuro e melhorias gerais no DX (Developer Experience).',
+    },
+    {
+      v: 'V1',
+      date: '30 Jan 2025',
+      desc: 'Lançamento inicial do Skeleton puro. Integração funcional entre React e Symfony focada em simplicidade.',
+    },
+  ]
+
+  return (
+    <Box className="bg-background-50 dark:bg-background-900/20 py-32 border-y border-outline-100 dark:border-outline-900">
+      <Container size="xl">
+        <VStack className="gap-16 items-center">
+          <VStack className="gap-6 text-center max-w-2xl mx-auto">
+            <HStack className="gap-3 w-full text-center justify-center items-center">
+              <Icon icon={Calendar} className="size-5 text-brand-500" />
+              <Text className="text-xs font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">
+                Roadmap Evolutivo
+              </Text>
+            </HStack>
+            <Title
+              size="4xl"
+              className="font-poppins text-center w-full font-black text-typography-950 dark:text-white tracking-tight"
+            >
+              Histórico do Catalyst
+            </Title>
+            <Text className="text-lg text-typography-600 dark:text-typography-400 font-medium">
+              Acompanhe a trajetória de refinamento constante que transformou o Skeleton na base de
+              elite que é hoje.
+            </Text>
+          </VStack>
+
+          <Card className="w-full max-w-5xl mx-auto bg-white dark:bg-background-950 border border-outline-200 dark:border-outline-800 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] dark:shadow-none">
+            <Table className="w-full">
+              <TableHeader className="bg-background-100/50 dark:bg-background-900/50 border-b border-outline-200 dark:border-outline-800">
+                <TableRow className="hover:bg-transparent border-none">
+                  <TableHead className="py-8 px-12 font-poppins font-black text-typography-950 dark:text-white uppercase tracking-widest text-[10px]">
+                    Versão
+                  </TableHead>
+                  <TableHead className="py-8 px-12 font-poppins font-black text-typography-950 dark:text-white uppercase tracking-widest text-[10px]">
+                    Lançamento
+                  </TableHead>
+                  <TableHead className="py-8 px-12 font-poppins font-black text-typography-950 dark:text-white uppercase tracking-widest text-[10px]">
+                    Destaques e Refatorações
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {versions.map((v, i) => (
+                  <TableRow
+                    key={i}
+                    className="group border-outline-100 dark:border-outline-900 transition-all hover:bg-brand-500/[0.03]"
+                  >
+                    <TableCell className="py-10 px-12">
+                      <HStack className="gap-4 items-center">
+                        <Box
+                          className={`size-2.5 rounded-full ${
+                            i === 0
+                              ? 'bg-success-500 animate-pulse ring-4 ring-success-500/20'
+                              : 'bg-typography-200 dark:bg-typography-800'
+                          }`}
+                        />
+                        <Text className="font-poppins font-black text-typography-950 dark:text-white text-2xl">
+                          {v.v}
+                        </Text>
+                      </HStack>
+                    </TableCell>
+                    <TableCell className="py-10 px-12">
+                      <Text className="font-bold text-typography-900 dark:text-typography-100 text-base">
+                        {v.date}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="py-10 px-12">
+                      <Text className="text-typography-600 dark:text-typography-400 leading-relaxed font-medium max-w-lg text-base">
+                        {v.desc}
+                      </Text>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </VStack>
+      </Container>
+    </Box>
   )
 }
 
@@ -660,113 +898,124 @@ const FinalCTA = ({ onAuth, autenticado }: any) => (
 )
 
 const MegaFooter = () => (
-  <Footer className="bg-background-50 dark:bg-background-950 border-t border-outline-100 dark:border-outline-900 py-24">
+  <Footer className="bg-white dark:bg-background-950 border-t border-outline-100 dark:border-outline-900 py-24">
     <Container size="xl">
       <Grid className="grid-cols-1 md:grid-cols-12 gap-16 mb-20">
-        <VStack className="md:col-span-5 gap-6">
+        <VStack className="md:col-span-6 gap-6">
           <HStack className="gap-3 items-center">
-            <Box className="size-12 rounded-xl bg-brand-500 flex items-center justify-center">
-              <Icon icon={Code2} className="size-6 text-white" strokeWidth={2.5} />
+            <Box className="size-10 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <Icon icon={Code2} className="size-5 text-white" strokeWidth={2.5} />
             </Box>
             <Title
               size="2xl"
-              className="font-heading font-black text-typography-950 dark:text-white"
+              className="font-poppins font-black text-typography-950 dark:text-white tracking-tighter"
             >
-              Catalyst
+              Catalyst Skeleton
             </Title>
           </HStack>
-          <Text className="text-lg text-typography-600 dark:text-typography-400 leading-relaxed font-medium">
-            Uma obra prima modular corporativa pronta para se tornar a fundação vitalógica de
-            sistemas imensos e maduros. Construído sem gambiarras, seguindo arquiteturas modernas e
-            seguras.
+          <Text className="text-lg text-typography-600 dark:text-typography-400 leading-relaxed font-medium max-w-md">
+            Fundação de elite para sistemas modernos. Construído com rigor de engenharia, seguindo
+            Clean Architecture e DDD.
           </Text>
-          <HStack className="gap-6 mt-4">
+          <HStack className="gap-4 mt-4">
             <a
               href="#"
-              className="p-3 bg-white dark:bg-background-900 border border-outline-200 dark:border-outline-800 rounded-xl text-typography-500 hover:text-brand-500 transition-colors shadow-sm"
+              className="p-2.5 rounded-lg bg-background-50 dark:bg-background-900 text-typography-500 hover:text-brand-500 transition-colors"
             >
               <Icon icon={Github} className="size-5" />
             </a>
             <a
               href="#"
-              className="p-3 bg-white dark:bg-background-900 border border-outline-200 dark:border-outline-800 rounded-xl text-typography-500 hover:text-brand-500 transition-colors shadow-sm"
+              className="p-2.5 rounded-lg bg-background-50 dark:bg-background-900 text-typography-500 hover:text-brand-500 transition-colors"
             >
               <Icon icon={MessageSquare} className="size-5" />
             </a>
           </HStack>
         </VStack>
-        <Box className="md:col-span-7">
+        <Box className="md:col-span-6">
           <Grid className="grid-cols-2 sm:grid-cols-3 gap-12">
             <VStack className="gap-6">
-              <Text className="text-lg font-black text-typography-950 dark:text-white uppercase tracking-widest text-sm">
-                A Fundação
+              <Text className="text-xs font-bold uppercase tracking-widest text-typography-400">
+                Produto
               </Text>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
+              <VStack className="gap-3">
+                <Link
+                  href="#recursos"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Recursos
+                </Link>
+                <Link
+                  href="#architecture"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Arquitetura
+                </Link>
+                <Link
+                  href="#stack"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Stack
+                </Link>
+              </VStack>
+            </VStack>
+            <VStack className="gap-6">
+              <Text className="text-xs font-bold uppercase tracking-widest text-typography-400">
                 Recursos
-              </Link>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Arquitetura DDD
-              </Link>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Componentes Visuais
-              </Link>
+              </Text>
+              <VStack className="gap-3">
+                <Link
+                  href="#"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Segurança
+                </Link>
+                <Link
+                  href="#"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  DevOps
+                </Link>
+                <Link
+                  href="#"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Documentação
+                </Link>
+              </VStack>
             </VStack>
             <VStack className="gap-6">
-              <Text className="text-lg font-black text-typography-950 dark:text-white uppercase tracking-widest text-sm">
-                Biblioteca
+              <Text className="text-xs font-bold uppercase tracking-widest text-typography-400">
+                Empresa
               </Text>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                ReadMe
-              </Link>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Doc Técnica Inteira
-              </Link>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Guias de Frontend
-              </Link>
-            </VStack>
-            <VStack className="gap-6">
-              <Text className="text-lg font-black text-typography-950 dark:text-white uppercase tracking-widest text-sm">
-                Legalidade
-              </Text>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Licença
-              </Link>
-              <Link
-                href="#"
-                className="text-lg font-medium text-typography-600 dark:text-typography-400 hover:text-brand-600 dark:hover:text-brand-400"
-              >
-                Código de Conduta
-              </Link>
+              <VStack className="gap-3">
+                <Link
+                  href="#"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Sobre
+                </Link>
+                <Link
+                  href="#"
+                  className="text-sm font-bold text-typography-600 hover:text-brand-500"
+                >
+                  Licença
+                </Link>
+              </VStack>
             </VStack>
           </Grid>
         </Box>
       </Grid>
-      <Box className="border-t border-outline-200 dark:border-outline-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <Text className="text-typography-600 font-medium tracking-wide text-sm">
-          © Catalyst Skeleton — Operado nativamente e com orgulho.
+      <Box className="border-t border-outline-100 dark:border-outline-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <Text className="text-typography-400 text-xs font-medium">
+          © 2026 Catalyst Skeleton • Operado nativamente com excelência técnica.
         </Text>
+        <Badge
+          variant="secondary"
+          className="bg-background-50 dark:bg-background-900 text-typography-500"
+        >
+          v4.0.0 Stable
+        </Badge>
       </Box>
     </Container>
   </Footer>
@@ -805,9 +1054,14 @@ export function Component() {
 
       <main>
         <Hero onDemo={handleDemo} onOpenAuth={abrirAuth} autenticado={autenticado} />
+
+        <DNASection />
+
         <FeatureSection />
+
         <ArchitectureSection />
         <UIComponentsSection />
+        <TimelineSection />
         <FAQSection />
         <FinalCTA onAuth={abrirAuth} autenticado={autenticado} />
       </main>

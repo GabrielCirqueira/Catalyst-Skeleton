@@ -17,14 +17,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return (stored === 'light' || stored === 'dark') ? stored : 'light'
   })
 
-  // Sincronização inicial
   useMountEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
     root.classList.add(theme)
   })
 
-  // Sincronização em atualizações
   useUpdateEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')

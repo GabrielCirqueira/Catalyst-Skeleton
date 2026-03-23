@@ -84,14 +84,14 @@ for FILE in "${FILES[@]}"; do
       ;;
     php|ts|tsx|js|jsx)
       NEW=$(perl -0777 -pe '
-        # Linhas inteiras {/* ... */} (JSX, single-line)
-        s/[ \t]*\{\/\*.*?\*\/\}[ \t]*\n//gm;
-        # Trechos inline {/* ... */}
-        s/[ \t]*\{\/\*.*?\*\/\}//g;
-        # Linhas inteiras de comentário //
-        s/^[ \t]*\/\/[^\n]*\n//gm;
-        # Comentário inline // no final (não casa :// de URLs nem ///)
-        s/(?<!:)[ \t]+\/\/(?!\/).*$//gm;
+        # Linhas inteiras {/* ... */} (JSX, single-line) - Pula se biome-ignore
+        s/[ \t]*\{\/\*(?!\s*biome-ignore).*?\*\/\}[ \t]*\n//gm;
+        # Trechos inline {/* ... */} - Pula se biome-ignore
+        s/[ \t]*\{\/\*(?!\s*biome-ignore).*?\*\/\}//g;
+        # Linhas inteiras de comentário // - Pula se biome-ignore
+        s/^[ \t]*\/\/(?!\s*biome-ignore)[^\n]*\n//gm;
+        # Comentário inline // no final (não casa :// de URLs nem /// nem biome-ignore)
+        s/(?<!:)[ \t]+\/\/(?!\/)(?!\s*biome-ignore).*$//gm;
         # Colapsa linhas em branco consecutivas em no máximo uma
         s/\n{3,}/\n\n/g;
       ' "$FILE")

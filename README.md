@@ -1,8 +1,23 @@
-# 🚀 Catalyst Skeleton — Symfony 7.3 & React 19
+# 🚀 Catalyst Skeleton v4.0.0 — Symfony 7.3 & React 19
 
 **O ponto de partida definitivo para aplicações empresariais sólidas, escaláveis e resilientes.**
 
 Catalyst Skeleton é uma suite completa de engenharia que impõe padrões de **Clean Architecture**, **DDD** e **SOLID**. Backend PHP 8.4 + Symfony 7.3 com JSON API. Frontend React 19 + TypeScript como SPA. Tudo containerizado, production-ready desde o primeiro commit.
+
+---
+
+## 📅 Histórico de Versões
+
+O roadmap do Catalyst Skeleton é focado em estabilidade e modernização constante da stack.
+
+| Versão | Data de Lançamento | Destaque Principal |
+| :--- | :--- | :--- |
+| **Skeleton V4** | 23 de março 2026 | **Atual** — Symfony 7.3, React 19, Biome. |
+| **Skeleton V3** | 6 de outubro 2025 | Estabilização de Message Bus e Workers. |
+| **Skeleton V2** | 1 de junho 2025 | Introdução de Shadcn UI e Lucide Icons. |
+| **Skeleton V1** | 30 de janeiro 2025 | Release inicial (Symfony 6.4 + React 18). |
+
+---
 
 > Para documentação técnica detalhada (arquitetura, variáveis de ambiente, DevOps, deploy, logs, etc.) consulte [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).
 
