@@ -54,6 +54,17 @@ else
   log "JWT keys already present."
 fi
 
+# ── Stub .env para o Symfony Runtime ────────────────────────────────────────
+# O Symfony Runtime (autoload_runtime.php) tenta carregar .env do disco.
+# Como o container recebe variáveis via env_file do Docker Compose (sem arquivo
+# físico .env), criamos um stub mínimo para o Runtime não falhar no boot.
+# As variáveis reais já estão no ambiente — o stub apenas satisfaz a busca pelo arquivo.
+if [[ ! -f /var/www/html/.env ]]; then
+  printf 'APP_ENV=%s\nAPP_DEBUG=%s\n' "${APP_ENV:-prod}" "${APP_DEBUG:-0}" \
+    > /var/www/html/.env
+  log ".env stub criado para Symfony Runtime."
+fi
+
 # ── 3. Migrations ────────────────────────────────────────────────────────────
 if [[ -f /var/www/html/bin/console ]]; then
   # Aguarda o banco ficar realmente acessível via Doctrine
