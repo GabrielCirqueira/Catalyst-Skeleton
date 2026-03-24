@@ -4,6 +4,7 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react
 import * as React from 'react'
 import type { DayButton } from 'react-day-picker'
 import { DayPicker, getDefaultClassNames } from 'react-day-picker'
+import { ptBR } from 'date-fns/locale'
 
 import { Button, buttonVariants } from '@shadcn/button'
 import { cn } from '@shadcn/lib/utils'
@@ -24,6 +25,7 @@ function Calendar({
 
   return (
     <DayPicker
+      locale={ptBR}
       showOutsideDays={showOutsideDays}
       className={cn(
         'bg-background group/calendar p-3 [--cell-size:2rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',

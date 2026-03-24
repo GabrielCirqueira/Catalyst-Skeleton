@@ -8,6 +8,7 @@ services:
       MYSQL_DATABASE: skeleton
       MYSQL_USER: skeleton
       MYSQL_PASSWORD: skeleton
+      TZ: America/Sao_Paulo
     ports:
       - "${DATABASE_HOST_PORT:-3309}:${DATABASE_CONTAINER_PORT:-3306}"
     volumes:
@@ -22,6 +23,8 @@ services:
     restart: always
     env_file:
       - ./ports.env
+    environment:
+      TZ: America/Sao_Paulo
     ports:
       - "${SUPERVISOR_PORT:-9001}:9001"
     volumes:
@@ -33,6 +36,8 @@ services:
     image: nginx:alpine
     container_name: skeleton_nginx
     restart: always
+    environment:
+      TZ: America/Sao_Paulo
     ports:
       - "${BACKEND_PORT:-8000}:80"
     volumes:
@@ -53,6 +58,8 @@ services:
     command: sh -c "npm install --legacy-peer-deps && npm run dev"
     env_file:
       - ./ports.env
+    environment:
+      TZ: America/Sao_Paulo
     ports:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
     depends_on:

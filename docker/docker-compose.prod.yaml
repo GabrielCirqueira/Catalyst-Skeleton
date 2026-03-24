@@ -10,6 +10,7 @@ services:
     environment:
       APP_ENV: prod
       APP_DEBUG: "0"
+      TZ: America/Sao_Paulo
     env_file: ../.env
     ports:
       - "127.0.0.1:${DEPLOY_PORT:-8080}:80"
@@ -29,6 +30,8 @@ services:
     container_name: skeleton_database_prod
     restart: unless-stopped
     env_file: ../.env
+    environment:
+      TZ: America/Sao_Paulo
     volumes:
       - db_data_prod:/var/lib/mysql
     healthcheck:
