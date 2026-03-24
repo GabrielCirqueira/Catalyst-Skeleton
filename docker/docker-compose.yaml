@@ -21,7 +21,7 @@ services:
     container_name: skeleton_symfony
     restart: always
     env_file:
-      - ../ports.env
+      - ./ports.env
     ports:
       - "${SUPERVISOR_PORT:-9001}:9001"
     volumes:
@@ -52,7 +52,7 @@ services:
       - ..:/app
     command: sh -c "npm install --legacy-peer-deps && npm run dev"
     env_file:
-      - ../ports.env
+      - ./ports.env
     ports:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
     depends_on:

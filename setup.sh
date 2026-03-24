@@ -51,7 +51,7 @@ is_step_done() {
 # Reset total em caso de erro crítico
 critical_reset() {
   warn "Erro crítico detectado ou solicitado. Realizando limpeza total..."
-  rm -f .env .setup-progress .setup-done ports.env
+  rm -f .env .setup-progress .setup-done docker/ports.env
   rm -rf vendor node_modules
   # Remove chaves JWT (vital pois se o .env mudar, as chaves antigas ficam inválidas)
   rm -rf config/jwt/*.pem 2>/dev/null || true
@@ -220,16 +220,16 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # PASSO 1.5 — Portas do projeto
 # ═══════════════════════════════════════════════════════════════
-if is_step_done "1_5" && [[ -f "ports.env" ]]; then
+if is_step_done "1_5" && [[ -f "docker/ports.env" ]]; then
   step "1.5/9 — Configuração de portas (Restaurado)"
-  BACKEND_PORT=$(grep "^BACKEND_PORT=" ports.env | cut -d= -f2)
-  ok "Portas carregadas do ports.env"
+  BACKEND_PORT=$(grep "^BACKEND_PORT=" docker/ports.env | cut -d= -f2)
+  ok "Portas carregadas do docker/ports.env"
 else
   step "1.5/9 — Configuração de portas"
 
   # Lê valores atuais do ports.env para usar como default
   GET_PORT() {
-    grep "^$1=" ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]'
+    grep "^$1=" docker/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]'
   }
 
   _BACKEND_DEF=$(GET_PORT "BACKEND_PORT")
@@ -279,15 +279,15 @@ else
   fi
   unset _seen_ports _port_labels _port _port_conflict
 
-  # Atualiza o arquivo ports.env
-  if [[ -f "ports.env" ]]; then
-    sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" ports.env
-    sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" ports.env
-    sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" ports.env
-    sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" ports.env
-    ok "Arquivo ports.env atualizado com as novas portas."
+  # Atualiza o arquivo docker/ports.env
+  if [[ -f "docker/ports.env" ]]; then
+    sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" docker/ports.env
+    sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" docker/ports.env
+    sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" docker/ports.env
+    sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" docker/ports.env
+    ok "Arquivo docker/ports.env atualizado com as novas portas."
   else
-    warn "Arquivo ports.env não encontrado. Usando variáveis locais."
+    warn "Arquivo docker/ports.env não encontrado. Usando variáveis locais."
   fi
 
   save_state "BACKEND_PORT" "$BACKEND_PORT"
@@ -317,10 +317,10 @@ check_cmd git
 # Docker Compose (plugin v2 ou standalone v1) com isolamento por projeto (-p)
 if docker compose version &>/dev/null 2>&1; then
   ok "docker compose (plugin v2)"
-  COMPOSE="docker compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file ports.env -f docker/docker-compose.yaml"
+  COMPOSE="docker compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file docker/ports.env -f docker/docker-compose.yaml"
 elif docker-compose version &>/dev/null 2>&1; then
   ok "docker-compose (standalone)"
-  COMPOSE="docker-compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file ports.env -f docker/docker-compose.yaml"
+  COMPOSE="docker-compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file docker/ports.env -f docker/docker-compose.yaml"
 else
   die "docker compose não encontrado. Instale o Docker Desktop ou o plugin compose."
 fi
@@ -667,7 +667,7 @@ echo ""
 echo -e "  ${BOLD}Projeto:${RESET}   ${PROJECT_NAME_DISPLAY}"
 echo -e "  ${BOLD}Backend:${RESET}   http://127.0.0.1:${BACKEND_PORT}"
 echo -e "  ${BOLD}Frontend:${RESET}  http://127.0.0.1:${FRONTEND_PORT}"
-echo -e "  ${BOLD}Banco:${RESET}     127.0.0.1:$(grep "^DATABASE_HOST_PORT=" ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || echo 1013)"
+echo -e "  ${BOLD}Banco:${RESET}     127.0.0.1:$(grep "^DATABASE_HOST_PORT=" docker/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || echo 1013)"
 echo ""
 echo -e "  ${CYAN}Comandos úteis (Makefile):${RESET}"
 echo "   make up-d                   subir containers (background)"

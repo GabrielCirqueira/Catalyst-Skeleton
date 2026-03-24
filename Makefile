@@ -9,7 +9,7 @@ DOCKER_DIR      ?= docker
 CLI_DIR         ?= cli
 DEVOPS_DIR      ?= devops
 PUBLIC_DIR      ?= public
-PORTS_ENV_FILE  ?= ports.env
+PORTS_ENV_FILE  ?= docker/ports.env
 ENV_PROD_FILE   ?= .env
 ENV_EXAMPLE_FILE ?= .env.example
 
