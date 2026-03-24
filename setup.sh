@@ -258,6 +258,27 @@ else
   read -rp "  Porta do Supervisor [$_SUPERVISOR_DEF]: " SUPERVISOR_PORT
   SUPERVISOR_PORT=${SUPERVISOR_PORT:-$_SUPERVISOR_DEF}
 
+  # Valida que todas as portas são únicas entre si
+  declare -A _seen_ports=()
+  declare -A _port_labels=(
+    ["$BACKEND_PORT"]="Backend"
+    ["$FRONTEND_PORT"]="Frontend"
+    ["$DB_PORT"]="Banco de Dados"
+    ["$SUPERVISOR_PORT"]="Supervisor"
+  )
+  _port_conflict=false
+  for _port in "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT"; do
+    if [[ -n "${_seen_ports[$_port]+x}" ]]; then
+      warn "Conflito: a porta $_port foi atribuída a mais de um serviço."
+      _port_conflict=true
+    fi
+    _seen_ports[$_port]=1
+  done
+  if [[ "$_port_conflict" == "true" ]]; then
+    die "Portas duplicadas detectadas. Execute o setup novamente e escolha portas distintas para cada serviço."
+  fi
+  unset _seen_ports _port_labels _port _port_conflict
+
   # Atualiza o arquivo ports.env
   if [[ -f "ports.env" ]]; then
     sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" ports.env
@@ -447,6 +468,8 @@ else
   info "DB_ROOT_PASSWORD gerado: ${DB_ROOT_PASSWORD:0:8}..."
 
   # Copia .env.example → .env e substitui os placeholders
+  # Remove o .env anterior caso exista (pode estar sem permissão de escrita)
+  rm -f .env
   cp .env.example .env
 
   # Substitui ou adiciona APP_SECRET
