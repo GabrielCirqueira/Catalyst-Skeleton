@@ -4,6 +4,8 @@
 
 Catalyst Skeleton é uma suite completa de engenharia que impõe padrões de **Clean Architecture**, **DDD** e **SOLID**. Backend PHP 8.4 + Symfony 7.3 com JSON API. Frontend React 19 + TypeScript como SPA. Tudo containerizado, production-ready desde o primeiro commit.
 
+<img width="1450" height="788" alt="image" src="https://github.com/user-attachments/assets/0e4124c3-34c5-4fea-9eb2-a48411deafcc" />
+
 ---
 
 ## 📅 Histórico de Versões
