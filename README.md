@@ -1,199 +1,124 @@
-# Catalyst Skeleton — Symfony 7 + React + Vite
+# 🚀 Catalyst Skeleton v4.0.0 — Symfony 7.3 & React 19
 
-<img width="1147" height="836" alt="image" src="https://github.com/user-attachments/assets/28e02cb8-297c-4af7-9ba6-1933e0698a0f" />
+**O ponto de partida definitivo para aplicações empresariais sólidas, escaláveis e resilientes.**
 
+Catalyst Skeleton é uma suite completa de engenharia que impõe padrões de **Clean Architecture**, **DDD** e **SOLID**. Backend PHP 8.4 + Symfony 7.3 com JSON API. Frontend React 19 + TypeScript como SPA. Tudo containerizado, production-ready desde o primeiro commit.
 
-Starter moderno integrando Symfony (backend) e React (frontend), com Vite, Mantine UI e tooling de qualidade (ESLint/Prettier, PHPCS, PHPStan). Projetado para dev ágil com foco em performance e boas práticas.
+---
 
-## ✨ Tecnologias Principais
+## 📅 Histórico de Versões
 
-- Symfony 7.3 (PHP 8.4 no container)
-- React 18 + TypeScript
-- Vite 7 (HMR)
-- Mantine 8 (UI)
-- Lucide (ícones)
-- ESLint + Prettier, PHPCS, PHPStan
+O roadmap do Catalyst Skeleton é focado em estabilidade e modernização constante da stack.
 
-## 🚀 Instalação
+| Versão | Data de Lançamento | Destaque Principal |
+| :--- | :--- | :--- |
+| **Skeleton V4** | 23 de março 2026 | **Atual** — Symfony 7.3, React 19, Biome. |
+| **Skeleton V3** | 6 de outubro 2025 | Estabilização de Message Bus e Workers. |
+| **Skeleton V2** | 1 de junho 2025 | Introdução de Shadcn UI e Lucide Icons. |
+| **Skeleton V1** | 30 de janeiro 2025 | Release inicial (Symfony 6.4 + React 18). |
 
-### Pré-requisitos (alternativas)
+---
 
-- Com Docker: Docker Desktop e Docker Compose (recomendado)
-- Sem Docker: PHP 8.4+, Composer 2.6+, Node.js 18+
+> Para documentação técnica detalhada (arquitetura, variáveis de ambiente, DevOps, deploy, logs, etc.) consulte [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).
 
-### Passo a Passo
+---
 
-1. **Clonar o repositório**
-   ```bash
-   git clone https://github.com/GabrielCirqueira/Catalyst-Skeleton.git
-   cd Catalyst-Skeleton
-   ```
+## Pré-requisitos
 
-2. **Instalar dependências PHP**
-   ```bash
-   composer install
-   ```
+| Ferramenta | Verificação |
+| :--- | :--- |
+| Docker + Docker Compose v2 | `docker compose version` |
+| Git | `git --version` |
+| OpenSSL | `openssl version` |
 
-3. **Instalar dependências JavaScript**
-   ```bash
-   npm install
-   # ou com yarn
-   yarn
-   ```
+> Node.js e PHP não precisam estar instalados na máquina host.
 
-4. **Iniciar servidores de desenvolvimento**
-   ```bash
-   # Recomendado: via Docker
-   make up-d
+---
 
-   # Ou localmente
-   npm install && npm run dev
-   php -S localhost:8000 -t public # ou Apache/Nginx local
-   ```
+## 🛠️ Setup Inicial (The Magic Script)
 
-5. **Acessar a aplicação**
-   - Backend: `http://localhost:8000` (configurável via `BACKEND_PORT` em `docker/ports.env`)
-   - Frontend: `http://localhost:5173` (configurável via `FRONTEND_PORT` em `docker/ports.env`)
+O Catalyst Skeleton possui um orquestrador de setup altamente sofisticado que prepara todo o seu ambiente profissional em minutos.
 
-   > Ajuste os valores em `docker/ports.env` para trocar as portas expostas pela stack.
-
-## 🏗️ Estrutura (high-level)
-
-- `web/` — Frontend React (App, layouts, pages, theme)
-- `templates/base.html.twig` — Shell do SPA com tags Vite
-- `src/` — Backend Symfony (controllers, console, kernel)
-- `config/` — Configurações do framework/bundles/rotas
-- `docker-compose.yaml`, `Dockerfile`, `docker/` — Orquestração
-- `cli/` — Scripts de lint/QA e hooks
-- `Makefile` — Comandos de conveniência
-
-## 🔍 Principais Funcionalidades
-
-### Linting e Formatação
-
-- Frontend: `npm run lint:frontend` (ou `lint:frontend:fix`)
-- Backend: `composer lint:php:cs` (ou `composer fix:php`)
-- Tudo: `./cli/run-qa.sh` (ou `npm run lint:all`)
-
-### Frontend
-
-- Componentes funcionais com Hooks
-- Lazy routes (React Router)
-- Tema centralizado (Mantine)
-- Ícones Lucide
-
-## 🛠️ Comandos Úteis
-
-- `make up-d` — sobe a stack Docker
-- `npm run dev` — Vite em modo dev (local)
-- `npm run build` — build de produção
-- `./cli/run-qa.sh` — roda todos os linters
-- `make help` — lista todos os comandos do Makefile
-
-## 📚 Documentação
-
-Para uma visão mais detalhada, consulte:
-
-- Frontend: documentation/frontend.md
-- Backend (Symfony): documentation/backend.md
-- Makefile (comandos): documentation/makefile.md
-- Scripts CLI: documentation/cli.md
-- Lint e formatação: documentation/formatting.md
-- Docker e orquestração: documentation/docker.md
-
-## 🎨 Tema
-
-O tema Mantine inclui uma paleta personalizada `brand` definida em `web/themes/theme.ts`.
-
-```ts
-colors: {
-  brand: {
-      50: '#E6F6F7',
-      100: '#B3E1E4',
-      200: '#80CCCC',
-      300: '#4DB7B3',
-      400: '#26A3A0',
-      500: '#1F8C89',
-      600: '#186F6E',
-      700: '#125355',
-      800: '#0B393B',
-      900: '#041F20',
-  }
-}
+```bash
+bash setup.sh
 ```
 
-### Como usar as cores brand:
-```tsx
-// Exemplo de uso
-<Box bg="brand.100" color="brand.700">
-  <Text>Texto com cor brand</Text>
-</Box>
+### O que o setup faz por você:
 
-<Button colorScheme="brand">Botão Primário</Button>
-```
+1. **Personalização**: Renomeia o projeto em todos os arquivos (`package.json`, namespaces, banners).
+2. **Gestão de Portas**: Permite configurar portas customizadas para evitar conflitos locais.
+3. **Segurança Máxima**: Gera segredos aleatórios (`APP_SECRET`, `JWT_PASSPHRASE`) e senhas únicas de banco.
+4. **Ambiente Isolado**: Cria seu arquivo `.env` configurado com DSNs e URLs corretos.
+5. **Orquestração Docker**: Realiza o build multi-stage e sobe os containers de forma resiliente.
+6. **Instalação de Deps**: Instala dependências PHP (Composer) e JS (NPM) dentro do ambiente isolado.
+7. **Criptografia**: Gera o par de chaves **RS256** (pública/privada) para o subsistema de JWT.
+8. **Sincronização**: Aguarda o banco estar pronto e executa as Migrations automaticamente.
+9. **Health Check**: Valida a saúde final da API antes de declarar o sucesso do setup.
 
-**Dica profissional:** Use `useColorModeValue` para alternar entre cores em light/dark mode:
-```tsx
-const color = useColorModeValue('brand.600', 'brand.300')
-```
+---
 
-## 🛣️ Sistema de Rotas Avançado
+| Serviço | Porta (Host) | Destino |
+| :--- | :--- | :--- |
+| **API Symfony** | `BACKEND_PORT` | [http://localhost:4355](http://localhost:4355) |
+| **Frontend Vite** | `FRONTEND_PORT` | [http://localhost:3453](http://localhost:3453) |
+| **MySQL** | `DATABASE_PORT` | `localhost:2345` |
+| **Supervisor** | `SUPERVISOR_PORT` | [http://localhost:1011](http://localhost:1011) |
 
-### Backend (Symfony)
-```yaml
-# config/routes.yaml
-react_frontend:
-  path: /{reactRouting}
-  controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
-  defaults:
-    template: 'base.html.twig'
-  requirements:
-    reactRouting: ".+"
-```
+> [!TIP]
+> As portas são centralizadas no arquivo `ports.env`. O setup pergunta quais você deseja usar, mas você pode alterá-las a qualquer momento e rodar `make restart`.
 
-Esta configuração permite que:
-- Todas as rotas sejam manipuladas pelo React Router
-- O Symfony sirva apenas o template base para o frontend
-- URLs amigáveis e limpas
+---
 
-### Frontend (React Router)
-Estrutura moderna com lazy loading:
+---
 
-```tsx
-// Exemplo de roteamento lazy-loaded
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route element={<AppLayout />}>
-      <Route 
-        path="/" 
-        lazy={() => import('@app/pages/Home')} 
-      />
-      <Route 
-        path="/about" 
-        lazy={() => import('@app/pages/About')} 
-      />
-      <Route 
-        path="*" 
-        lazy={() => import('@app/pages/NotFound')} 
-      />
-    </Route>
-  )
-)
-```
+## 🛠️ Comandos do dia a dia
 
-**Vantagens:**
-- Carregamento sob demanda (melhor performance)
-- Código dividido automaticamente pelo Vite
-- Fácil manutenção e adição de novas rotas
+| Comando | Descrição |
+| :--- | :--- |
+| `make up-d` | Sobe a stack completa em background |
+| `make down` | Para todos os containers |
+| `make restart` | Reinicia todos os serviços |
+| `make install` | Instala dependências (Composer + NPM) |
+| `make migrate` | Executa migrations pendentes |
+| `make test` | Roda suite completa de testes (PHPUnit) |
+| `make lint-all` | Valida estilo (PHP-CS-Fixer + Biome) |
+| `make bash-backend` | Acessa shell do container Symfony |
 
-## 🤝 Contribuição
+---
 
-1. Faça um fork do projeto
-2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+## 🏗️ Arquitetura (Visão Rápida)
 
-## 📄 Licença
+O Catalyst Skeleton impõe uma separação rigorosa de interesses:
 
-Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+- **Backend**: Baseado em **Services Atômicos** e **DTOs**. A lógica de negócio nunca vaza para o Controller.
+- **Frontend**: Organizado por **Features**. Cada funcionalidade (Auth, User, etc) é um módulo autossucedido.
+- **Padrão Resultado**: Todas as operações de negócio retornam um objeto `Resultado` em vez de lançar exceções.
+
+---
+
+## 📚 Documentação Detalhada
+
+Para uma imersão profunda em cada área do projeto, consulte nossos guias específicos:
+
+- [**Guia de Autenticação**](documentation/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
+- [**Guia de Frontend**](documentation/FRONTEND.md): React 19, Shadcn/ui e "No useEffect".
+- [**Guia de Backend**](documentation/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
+- [**Arquitetura e Padrões**](documentation/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
+- [**Testes Automatizados**](documentation/TESTING.md): PHPUnit (Unit & Integration).
+- [**Mensageria (Async)**](documentation/MESSENGER.md): Symfony Messenger e Workers.
+- [**Docker e DevOps**](documentation/DOCKER.md): Infraestrutura e multi-stage builds.
+- [**Makefile e CLI**](documentation/MAKEFILE.md): Comandos de produtividade e Scaffolding.
+- [**Lint e Formatação**](documentation/FORMATTING.md): Biome e PHP-CS-Fixer.
+
+---
+
+## 🚀 Produção e DevOps
+
+Desenvolvido para ser *Production Ready*:
+- **Deploy**: Script `devops/deploy.sh` com zero-downtime aproximado e healthchecks.
+- **Segurança**: Nginx configurado com TLS 1.3 e headers de segurança (HSTS, CSP).
+- **Monitoramento**: Painel Supervisor para gestão de workers e logs estruturados.
+
+---
+
+*Para uma visão técnica global e variáveis de ambiente, veja [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).*

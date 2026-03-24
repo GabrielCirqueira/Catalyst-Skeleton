@@ -10,9 +10,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Lato', 'Poppins', 'system-ui', 'sans-serif'],
-        heading: ['Poppins', 'Lato', 'system-ui', 'sans-serif'],
-        body: ['Lato', 'Poppins', 'system-ui', 'sans-serif'],
+        sans: ['Lato', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+        body: ['Lato', 'system-ui', 'sans-serif'],
+        poppins: ['Poppins', 'system-ui', 'sans-serif'],
+        lato: ['Lato', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         normal: '400',
@@ -33,26 +35,60 @@ module.exports = {
         '4xl': '2.25rem',
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        none: '0',
+        sm: 'calc(var(--radius) - 4px)',    // ~0.25rem
+        DEFAULT: 'var(--radius)',             // ~0.5rem
+        md: 'var(--radius)',                  // ~0.5rem
+        lg: 'calc(var(--radius) + 2px)',      // ~0.625rem
+        xl: 'calc(var(--radius) + 6px)',      // ~0.875rem  (cards, dropdowns)
+        '2xl': 'calc(var(--radius) + 12px)',  // ~1.25rem   (modais, hero)
+        '3xl': '1.5rem',
+        full: '9999px',
       },
       colors: {
+        /* shadcn/ui CSS-variable aliases */
+        foreground: "hsl(var(--foreground))",
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+
         brand: {
-          50: '#e6f7f3',
-          100: '#c0ede3',
-          200: '#97e2d1',
-          300: '#6dd7be',
-          400: '#45cdae',
-          500: '#1cc39d',
-          600: '#11967c',
-          700: '#0d6d5b',
-          800: '#08493f',
-          900: '#042623',
-          950: '#021514',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         },
 
         primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
           50: '#e8faf7',
           100: '#c4f0e7',
           200: '#9ee6d6',
@@ -67,6 +103,8 @@ module.exports = {
         },
 
         secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
@@ -132,19 +170,20 @@ module.exports = {
           950: '#172554',
         },
         typography: {
-          50: '#fafafa',
-          100: '#f5f5f5',
-          200: '#e5e5e5',
-          300: '#d4d4d4',
-          400: '#a3a3a3',
-          500: '#737373',
-          600: '#525252',
-          700: '#404040',
-          800: '#262626',
-          900: '#171717',
-          950: '#0a0a0a',
+          50: '#ffffff',
+          100: '#f9fafb',
+          200: '#f3f4f6',
+          300: '#e5e7eb',
+          400: '#d1d5db',
+          500: '#9ca3af',
+          600: '#6b7280',
+          700: '#4b5563',
+          800: '#374151',
+          900: '#1f2937',
+          950: '#111827',
         },
         background: {
+          DEFAULT: "hsl(var(--background))",
           50: '#f9fafb',
           100: '#f3f4f6',
           200: '#e5e7eb',

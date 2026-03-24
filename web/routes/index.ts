@@ -1,0 +1,1 @@
+export { RotaProtegida } from './RotaProtegida'

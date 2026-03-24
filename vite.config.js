@@ -29,9 +29,13 @@ export default defineConfig((config) => ({
   },
     resolve: {
     alias: [
-      // project sources live under `web/` in this repo
       { find: "@layouts", replacement: path.resolve(__dirname, "web", "layouts") },
       { find: "@pages", replacement: path.resolve(__dirname, "web", "pages") },
+      { find: "@config", replacement: path.resolve(__dirname, "web", "config") },
+      { find: "@stores", replacement: path.resolve(__dirname, "web", "stores") },
+      { find: "@routes", replacement: path.resolve(__dirname, "web", "routes") },
+      { find: "@features", replacement: path.resolve(__dirname, "web", "features") },
+      { find: "@shared", replacement: path.resolve(__dirname, "web", "shared") },
       { find: "@shadcn/lib", replacement: path.resolve(__dirname, "web", "shadcn", "lib") },
       { find: "@shadcn/hooks", replacement: path.resolve(__dirname, "web", "shadcn", "hooks") },
       {

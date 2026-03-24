@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Script CLI para executar comandos Symfony console no container
+# Uso: cli/sf <comando>
+# Exemplo: cli/sf cache:clear
+# Exemplo: cli/sf make:entity
+# Exemplo: cli/sf doctrine:migrations:migrate
+
+if [ $# -eq 0 ]; then
+    # Se não passar argumentos, lista os comandos disponíveis
+    docker compose exec symfony php bin/console list
+else
+    # Executa o comando Symfony console
+    docker compose exec symfony php bin/console "$@"
+fi

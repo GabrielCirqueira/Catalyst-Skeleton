@@ -1,0 +1,46 @@
+name: catalyst-skeleton-prod
+
+services:
+  symfony:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile.prod
+    container_name: skeleton_symfony_prod
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+    env_file: ../.env
+    ports:
+      - "127.0.0.1:${DEPLOY_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [app_net]
+
+  database:
+    image: mysql:8.3
+    container_name: skeleton_database_prod
+    restart: unless-stopped
+    env_file: ../.env
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [app_net]
+
+volumes:
+  db_data_prod:
+
+networks:
+  app_net:
+    driver: bridge

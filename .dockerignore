@@ -1,0 +1,42 @@
+# .dockerignore — Exclui arquivos desnecessários do build context do Docker.
+# Reduz o tamanho do contexto enviado ao daemon e evita invalidar o cache
+# por causa de arquivos gerados (.git, node_modules, etc.)
+
+# Controle de versão
+.git
+.gitignore
+.gitattributes
+
+node_modules/
+vendor/
+
+# Cache e artefatos gerados
+var/
+public/build/
+public/assets/
+*.tsbuildinfo
+
+# Ambiente local (nunca deve entrar na imagem)
+.env.local
+.env.*.local
+.env
+
+# Devops e documentação (não precisam estar na imagem da aplicação)
+devops/
+documentation/
+leading/
+
+# Ferramentas de qualidade de código (usadas só em dev)
+.phpunit.result.cache
+phpunit.xml
+.php-cs-fixer.cache
+.php-cs-fixer.php
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Outros
+*.log
+README.md

@@ -8,4 +8,5 @@ framework:
 when@prod:
     framework:
         asset_mapper:
+            enabled: false
             missing_import_mode: warn
