@@ -7,6 +7,16 @@ security:
             entity:
                 class: App\Entity\Usuario
                 property: username
+        app_in_memory_provider:
+            memory:
+                users:
+                    master-cli:
+                        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
+                        password: '' # Sem senha, pois usamos JWT
+    
+        app_chained_provider:
+            chain:
+                providers: [app_in_memory_provider, app_usuario_provider]
 
     firewalls:
         dev:
@@ -16,6 +26,7 @@ security:
         login:
             pattern: ^/api/auth/login
             stateless: true
+            provider: app_chained_provider
             json_login:
                 check_path: /api/auth/login
                 username_path: username
@@ -29,14 +40,14 @@ security:
         refresh:
             pattern: ^/api/token/refresh
             stateless: true
-            provider: app_usuario_provider
+            provider: app_chained_provider
             refresh_jwt:
                 check_path: /api/token/refresh
 
         api:
             pattern: ^/api
             stateless: true
-            provider: app_usuario_provider
+            provider: app_chained_provider
             jwt: ~
 
         main:

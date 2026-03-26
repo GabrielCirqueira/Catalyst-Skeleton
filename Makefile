@@ -28,7 +28,7 @@ EXEC_BACKEND  = $(COMPOSE_DEV_CMD) exec --user $(DEV_UID):$(DEV_GID) symfony
 EXEC_FRONTEND = $(COMPOSE_DEV_CMD) exec --user $(DEV_UID):$(DEV_GID) vite-react
 PROD_SYMFONY  = $(COMPOSE_PROD_CMD) exec -T symfony
 
-.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-tsx fix-all fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage db-reset cache-clear check-status db-restore db-shell docker-clean system-info dev-logs prod-logs-all monitor update-prod
+.PHONY: help build up up-d down restart install install-backend install-frontend composer npm lint-php lint-tsx lint-all fix-php fix-tsx fix-all fix-php-diff logs-backend logs-frontend logs-scheduler bash-backend bash-frontend supervisor-shell test test-unit test-integration test-coverage db-reset jwt-master cache-clear check-status db-restore db-shell docker-clean system-info dev-logs prod-logs-all monitor update-prod
 
 help: ## List available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-24s %s\n", $$1, $$2}'
@@ -121,6 +121,9 @@ rollback: ## Revert to previous migration version local
 
 db-reset: ## Clear DB, Rebuild and Migrate (Fresh State)
 	bash $(CLI_DIR)/db-reset.sh
+
+jwt-master: ## Generate a full-access JWT token (Master)
+	bash $(CLI_DIR)/jwt-full-access.sh
 
 db-shell: ## Access MySQL shell inside container
 	bash $(DEVOPS_DIR)/db-shell.sh
