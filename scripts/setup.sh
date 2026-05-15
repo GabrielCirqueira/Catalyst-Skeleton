@@ -24,6 +24,9 @@ cd "$ROOT_DIR"
 # ─── Configuração de Estado (Persistence) ─────────────────────────────────────
 STATE_FILE=".tooling/.setup-progress"
 
+# Cria o diretório .tooling se não existir
+mkdir -p .tooling
+
 # Carrega estado anterior se existir
 if [[ -f "$STATE_FILE" ]]; then
   # shellcheck disable=SC1090
