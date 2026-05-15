@@ -24,9 +24,6 @@ cd "$ROOT_DIR"
 # ─── Configuração de Estado (Persistence) ─────────────────────────────────────
 STATE_FILE=".tooling/.setup-progress"
 
-# Cria o diretório .tooling se não existir
-mkdir -p .tooling
-
 # Carrega estado anterior se existir
 if [[ -f "$STATE_FILE" ]]; then
   # shellcheck disable=SC1090
@@ -36,6 +33,7 @@ fi
 # Salva variável no arquivo de estado
 save_state() {
   local key="$1"; local value="$2"
+  mkdir -p "$(dirname "$STATE_FILE")"
   # Remove se já existir para evitar duplicatas
   if [[ -f "$STATE_FILE" ]]; then
     sed -i "/^export ${key}=/d" "$STATE_FILE" 2>/dev/null || true
