@@ -1,11 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+const path = require('path')
+const root = path.resolve(__dirname, '..', '..')
+
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./index.html",
-    "./web/**/*.{js,jsx,ts,tsx}",
-    "./templates/**/*.twig",
-    "./assets/**/*.{js,ts,jsx,tsx,css}",
+    path.join(root, "index.html"),
+    path.join(root, "web/**/*.{js,jsx,ts,tsx}"),
+    path.join(root, "templates/**/*.twig"),
+    path.join(root, "assets/**/*.{js,ts,jsx,tsx,css}"),
   ],
   theme: {
     extend: {

@@ -22,6 +22,9 @@ export default defineConfig((config) => ({
     },
     sourcemap: config.mode === 'development',
   },
+  css: {
+    postcss: path.resolve(__dirname, 'postcss.config.cjs'),
+  },
   server: {
     cors: true,
     hmr: {
