@@ -22,7 +22,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 # ─── Configuração de Estado (Persistence) ─────────────────────────────────────
-STATE_FILE=".tooling/.setup-progress"
+STATE_FILE="$ROOT_DIR/.tooling/.setup-progress"
+SETUP_DONE_FILE="$ROOT_DIR/.tooling/.setup-done"
 
 # Carrega estado anterior se existir
 if [[ -f "$STATE_FILE" ]]; then
@@ -56,7 +57,7 @@ is_step_done() {
 # Reset total em caso de erro crítico
 critical_reset() {
   warn "Erro crítico detectado ou solicitado. Realizando limpeza total..."
-  rm -f .env .tooling/.setup-progress .tooling/.setup-done devops/ports.env
+  rm -f .env "$STATE_FILE" "$SETUP_DONE_FILE" devops/ports.env
   rm -rf vendor node_modules
   # Remove chaves JWT (vital pois se o .env mudar, as chaves antigas ficam inválidas)
   rm -rf config/jwt/*.pem 2>/dev/null || true
@@ -111,7 +112,6 @@ retry_cmd() {
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
 
 # Helper: Aguarda container estar em estado RUNNING (não restarting)
 wait_for_container() {
@@ -142,7 +142,7 @@ echo "  Execute apenas uma vez, após clonar o repositório."
 echo ""
 
 # ─── Verificar se já foi executado ────────────────────────────────────────────
-if [[ -f ".tooling/.setup-done" ]]; then
+if [[ -f "$SETUP_DONE_FILE" ]]; then
   echo -e "${YELLOW}  ⚠  Este projeto já foi configurado (arquivo .tooling/.setup-done encontrado).${RESET}"
   echo ""
   read -rp "  Deseja reconfigurar do zero? [s/N]: " RERUN
@@ -657,11 +657,11 @@ done
 
 # Marca concluído
 mark_step "DONE"
-echo "setup concluído em $(date)" > .tooling/.setup-done
-echo "project_name=${PROJECT_NAME_DISPLAY}" >> .tooling/.setup-done
-echo "project_slug=${PROJECT_NAME_SLUG}" >> .tooling/.setup-done
-echo "backend_url=http://127.0.0.1:${BACKEND_PORT}" >> .tooling/.setup-done
-echo "frontend_url=http://127.0.0.1:${FRONTEND_PORT}" >> .tooling/.setup-done
+echo "setup concluído em $(date)" > "$SETUP_DONE_FILE"
+echo "project_name=${PROJECT_NAME_DISPLAY}" >> "$SETUP_DONE_FILE"
+echo "project_slug=${PROJECT_NAME_SLUG}" >> "$SETUP_DONE_FILE"
+echo "backend_url=http://127.0.0.1:${BACKEND_PORT}" >> "$SETUP_DONE_FILE"
+echo "frontend_url=http://127.0.0.1:${FRONTEND_PORT}" >> "$SETUP_DONE_FILE"
 
 # ─── Resumo final ─────────────────────────────────────────────────────────────
 echo ""
