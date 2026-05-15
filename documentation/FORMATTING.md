@@ -5,7 +5,7 @@ O projeto Catalyst Skeleton mantém um alto rigor de qualidade de código atrav�
 ## Frontend (Biome 1.9)
 Utilizamos o **Biome** como substituto moderno para ESLint, Prettier e organizador de imports. O Biome é radicalmente mais rápido e unifica toda a análise em um único binário.
 
-### Configuração (`biome.json`)
+### Configuração (`.tooling/frontend/biome.json`)
 - **Linter**: Ativa regras essenciais de React 19 e acessibilidade.
 - **Formatter**: Configurado para indentação via espaços (2), aspas simples e **sem ponto e vírgula** no final das linhas (estilo limpo).
 - **Import Sorting**: Organiza automaticamente os imports por ordem alfabética e por grupos (nativos, externos, aliases `@/`).
@@ -24,7 +24,7 @@ O backend segue o padrão **PSR-12** com adições para PHP 8.4 (modernizações
 - **Regras**: PSR-12 unificado + modernizações (arrow functions, typed properties).
 - **Comandos**: `make lint-php` (dry-run) ou `make fix-php` (fix real).
 
-### Análise Estática (`phpstan.neon`)
+### Análise Estática (`.tooling/quality/phpstan.neon`)
 - **Nível**: 6 (Análise forte de tipos, detecção de loops e caminhos de código inalcançáveis).
 - **Alvo**: Todo o diretório `src/` e `tests/`.
 - **Comando**: `./cli/phpstan.sh`.

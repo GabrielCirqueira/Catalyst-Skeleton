@@ -1,0 +1,123 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "jsx": "react-jsx",
+    "sourceMap": true,
+    "noLib": false,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
+    "incremental": true,
+    "baseUrl": "../../",
+    "paths": {
+      "@app/*": [
+        "web/*"
+      ],
+      "@/*": [
+        "web/*"
+      ],
+      "@layouts": [
+        "web/layouts/index.ts"
+      ],
+      "@layouts/*": [
+        "web/layouts/*"
+      ],
+      "@pages": [
+        "web/pages/index.ts"
+      ],
+      "@pages/*": [
+        "web/pages/*"
+      ],
+      "@config": [
+        "web/config"
+      ],
+      "@config/*": [
+        "web/config/*"
+      ],
+      "@stores": [
+        "web/stores/index.ts"
+      ],
+      "@stores/*": [
+        "web/stores/*"
+      ],
+      "@routes": [
+        "web/routes/index.ts"
+      ],
+      "@routes/*": [
+        "web/routes/*"
+      ],
+      "@features/*": [
+        "web/features/*"
+      ],
+      "@shared/*": [
+        "web/shared/*"
+      ],
+      "@shadcn/lib": [
+        "web/shadcn/lib/utils"
+      ],
+      "@shadcn/lib/*": [
+        "web/shadcn/lib/*"
+      ],
+      "@shadcn/hooks/*": [
+        "web/shadcn/hooks/*"
+      ],
+      "@shadcn/layout": [
+        "web/shadcn/components/ui/layout/index.ts"
+      ],
+      "@shadcn/layout/*": [
+        "web/shadcn/components/ui/layout/*"
+      ],
+      "@shadcn/typography": [
+        "web/shadcn/components/ui/typography"
+      ],
+      "@shadcn/typography/*": [
+        "web/shadcn/components/ui/typography/*"
+      ],
+      "@shadcn/components/ui/*": [
+        "web/shadcn/components/ui/*"
+      ],
+      "@shadcn/components/*": [
+        "web/shadcn/components/ui/*"
+      ],
+      "@shadcn/*": [
+        "web/shadcn/components/ui/*"
+      ],
+      "@shadcn": [
+        "web/shadcn/components/ui"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ],
+    "lib": [
+      "DOM",
+      "ESNext"
+    ]
+  },
+  "include": [
+    "../../web/**/*.ts",
+    "../../web/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "vendor",
+    "public/build"
+  ]
+}

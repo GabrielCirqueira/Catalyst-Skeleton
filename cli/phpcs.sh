@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 VENDOR_BIN="$ROOT_DIR/vendor/bin/phpcs"
-STANDARD_FILE="$ROOT_DIR/phpcs.xml"
+STANDARD_FILE="$ROOT_DIR/.tooling/quality/phpcs.xml"
 
 if [[ ! -x "$VENDOR_BIN" ]]; then
   echo "PHP_CodeSniffer not installed. Run 'composer install'." >&2
@@ -37,7 +37,7 @@ run_in_docker() {
   DEV_UID=$(id -u)
   DEV_GID=$(id -g)
 
-  exec env DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" "${COMPOSE[@]}" --env-file ports.env -f docker-compose.yaml run --rm --user "$DEV_UID:$DEV_GID" --env HOME=/tmp/git-home symfony php vendor/bin/phpcs --standard=/var/www/html/phpcs.xml "$@"
+  exec env DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" "${COMPOSE[@]}" --env-file ports.env -f docker-compose.yaml run --rm --user "$DEV_UID:$DEV_GID" --env HOME=/tmp/git-home symfony php vendor/bin/phpcs --standard=/var/www/html/.tooling/quality/phpcs.xml "$@"
 }
 
 if (( PHPVID == 0 || PHPVID < MIN_VERSION )); then

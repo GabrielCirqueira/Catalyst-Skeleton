@@ -31,7 +31,6 @@ final class JwtMasterCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Gerador de Token JWT Master (Full Access)');
 
-        // 1. Verificações de Ambiente
         $io->section('Passo 1: Verificações de Configuração');
         
         if (!$this->verificarConfiguracao($io)) {
@@ -40,13 +39,11 @@ final class JwtMasterCommand extends Command
 
         $io->success('Ambiente verificado e configurado corretamente.');
 
-        // 2. Geração do Token
         $io->section('Passo 2: Geração do Token');
 
         try {
-            // Criamos o payload do token manualmente para garantir o acesso total e o TTL
             $now = new \DateTimeImmutable();
-            $exp = $now->getTimestamp() + (30 * 60); // 30 minutos em segundos
+            $exp = $now->getTimestamp() + (30 * 60);
 
             $payload = [
                 'username' => 'master-cli',
@@ -55,7 +52,6 @@ final class JwtMasterCommand extends Command
                 'exp' => $exp,
             ];
 
-            // Gera o token assinado usando o encoder do bundle
             $token = $this->jwtEncoder->encode($payload);
             
             $io->info('Identificador: master-cli');
@@ -78,7 +74,6 @@ final class JwtMasterCommand extends Command
     {
         $erros = [];
 
-        // Lemos diretamente do ambiente, sincronizado com o config/packages/lexik_jwt_authentication.yaml
         $privateKeyPath = $_ENV['JWT_SECRET_KEY'] ?? getenv('JWT_SECRET_KEY');
         $publicKeyPath = $_ENV['JWT_PUBLIC_KEY'] ?? getenv('JWT_PUBLIC_KEY');
         $passphrase = $_ENV['JWT_PASSPHRASE'] ?? getenv('JWT_PASSPHRASE');

@@ -2,7 +2,7 @@
 # setup.sh — Configuração inicial do projeto Catalyst Skeleton
 #
 # Execute UMA VEZ após clonar o repositório:
-#   bash setup.sh
+#   bash scripts/setup.sh
 #
 # O que este script faz:
 #   1. Pergunta o nome do projeto e substitui "skeleton"/"Catalyst Skeleton" em todo o código
@@ -17,8 +17,12 @@
 
 set -euo pipefail
 
+# Navegar para a raiz do projeto
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
 # ─── Configuração de Estado (Persistence) ─────────────────────────────────────
-STATE_FILE=".setup-progress"
+STATE_FILE=".tooling/.setup-progress"
 
 # Carrega estado anterior se existir
 if [[ -f "$STATE_FILE" ]]; then
@@ -51,7 +55,7 @@ is_step_done() {
 # Reset total em caso de erro crítico
 critical_reset() {
   warn "Erro crítico detectado ou solicitado. Realizando limpeza total..."
-  rm -f .env .setup-progress .setup-done docker/ports.env
+  rm -f .env .tooling/.setup-progress .tooling/.setup-done docker/ports.env
   rm -rf vendor node_modules
   # Remove chaves JWT (vital pois se o .env mudar, as chaves antigas ficam inválidas)
   rm -rf config/jwt/*.pem 2>/dev/null || true
@@ -137,8 +141,8 @@ echo "  Execute apenas uma vez, após clonar o repositório."
 echo ""
 
 # ─── Verificar se já foi executado ────────────────────────────────────────────
-if [[ -f ".setup-done" ]]; then
-  echo -e "${YELLOW}  ⚠  Este projeto já foi configurado (arquivo .setup-done encontrado).${RESET}"
+if [[ -f ".tooling/.setup-done" ]]; then
+  echo -e "${YELLOW}  ⚠  Este projeto já foi configurado (arquivo .tooling/.setup-done encontrado).${RESET}"
   echo ""
   read -rp "  Deseja reconfigurar do zero? [s/N]: " RERUN
   if [[ ! "${RERUN,,}" =~ ^s$ ]]; then
@@ -351,7 +355,7 @@ else
       -not -path "./var/cache/*" \
       -not -path "./var/log/*" \
       -not -path "./public/build/*" \
-      -not -path "./.setup-done" \
+      -not -path "./.tooling/.setup-done" \
       -not -name "setup.sh" \
       -type f \
       \( \
@@ -652,11 +656,11 @@ done
 
 # Marca concluído
 mark_step "DONE"
-echo "setup concluído em $(date)" > .setup-done
-echo "project_name=${PROJECT_NAME_DISPLAY}" >> .setup-done
-echo "project_slug=${PROJECT_NAME_SLUG}" >> .setup-done
-echo "backend_url=http://127.0.0.1:${BACKEND_PORT}" >> .setup-done
-echo "frontend_url=http://127.0.0.1:${FRONTEND_PORT}" >> .setup-done
+echo "setup concluído em $(date)" > .tooling/.setup-done
+echo "project_name=${PROJECT_NAME_DISPLAY}" >> .tooling/.setup-done
+echo "project_slug=${PROJECT_NAME_SLUG}" >> .tooling/.setup-done
+echo "backend_url=http://127.0.0.1:${BACKEND_PORT}" >> .tooling/.setup-done
+echo "frontend_url=http://127.0.0.1:${FRONTEND_PORT}" >> .tooling/.setup-done
 
 # ─── Resumo final ─────────────────────────────────────────────────────────────
 echo ""

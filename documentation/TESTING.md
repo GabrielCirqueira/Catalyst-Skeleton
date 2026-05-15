@@ -3,7 +3,7 @@
 O Catalyst Skeleton privilegia a estabilidade do código através de uma bateria rigorosa de testes unitários e de integração utilizando o **PHPUnit 9.x**.
 
 ## Estrutura de Testes (`tests/`)
-Divididos em duas suites principais no `phpunit.xml.dist`:
+Divididos em duas suites principais no `.tooling/quality/phpunit.xml.dist`:
 
 ### 1. Testes Unitários (`tests/Unit/`)
 - Módulos de lógica pura.

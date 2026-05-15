@@ -42,7 +42,7 @@ O roadmap do Catalyst Skeleton é focado em estabilidade e modernização consta
 O Catalyst Skeleton possui um orquestrador de setup altamente sofisticado que prepara todo o seu ambiente profissional em minutos.
 
 ```bash
-bash setup.sh
+bash scripts/setup.sh
 ```
 
 ### O que o setup faz por você:

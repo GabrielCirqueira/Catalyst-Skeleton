@@ -43,6 +43,7 @@ yarn-error.log
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
+/.tooling/quality/.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
 ###> lexik/jwt-authentication-bundle ###

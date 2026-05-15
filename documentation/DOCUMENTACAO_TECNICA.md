@@ -64,7 +64,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | React Hook Form | 7.66 | Formulários performáticos com validação Zod |
 | Zod | 4.1 | Validação de schemas (forms, respostas de API) |
 | Shadcn / Radix UI | — | Componentes UI acessíveis e sem-opinião de estilo |
-| Tailwind CSS | 3.4 | Utilitários CSS — configuração customizada em `tailwind.config.cjs` |
+| Tailwind CSS | 3.4 | Utilitários CSS — configuração customizada em `.tooling/frontend/tailwind.config.cjs` |
 | Framer Motion | 12.23 | Animações declarativas |
 | Sonner | 2.0 | Sistema de toasts/notificações |
 | Recharts | 2.15 | Gráficos reativos baseados em SVG |
@@ -187,20 +187,18 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── shared/               # Componentes, hooks e utils reutilizáveis
 │   └── stores/useAuthStore.ts    # Estado de autenticação (Zustand + persist)
 │
-├── biome.json                # Configuração do Biome (linter/formatter frontend)
-├── commitlint.config.js      # Regras Conventional Commits
+├── .tooling/                  # Todas as configurações centralizadas
+│   ├── frontend/             # Configurações do frontend (biome, vite, tailwind, etc)
+│   ├── quality/              # Configurações de qualidade (phpstan, phpcs, phpunit)
+│   ├── backend/              # Configurações backend (importmap)
+│   └── git/                  # Configurações git (commitlint)
 ├── composer.json             # Dependências PHP + autoloading PSR-4
 ├── Makefile                  # Atalhos de comandos
 ├── package.json              # Dependências Node + scripts npm
-├── phpcs.xml                 # Regras PHP_CodeSniffer (PSR-12 customizado)
-├── phpstan.neon              # Configuração PHPStan (nível 6)
-├── phpunit.xml.dist          # Configuração PHPUnit (suites Unit + Integration)
 ├── ports.env                 # Mapeamento de portas do ambiente local
-├── setup.sh                  # Script de bootstrap inicial completo
+├── scripts/setup.sh          # Script de bootstrap inicial completo
 ├── supervisord.conf          # Configuração do Supervisor (workers Messenger)
-├── tailwind.config.cjs       # Configuração Tailwind (cores, fontes, breakpoints)
-├── tsconfig.json             # Configuração TypeScript (strict mode + aliases)
-└── vite.config.js            # Configuração Vite (HMR, aliases, proxy)
+└── STRUCTURE.md              # Documentação da estrutura de pastas
 ```
 
 ---
@@ -552,7 +550,7 @@ export function RotaProtegida() {
 
 ### 6.5 Aliases de Importação (Vite + TypeScript)
 
-Configurados em `vite.config.js` e `tsconfig.json`:
+Configurados em `.tooling/frontend/vite.config.js` e `.tooling/frontend/tsconfig.json`:
 
 | Alias | Resolve para |
 | :--- | :--- |
@@ -982,13 +980,13 @@ Agende o worker via `MainScheduler` para rodar a cada 30 segundos ou conforme a 
 
 | Ferramenta | Comando | O que faz |
 | :--- | :--- | :--- |
-| PHPStan | `make phpstan` | Análise estática, nível 6 (configurado em `phpstan.neon`) |
-| PHP_CodeSniffer | `make phpcs` | Verifica estilo PSR-12 customizado (`phpcs.xml`) |
+| PHPStan | `make phpstan` | Análise estática, nível 6 (configurado em `.tooling/quality/phpstan.neon`) |
+| PHP_CodeSniffer | `make phpcs` | Verifica estilo PSR-12 customizado (`.tooling/quality/phpcs.xml`) |
 | PHP-CS-Fixer | `make phpcbf` | Corrige automaticamente violações de estilo |
-| PHPUnit | `make test` | Executa suites Unit e Integration (`phpunit.xml.dist`) |
+| PHPUnit | `make test` | Executa suites Unit e Integration (`.tooling/quality/phpunit.xml.dist`) |
 | Todos | `make qa` | Roda PHPStan + PHPCS + PHPUnit em sequência |
 
-**Suites de teste (`phpunit.xml.dist`):**
+**Suites de teste (`.tooling/quality/phpunit.xml.dist`):**
 - `Unit` — testa classes isoladas (Services, ValueObjects, Specifications) sem I/O
 - `Integration` — testa com banco de dados real
 
@@ -1004,7 +1002,7 @@ Agende o worker via `MainScheduler` para rodar a cada 30 segundos ou conforme a 
 
 ### Conventional Commits
 
-Configurado em `commitlint.config.js`. Formato obrigatório:
+Configurado em `.tooling/git/commitlint.config.js`. Formato obrigatório:
 
 ```
 <tipo>(escopo-opcional): <descrição no imperativo>

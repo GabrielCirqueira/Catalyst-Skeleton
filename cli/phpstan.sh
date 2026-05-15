@@ -42,7 +42,7 @@ run_in_docker() {
   compose_run=("${COMPOSE[@]}" --env-file ports.env -f docker-compose.yaml run --rm)
 
   local phpstan_args
-  phpstan_args=(analyse --memory-limit=1G --configuration=phpstan.neon)
+  phpstan_args=(analyse --memory-limit=1G --configuration=.tooling/quality/phpstan.neon)
   if [[ $# -gt 0 ]]; then
     phpstan_args+=("$@")
   fi
@@ -66,7 +66,7 @@ fi
 export SKIP_COMPOSER_PLATFORM_CHECK=1
 export COMPOSER_DISABLE_RUNTIME_PLATFORM_CHECK=1
 
-ANALYSE_ARGS=(analyse --memory-limit=1G --configuration=phpstan.neon)
+ANALYSE_ARGS=(analyse --memory-limit=1G --configuration=.tooling/quality/phpstan.neon)
 if [[ $# -gt 0 ]]; then
   ANALYSE_ARGS+=("$@")
 fi

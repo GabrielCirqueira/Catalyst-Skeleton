@@ -39,7 +39,7 @@ Utilizamos o padrão **Remix Router** no `web/App.tsx`:
 - Guardas de rota (ex: `RotaProtegida.tsx`) interceptam acessos baseados no estado do `useAuthStore`.
 
 ## Aliases de Importação
-Configurados no `tsconfig.json` para evitar caminhos relativos complexos:
+Configurados no `.tooling/frontend/tsconfig.json` para evitar caminhos relativos complexos:
 - `@/`: `web/`
 - `@features/`: `web/features/`
 - `@shared/`: `web/shared/`

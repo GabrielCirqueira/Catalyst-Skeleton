@@ -1,0 +1,5 @@
+setup concluído em qui 26 mar 2026 16:05:27 -03
+project_name=Catalyst Skeleton
+project_slug=skeleton
+backend_url=http://127.0.0.1:1010
+frontend_url=http://127.0.0.1:1012

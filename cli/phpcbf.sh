@@ -10,8 +10,8 @@ COMPOSE_FILE=${COMPOSE_FILE:-"docker-compose.yaml"}
 COMPOSE_ENV_FILE=${COMPOSE_ENV_FILE:-"ports.env"}
 COMPOSE_CMD=( $COMPOSE_BIN --env-file "$COMPOSE_ENV_FILE" -f "$COMPOSE_FILE" )
 
-STANDARD_FILE_HOST="$ROOT_DIR/phpcs.xml"
-STANDARD_FILE_CONT="/var/www/html/phpcs.xml"
+STANDARD_FILE_HOST="$ROOT_DIR/.tooling/quality/phpcs.xml"
+STANDARD_FILE_CONT="/var/www/html/.tooling/quality/phpcs.xml"
 
 declare -a TARGETS
 if [[ $# -gt 0 ]]; then
@@ -35,7 +35,7 @@ done
 # Important: use project-relative paths in the file list.
 # Absolute paths like /var/www/html/... conflict with ruleset exclude-patterns
 # (e.g., "var/") because they match the leading "/var/".
-${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc 'printf "%s\n" "$@" > /tmp/phpcbf-files.txt && echo "[phpcbf] File list:" && cat /tmp/phpcbf-files.txt && php vendor/bin/phpcbf -p -s -vv --extensions=php --standard=/var/www/html/phpcs.xml --file-list=/tmp/phpcbf-files.txt' sh "${TARGETS[@]}"
+${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc 'printf "%s\n" "$@" > /tmp/phpcbf-files.txt && echo "[phpcbf] File list:" && cat /tmp/phpcbf-files.txt && php vendor/bin/phpcbf -p -s -vv --extensions=php --standard=/var/www/html/.tooling/quality/phpcs.xml --file-list=/tmp/phpcbf-files.txt' sh "${TARGETS[@]}"
 status=$?
 
 if [[ $status -ne 0 ]]; then

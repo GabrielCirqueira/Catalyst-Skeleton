@@ -75,7 +75,7 @@ done
 # Absolute paths like /var/www/html/... conflict with the ruleset
 # exclude-pattern "var/" (which would then match the leading "/var/")
 # and cause PHPCS/PHPCBF to exclude everything under /var/.
-${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc 'printf "%s\n" "$@" > /tmp/phpcbf-files.txt && echo "[phpcbf] File list:" && cat /tmp/phpcbf-files.txt && php vendor/bin/phpcbf -p -s -vv --extensions=php --standard=/var/www/html/phpcs.xml --file-list=/tmp/phpcbf-files.txt' sh "${targets[@]}"
+${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc 'printf "%s\n" "$@" > /tmp/phpcbf-files.txt && echo "[phpcbf] File list:" && cat /tmp/phpcbf-files.txt && php vendor/bin/phpcbf -p -s -vv --extensions=php --standard=/var/www/html/.tooling/quality/phpcs.xml --file-list=/tmp/phpcbf-files.txt' sh "${targets[@]}"
 status=$?
 
 if [[ $status -ne 0 ]]; then
