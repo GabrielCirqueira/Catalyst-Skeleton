@@ -13,7 +13,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.prod.yaml"
+COMPOSE="docker compose -f $PROJECT_ROOT/devops/docker-compose.prod.yaml"
 SYMFONY="skeleton_symfony_prod"
 DATABASE="skeleton_database_prod"
 TAIL="${LOG_TAIL:-100}"

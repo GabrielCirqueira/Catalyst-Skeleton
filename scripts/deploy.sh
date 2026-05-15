@@ -69,7 +69,7 @@ log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 gen_hex()  { openssl rand -hex "${1:-32}"; }
 gen_pass() { openssl rand -base64 "${1:-24}" | tr -d '/+='; }
 
-COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.prod.yaml"
+COMPOSE="docker compose -f $PROJECT_ROOT/devops/docker-compose.prod.yaml"
 ENV_FILE="$PROJECT_ROOT/.env"
 
 LOG_DIR="/var/log/deploys"
@@ -567,7 +567,7 @@ if [[ "${CONFIGURE_NGINX,,}" =~ ^s$ ]]; then
     echo -e "  ${CYAN}DOMAIN=${DEPLOY_DOMAIN}${RESET}"
     echo -e "  ${CYAN}PORT=${DEPLOY_PORT}${RESET}"
     echo -e "  ${CYAN}sed -e \"s|__DOMAIN__|\${DOMAIN}|g\" -e \"s|__PORT__|\${PORT}|g\" \\${RESET}"
-    echo -e "  ${CYAN}    docker/nginx/prod.conf > /etc/nginx/sites-available/\$DOMAIN${RESET}"
+    echo -e "  ${CYAN}    devops/nginx/prod.conf > /etc/nginx/sites-available/\$DOMAIN${RESET}"
     echo -e "  ${CYAN}ln -sf /etc/nginx/sites-available/\$DOMAIN /etc/nginx/sites-enabled/\$DOMAIN${RESET}"
     echo -e "  ${CYAN}nginx -t && systemctl reload nginx${RESET}"
     echo -e "  ${CYAN}certbot --nginx -d \$DOMAIN --email ${DEPLOY_EMAIL} --agree-tos --no-eff-email${RESET}"
@@ -577,13 +577,13 @@ if [[ "${CONFIGURE_NGINX,,}" =~ ^s$ ]]; then
     NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
     NGINX_DEST="${NGINX_SITES_AVAILABLE}/${DEPLOY_DOMAIN}"
 
-    info "Aplicando template docker/nginx/prod.conf..."
+    info "Aplicando template devops/nginx/prod.conf..."
     # Remove versão anterior (pode ter SSL hardcoded de tentativas anteriores)
     rm -f "$NGINX_DEST"
     sed \
       -e "s|__DOMAIN__|${DEPLOY_DOMAIN}|g" \
       -e "s|__PORT__|${DEPLOY_PORT}|g" \
-      "$PROJECT_ROOT/docker/nginx/prod.conf" \
+      "$PROJECT_ROOT/devops/nginx/prod.conf" \
       > "$NGINX_DEST"
     ok "Config gerado: $NGINX_DEST"
 
@@ -651,7 +651,7 @@ if [[ "${CONFIGURE_NGINX,,}" =~ ^s$ ]]; then
     cat "$NGINX_DEST"
     echo "  ────────────────────────────────────────────────────────────"
     echo ""
-    warn "Lembrete: o arquivo docker/nginx/prod.conf no repositório é o"
+    warn "Lembrete: o arquivo devops/nginx/prod.conf no repositório é o"
     warn "template original (com placeholders). O arquivo gerado acima"
     warn "($NGINX_DEST) é a versão final para este servidor."
     warn "Não commite o arquivo gerado — ele contém caminhos absolutos."

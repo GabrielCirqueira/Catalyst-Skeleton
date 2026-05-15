@@ -118,15 +118,6 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │       └── sentry.yaml                        # Configuração do Sentry (DSN via .env)
 │
 ├── devops/
-│   ├── deploy.sh             # Deploy completo em produção
-│   ├── update.sh             # Atualização incremental (sem downtime)
-│   ├── backup.sh             # Backup do banco MySQL
-│   ├── monitor.sh            # Verificação de saúde dos serviços
-│   ├── logs-dev.sh           # Tail de logs em desenvolvimento
-│   ├── logs-prod.sh          # Tail de logs em produção
-│   └── README.md             # Instruções de uso dos scripts DevOps
-│
-├── docker/
 │   ├── docker-compose.yaml       # Stack de desenvolvimento
 │   ├── docker-compose.prod.yaml  # Stack de produção (multi-stage)
 │   ├── bootstrap.sh              # Startup da aplicação (JWT keys, permissões)
@@ -1072,7 +1063,7 @@ Script interativo que gera a estrutura completa de uma nova feature. Para a feat
 
 ## 11. DevOps e Produção
 
-### 11.1 Dockerfile Multi-stage (`docker/php/Dockerfile`)
+### 11.1 Dockerfile Multi-stage (`devops/php/Dockerfile`)
 
 ```
 base    →  php:8.4-fpm-alpine + extensões (pdo_mysql, zip, intl, opcache)
@@ -1084,9 +1075,9 @@ base    →  php:8.4-fpm-alpine + extensões (pdo_mysql, zip, intl, opcache)
   └── prod     →  copia vendor/ do builder; USER www-data; sem Xdebug; OPcache agressivo
 ```
 
-O stage `prod` é a imagem final em `docker-compose.prod.yaml`.
+O stage `prod` é a imagem final em `devops/docker-compose.prod.yaml`.
 
-### 11.2 `docker/bootstrap.sh` — Startup do Container
+### 11.2 `devops/bootstrap.sh` — Startup do Container
 
 Executado como entrypoint do container PHP:
 
@@ -1108,9 +1099,9 @@ MySQL 8.3
 Supervisor → Workers Messenger (2 processos, auto-restart)
 ```
 
-Definida em `docker/docker-compose.prod.yaml`.
+Definida em `devops/docker-compose.prod.yaml`.
 
-### 11.4 Nginx de Produção (`docker/nginx/prod.conf`)
+### 11.4 Nginx de Produção (`devops/nginx/prod.conf`)
 
 - TLS 1.2 e 1.3 com certificados Let's Encrypt (Certbot)
 - HTTP/2 habilitado

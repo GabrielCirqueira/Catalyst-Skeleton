@@ -21,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.prod.yaml"
+COMPOSE="docker compose -f $PROJECT_ROOT/devops/docker-compose.prod.yaml"
 APP_CONTAINER="skeleton_symfony_prod"
 LOG_DIR="/var/log/deploys"
 LOG_FILE="$LOG_DIR/update-$(date +%Y%m%d-%H%M%S).log"
@@ -136,7 +136,7 @@ fi
 log "── [3/4] Imagem Docker ──"
 
 DEPS_CHANGED=$(git diff "$BEFORE_HASH" "$AFTER_HASH" --name-only 2>/dev/null \
-  | grep -E "composer\.(json|lock)|Dockerfile|docker/php|docker/docker-compose" || true)
+  | grep -E "composer\.(json|lock)|Dockerfile|devops/php|devops/docker-compose" || true)
 
 if [[ -n "$DEPS_CHANGED" ]] || [[ "$BEFORE_HASH" == "$AFTER_HASH" ]]; then
   if [[ -n "$DEPS_CHANGED" ]]; then

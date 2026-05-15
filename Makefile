@@ -5,18 +5,18 @@ DEV_UID := $(shell id -u)
 DEV_GID := $(shell id -g)
 
 # --- DIRETÓRIOS E ARQUIVOS ---
-DOCKER_DIR      ?= docker
+DEVOPS_DIR      ?= devops
 CLI_DIR         ?= cli
 SCRIPTS_DIR     ?= scripts
 PUBLIC_DIR      ?= public
-PORTS_ENV_FILE  ?= docker/ports.env
+PORTS_ENV_FILE  ?= devops/ports.env
 ENV_PROD_FILE   ?= .env
 ENV_EXAMPLE_FILE ?= .tooling/env/.env.example
 
 # --- DOCKER CONFIG ---
 COMPOSE          ?= docker compose
-COMPOSE_DEV_FILE ?= $(DOCKER_DIR)/docker-compose.yaml
-COMPOSE_PROD_FILE ?= $(DOCKER_DIR)/docker-compose.prod.yaml
+COMPOSE_DEV_FILE ?= $(DEVOPS_DIR)/docker-compose.yaml
+COMPOSE_PROD_FILE ?= $(DEVOPS_DIR)/docker-compose.prod.yaml
 
 # --- COMANDOS DOCKER ---
 COMPOSE_ENV      = DEV_UID=$(DEV_UID) DEV_GID=$(DEV_GID)

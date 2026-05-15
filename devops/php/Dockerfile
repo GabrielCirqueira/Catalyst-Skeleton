@@ -12,9 +12,9 @@ RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
     && (pecl install xdebug || pecl install xdebug || pecl install xdebug) \
     && docker-php-ext-enable xdebug
 
-COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-COPY docker/php/php.dev.ini /usr/local/etc/php/conf.d/php.ini
+COPY devops/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY devops/php/php.dev.ini /usr/local/etc/php/conf.d/php.ini
 
-COPY --chmod=755 docker/bootstrap.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 devops/bootstrap.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]

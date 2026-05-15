@@ -55,13 +55,13 @@ is_step_done() {
 # Reset total em caso de erro crítico
 critical_reset() {
   warn "Erro crítico detectado ou solicitado. Realizando limpeza total..."
-  rm -f .env .tooling/.setup-progress .tooling/.setup-done docker/ports.env
+  rm -f .env .tooling/.setup-progress .tooling/.setup-done devops/ports.env
   rm -rf vendor node_modules
   # Remove chaves JWT (vital pois se o .env mudar, as chaves antigas ficam inválidas)
   rm -rf config/jwt/*.pem 2>/dev/null || true
   # Para os containers se possível
-  if command -v docker &>/dev/null && [[ -f "docker/docker-compose.yaml" ]]; then
-    docker compose -f docker/docker-compose.yaml down --volumes --remove-orphans 2>/dev/null || true
+  if command -v docker &>/dev/null && [[ -f "devops/docker-compose.yaml" ]]; then
+    docker compose -f devops/docker-compose.yaml down --volumes --remove-orphans 2>/dev/null || true
   fi
   info "Limpeza concluída. Reiniciando setup..."
   exec bash "$0"
@@ -224,16 +224,16 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # PASSO 1.5 — Portas do projeto
 # ═══════════════════════════════════════════════════════════════
-if is_step_done "1_5" && [[ -f "docker/ports.env" ]]; then
+if is_step_done "1_5" && [[ -f "devops/ports.env" ]]; then
   step "1.5/9 — Configuração de portas (Restaurado)"
-  BACKEND_PORT=$(grep "^BACKEND_PORT=" docker/ports.env | cut -d= -f2)
-  ok "Portas carregadas do docker/ports.env"
+  BACKEND_PORT=$(grep "^BACKEND_PORT=" devops/ports.env | cut -d= -f2)
+  ok "Portas carregadas do devops/ports.env"
 else
   step "1.5/9 — Configuração de portas"
 
   # Lê valores atuais do ports.env para usar como default
   GET_PORT() {
-    grep "^$1=" docker/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]'
+    grep "^$1=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]'
   }
 
   _BACKEND_DEF=$(GET_PORT "BACKEND_PORT")
@@ -283,15 +283,15 @@ else
   fi
   unset _seen_ports _port_labels _port _port_conflict
 
-  # Atualiza o arquivo docker/ports.env
-  if [[ -f "docker/ports.env" ]]; then
-    sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" docker/ports.env
-    sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" docker/ports.env
-    sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" docker/ports.env
-    sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" docker/ports.env
-    ok "Arquivo docker/ports.env atualizado com as novas portas."
+  # Atualiza o arquivo devops/ports.env
+  if [[ -f "devops/ports.env" ]]; then
+    sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" devops/ports.env
+    sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" devops/ports.env
+    sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" devops/ports.env
+    sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" devops/ports.env
+    ok "Arquivo devops/ports.env atualizado com as novas portas."
   else
-    warn "Arquivo docker/ports.env não encontrado. Usando variáveis locais."
+    warn "Arquivo devops/ports.env não encontrado. Usando variáveis locais."
   fi
 
   save_state "BACKEND_PORT" "$BACKEND_PORT"
@@ -321,10 +321,10 @@ check_cmd git
 # Docker Compose (plugin v2 ou standalone v1) com isolamento por projeto (-p)
 if docker compose version &>/dev/null 2>&1; then
   ok "docker compose (plugin v2)"
-  COMPOSE="docker compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file docker/ports.env -f docker/docker-compose.yaml"
+  COMPOSE="docker compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file devops/ports.env -f devops/docker-compose.yaml"
 elif docker-compose version &>/dev/null 2>&1; then
   ok "docker-compose (standalone)"
-  COMPOSE="docker-compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file docker/ports.env -f docker/docker-compose.yaml"
+  COMPOSE="docker-compose -p ${PROJECT_NAME_SLUG:-skeleton} --env-file devops/ports.env -f devops/docker-compose.yaml"
 else
   die "docker compose não encontrado. Instale o Docker Desktop ou o plugin compose."
 fi
@@ -503,12 +503,12 @@ else
     sed -i "s|^VITE_API_URL=.*|VITE_API_URL=http://localhost:${BACKEND_PORT}|" .env
   fi
 
-  # Atualiza docker/docker-compose.yaml com a nova senha do banco
-  if [[ -f "docker/docker-compose.yaml" ]]; then
-    sed -i "s|MYSQL_ROOT_PASSWORD:.*|MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}|" docker/docker-compose.yaml
-    sed -i "s|MYSQL_PASSWORD:.*|MYSQL_PASSWORD: ${DB_PASSWORD}|" docker/docker-compose.yaml
-    sed -i "s|MYSQL_USER:.*|MYSQL_USER: ${PROJECT_NAME_SLUG}|" docker/docker-compose.yaml
-    sed -i "s|MYSQL_DATABASE:.*|MYSQL_DATABASE: ${PROJECT_NAME_SLUG}|" docker/docker-compose.yaml
+  # Atualiza devops/docker-compose.yaml com a nova senha do banco
+  if [[ -f "devops/docker-compose.yaml" ]]; then
+    sed -i "s|MYSQL_ROOT_PASSWORD:.*|MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}|" devops/docker-compose.yaml
+    sed -i "s|MYSQL_PASSWORD:.*|MYSQL_PASSWORD: ${DB_PASSWORD}|" devops/docker-compose.yaml
+    sed -i "s|MYSQL_USER:.*|MYSQL_USER: ${PROJECT_NAME_SLUG}|" devops/docker-compose.yaml
+    sed -i "s|MYSQL_DATABASE:.*|MYSQL_DATABASE: ${PROJECT_NAME_SLUG}|" devops/docker-compose.yaml
     
     # Atualiza DATABASE_URL no .env para usar a nova senha e o host 'database'
     NEW_DB_URL="mysql://${PROJECT_NAME_SLUG}:${DB_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
@@ -520,7 +520,7 @@ else
     NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
     sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
     ok "DATABASE_URL atualizado no .env.test com credenciais de root"
-    ok "docker/docker-compose.yaml atualizado e DATABASE_URL configurado."
+    ok "devops/docker-compose.yaml atualizado e DATABASE_URL configurado."
   fi
   mark_step "4"
 fi
@@ -671,7 +671,7 @@ echo ""
 echo -e "  ${BOLD}Projeto:${RESET}   ${PROJECT_NAME_DISPLAY}"
 echo -e "  ${BOLD}Backend:${RESET}   http://127.0.0.1:${BACKEND_PORT}"
 echo -e "  ${BOLD}Frontend:${RESET}  http://127.0.0.1:${FRONTEND_PORT}"
-echo -e "  ${BOLD}Banco:${RESET}     127.0.0.1:$(grep "^DATABASE_HOST_PORT=" docker/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || echo 1013)"
+echo -e "  ${BOLD}Banco:${RESET}     127.0.0.1:$(grep "^DATABASE_HOST_PORT=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || echo 1013)"
 echo ""
 echo -e "  ${CYAN}Comandos úteis (Makefile):${RESET}"
 echo "   make up-d                   subir containers (background)"
@@ -682,7 +682,7 @@ echo ""
 # Garante que exibição funcione mesmo em restauração (pegando do .env se necessário)
 S_SECRET=${APP_SECRET:-$(grep "^APP_SECRET=" .env 2>/dev/null | cut -d= -f2 || echo "n/a")}
 S_JWT=${JWT_PASSPHRASE:-$(grep "^JWT_PASSPHRASE=" .env 2>/dev/null | cut -d= -f2 || echo "n/a")}
-S_DB_PASS=${DB_PASSWORD:-$(grep "MYSQL_PASSWORD:" docker/docker-compose.yaml 2>/dev/null | awk '{print $NF}' || echo "n/a")}
+S_DB_PASS=${DB_PASSWORD:-$(grep "MYSQL_PASSWORD:" devops/docker-compose.yaml 2>/dev/null | awk '{print $NF}' || echo "n/a")}
 
 echo -e "  ${YELLOW}Credenciais geradas (salvas no .env — não commite!):${RESET}"
 echo "   APP_SECRET:       ${S_SECRET:0:16}..."

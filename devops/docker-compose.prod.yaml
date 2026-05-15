@@ -4,7 +4,7 @@ services:
   symfony:
     build:
       context: ..
-      dockerfile: docker/php/Dockerfile.prod
+      dockerfile: devops/php/Dockerfile.prod
     container_name: skeleton_symfony_prod
     restart: unless-stopped
     environment:

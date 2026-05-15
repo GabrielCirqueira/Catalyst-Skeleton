@@ -359,7 +359,7 @@ RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var \
     && chmod -R 775 var
 
-COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY devops/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
 CMD ["apache2-foreground"]

@@ -6,7 +6,7 @@
 # O Nginx do host faz proxy_pass para a porta mapeada (ex: 127.0.0.1:8080:80).
 #
 # Build feito pelo devops/deploy.sh via docker compose build.
-# Para build manual: docker build -f docker/php/Dockerfile.prod -t catalyst-prod .
+# Para build manual: docker build -f devops/php/Dockerfile.prod -t catalyst-prod .
 # ──────────────────────────────────────────────────────────────────────────────
 
 # --- Builder: instala dependências PHP sem pacotes de dev ---
@@ -46,16 +46,16 @@ RUN apk add --no-cache \
 WORKDIR /var/www/html
 
 # Configurações PHP de produção
-COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/php.ini
+COPY devops/php/php.prod.ini /usr/local/etc/php/conf.d/php.ini
 
 # Pool PHP-FPM: clear_env=no para que os workers herdem as variáveis do container
-COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY devops/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Nginx interno: escuta na 80 e passa para php-fpm em 127.0.0.1:9000
-COPY docker/php/nginx-internal.conf /etc/nginx/http.d/default.conf
+COPY devops/php/nginx-internal.conf /etc/nginx/http.d/default.conf
 
 # Supervisord: gerencia nginx + php-fpm como processos filhos
-COPY docker/php/supervisord-prod.conf /etc/supervisord-prod.conf
+COPY devops/php/supervisord-prod.conf /etc/supervisord-prod.conf
 
 # Copia a aplicação compilada pelo builder
 COPY --from=builder --chown=www-data:www-data /app /var/www/html
@@ -68,7 +68,7 @@ RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
 
 # bootstrap.sh roda antes do supervisord:
 # gera JWT keys, aguarda DB, roda migrations, aquece cache
-COPY --chmod=755 docker/bootstrap.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 devops/bootstrap.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

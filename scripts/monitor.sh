@@ -12,7 +12,7 @@ SERVICES=("symfony" "database" "nginx")
 WEBHOOK_URL="${SLACK_WEBHOOK_URL}"
 
 for SERVICE in "${SERVICES[@]}"; do
-    STATUS=$(docker compose -f "$PROJECT_ROOT/docker/docker-compose.prod.yaml" ps --format json "skeleton_${SERVICE}_prod" | jq -r '.[0].Health // .[0].State')
+    STATUS=$(docker compose -f "$PROJECT_ROOT/devops/docker-compose.prod.yaml" ps --format json "skeleton_${SERVICE}_prod" | jq -r '.[0].Health // .[0].State')
     
     if [[ "$STATUS" != "healthy" && "$STATUS" != "running" ]]; then
         echo "🚨 Alerta: $SERVICE está com status $STATUS"

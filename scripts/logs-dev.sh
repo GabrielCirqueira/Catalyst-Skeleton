@@ -17,7 +17,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-COMPOSE="docker compose -f $PROJECT_ROOT/docker/docker-compose.yaml"
+COMPOSE="docker compose -f $PROJECT_ROOT/devops/docker-compose.yaml"
 SYMFONY="skeleton_symfony"
 NGINX="skeleton_nginx"
 DATABASE="skeleton_database"
@@ -42,7 +42,7 @@ _check_container() {
   if ! docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
     echo ""
     echo "  ⚠️  Container '$name' não está rodando."
-    echo "  Inicie com: make dev  (ou: docker compose -f docker/docker-compose.yaml up -d)"
+    echo "  Inicie com: make dev  (ou: docker compose -f devops/docker-compose.yaml up -d)"
     echo ""
     read -rp "  [Enter para voltar]"
     return 1

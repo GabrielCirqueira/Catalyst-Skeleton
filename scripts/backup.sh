@@ -12,7 +12,7 @@ FILENAME="$BACKUP_DIR/db_$TIMESTAMP.sql.gz"
 
 mkdir -p "$BACKUP_DIR"
 
-docker compose -f "$PROJECT_ROOT/docker/docker-compose.prod.yaml" exec -T database \
+docker compose -f "$PROJECT_ROOT/devops/docker-compose.prod.yaml" exec -T database \
     sh -c 'mysqldump -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE' \
     | gzip > "$FILENAME"
 

@@ -15,13 +15,12 @@ A raiz foi organizada para manter apenas arquivos essenciais e pastas principais
 ├── 📂 bin/                  # Executáveis (console, phpunit)
 ├── 📂 cli/                  # 🔥 Comandos rápidos (uso diário)
 ├── 📂 config/               # Configurações Symfony (bundles, services)
-├── 📂 devops/               # (Apenas symlink .env.prod.example)
-├── 📂 docker/               # Dockerfiles e compose
+├── 📂 devops/               # Dockerfiles e compose + configurações
 ├── 📂 documentation/        # Documentação técnica detalhada
 ├── 📂 guides/               # Guias práticos e padrões de desenvolvimento
 ├── 📂 migrations/           # Migrations do Doctrine
 ├── 📂 public/               # Entry point web (index.php)
-├── 📂 scripts/              # 📜 Processos grandes (uso esporádico)
+├── 📂 scripts/              # 📜 Processos grandes (uso espodrádico)
 ├── 📂 src/                  # Código-fonte PHP/Symfony
 ├── 📂 templates/            # Templates Twig
 ├── 📂 tests/                # Testes PHPUnit

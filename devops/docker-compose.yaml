@@ -17,7 +17,7 @@ services:
   symfony:
     build:
       context: ..
-      dockerfile: docker/php/Dockerfile
+      dockerfile: devops/php/Dockerfile
       target: dev
     container_name: skeleton_symfony
     restart: always
@@ -49,7 +49,7 @@ services:
   vite-react:
     build:
       context: ..
-      dockerfile: docker/vite/Dockerfile
+      dockerfile: devops/vite/Dockerfile
     container_name: skeleton_vite_react
     working_dir: /app
     user: "${DEV_UID:-1000}:${DEV_GID:-1000}"

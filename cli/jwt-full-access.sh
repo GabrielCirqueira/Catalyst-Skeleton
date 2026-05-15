@@ -17,10 +17,10 @@ if [ ! -f ".env" ]; then
 fi
 
 # 2. Verifica se o Docker está rodando e o container symfony está ativo
-if ! docker compose --env-file docker/ports.env -f docker/docker-compose.yaml ps symfony --status running | grep -q "symfony"; then
+if ! docker compose --env-file devops/ports.env -f devops/docker-compose.yaml ps symfony --status running | grep -q "symfony"; then
     echo -e "${RED}Erro: O container 'symfony' não está rodando. Inicie o projeto com docker compose up.${NC}"
     exit 1
 fi
 
 # 3. Executa o comando Symfony console dentro do container
-docker compose --env-file docker/ports.env -f docker/docker-compose.yaml exec symfony php bin/console app:jwt:master
+docker compose --env-file devops/ports.env -f devops/docker-compose.yaml exec symfony php bin/console app:jwt:master
