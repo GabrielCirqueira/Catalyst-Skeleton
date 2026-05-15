@@ -23,6 +23,7 @@ export default defineConfig((config) => ({
     sourcemap: config.mode === 'development',
   },
   server: {
+    cors: true,
     hmr: {
       host: 'localhost',
       port: frontendPort,
