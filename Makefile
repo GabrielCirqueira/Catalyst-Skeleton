@@ -188,3 +188,8 @@ ssl-renew: ## Renew SSL certificates
 
 setup-prod-env: ## Cria .env na raiz a partir de .tooling/env/.env.prod.example
 	@test -f $(ENV_PROD_FILE) || (cp .tooling/env/.env.prod.example $(ENV_PROD_FILE) && echo "⚠️  Configure o $(ENV_PROD_FILE) antes de continuar!")
+
+push: ## Push changes to remote repository (alias for git push)
+	git add .
+	git commit -m "feat: significant updates to the system"
+	git push

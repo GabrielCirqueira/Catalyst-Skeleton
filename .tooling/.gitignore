@@ -1,0 +1,7 @@
+###> gerados automaticamente ###
+*.tsbuildinfo
+/.setup-done
+/.deploy-done
+/.setup-progress
+/.deploy-progress
+###< gerados automaticamente ###
