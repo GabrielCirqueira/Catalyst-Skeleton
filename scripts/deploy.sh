@@ -1,8 +1,8 @@
 #!/bin/bash
-# devops/deploy.sh — Primeiro deploy em produção (execute na VPS)
+# scripts/deploy.sh — Primeiro deploy em produção (execute na VPS)
 #
 # Uso (na VPS, a partir da raiz do projeto):
-#   bash devops/deploy.sh
+#   bash scripts/deploy.sh
 #
 # Pré-requisitos na VPS (apenas):
 #   - Docker Engine com plugin compose
@@ -23,7 +23,7 @@
 # Retomada automática: se o script falhar, ao rodar novamente ele continua
 # de onde parou graças ao arquivo .deploy-progress.
 #
-# Para atualizações incrementais após o primeiro deploy: bash devops/update.sh
+# Para atualizações incrementais após o primeiro deploy: bash scripts/update.sh
 
 set -euo pipefail
 
@@ -145,7 +145,7 @@ log "Deploy iniciado (PID: $$, Log: $LOG_FILE)"
 if [[ -f "$PROJECT_ROOT/.deploy-done" ]]; then
   echo -e "${YELLOW}  ⚠  Este servidor já possui um deploy concluído (.deploy-done encontrado).${RESET}"
   echo ""
-  echo -e "  Para atualizar o projeto use: ${BOLD}bash devops/update.sh${RESET}"
+  echo -e "  Para atualizar o projeto use: ${BOLD}bash scripts/update.sh${RESET}"
   echo ""
   read -rp "  Deseja refazer o deploy do zero? [s/N]: " RERUN
   if [[ ! "${RERUN,,}" =~ ^s$ ]]; then
@@ -298,7 +298,7 @@ else
 
   # Monta o .env de produção completo
   cat > "$ENV_FILE" <<ENV
-# Gerado automaticamente por devops/deploy.sh em $(date)
+# Gerado automaticamente por scripts/deploy.sh em $(date)
 # NÃO commite este arquivo — ele está no .gitignore
 
 # ── Symfony ───────────────────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 MAILER_DSN=null://null
 
 # ── Configuração operacional do deploy ───────────────────────────────────────
-# Lidas pelo devops/update.sh para saber a porta e branch sem depender de
+# Lidas pelo scripts/update.sh para saber a porta e branch sem depender de
 # arquivos temporários (.deploy-progress é apagado após o deploy).
 DEPLOY_PORT=${DEPLOY_PORT}
 DEPLOY_DOMAIN=${DEPLOY_DOMAIN}
@@ -679,8 +679,8 @@ echo ""
 echo -e "  ${BOLD}${CYAN}Arquitetura em produção:${RESET}"
 echo -e "  Internet → Nginx do host (80/443) → container HTTP (127.0.0.1:${DEPLOY_PORT})"
 echo ""
-echo -e "  ${CYAN}Próximas atualizações:${RESET}  bash devops/update.sh"
-echo -e "  ${CYAN}Logs:${RESET}                   bash devops/logs-prod.sh"
+echo -e "  ${CYAN}Próximas atualizações:${RESET}  bash scripts/update.sh"
+echo -e "  ${CYAN}Logs:${RESET}                   bash scripts/logs-prod.sh"
 echo -e "  ${CYAN}Backup do banco:${RESET}         bash devops/backup.sh"
 echo -e "  ${CYAN}Monitorar:${RESET}               bash devops/monitor.sh"
 echo ""

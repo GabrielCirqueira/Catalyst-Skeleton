@@ -453,8 +453,8 @@ else
   done
   ok "Portas verificadas"
 
-  if [[ ! -f ".env.example" ]]; then
-    die "Arquivo .env.example não encontrado. O repositório pode estar corrompido."
+  if [[ ! -f ".tooling/env/.env.example" ]]; then
+    die "Arquivo .tooling/env/.env.example não encontrado. O repositório pode estar corrompido."
   fi
 
   # Gera valores aleatórios seguros
@@ -471,10 +471,10 @@ else
   info "DB_PASSWORD gerado:      ${DB_PASSWORD:0:8}..."
   info "DB_ROOT_PASSWORD gerado: ${DB_ROOT_PASSWORD:0:8}..."
 
-  # Copia .env.example → .env e substitui os placeholders
+  # Copia .tooling/env/.env.example → .env e substitui os placeholders
   # Remove o .env anterior caso exista (pode estar sem permissão de escrita)
   rm -f .env
-  cp .env.example .env
+  cp .tooling/env/.env.example .env
 
   # Substitui ou adiciona APP_SECRET
   if grep -q "^APP_SECRET=" .env; then
@@ -515,11 +515,11 @@ else
     # Escapa o '&' para não ser interpretado pelo sed como o match completo
     sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_DB_URL//&/\\&}\"|" .env
     
-    if [[ -f ".env.test" ]]; then
-      NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
-      sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
-      ok "DATABASE_URL atualizado no .env.test com credenciais de root"
-    fi
+    # Copia .tooling/env/.env.test → .env.test e atualiza DATABASE_URL para testes
+    cp .tooling/env/.env.test .env.test
+    NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
+    sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
+    ok "DATABASE_URL atualizado no .env.test com credenciais de root"
     ok "docker/docker-compose.yaml atualizado e DATABASE_URL configurado."
   fi
   mark_step "4"
@@ -677,7 +677,7 @@ echo -e "  ${CYAN}Comandos úteis (Makefile):${RESET}"
 echo "   make up-d                   subir containers (background)"
 echo "   make down                   parar containers"
 echo "   make help                   ver todos os comandos disponíveis"
-echo "   bash devops/logs-dev.sh     menu interativo de logs"
+echo "   bash scripts/logs-dev.sh     menu interativo de logs"
 echo ""
 # Garante que exibição funcione mesmo em restauração (pegando do .env se necessário)
 S_SECRET=${APP_SECRET:-$(grep "^APP_SECRET=" .env 2>/dev/null | cut -d= -f2 || echo "n/a")}

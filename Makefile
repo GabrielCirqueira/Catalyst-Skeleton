@@ -7,11 +7,11 @@ DEV_GID := $(shell id -g)
 # --- DIRETÓRIOS E ARQUIVOS ---
 DOCKER_DIR      ?= docker
 CLI_DIR         ?= cli
-DEVOPS_DIR      ?= devops
+SCRIPTS_DIR     ?= scripts
 PUBLIC_DIR      ?= public
 PORTS_ENV_FILE  ?= docker/ports.env
 ENV_PROD_FILE   ?= .env
-ENV_EXAMPLE_FILE ?= .env.example
+ENV_EXAMPLE_FILE ?= .tooling/env/.env.example
 
 # --- DOCKER CONFIG ---
 COMPOSE          ?= docker compose
@@ -126,37 +126,37 @@ jwt-master: ## Generate a full-access JWT token (Master)
 	bash $(CLI_DIR)/jwt-full-access.sh
 
 db-shell: ## Access MySQL shell inside container
-	bash $(DEVOPS_DIR)/db-shell.sh
+	bash $(SCRIPTS_DIR)/db-shell.sh
 
 db-restore: ## Restore backup (ARGS="file.sql")
-	bash $(DEVOPS_DIR)/db-restore.sh $(if $(ARGS),$(ARGS),"")
+	bash $(SCRIPTS_DIR)/db-restore.sh $(if $(ARGS),$(ARGS),"")
 
 # --- MONITORAMENTO E DIAGNÓSTICO ---
 check-status: ## Run health checks on services
 	bash $(CLI_DIR)/check-status.sh
 
 system-info: ## Monitor Docker resources and disk usage
-	bash $(DEVOPS_DIR)/system-info.sh
+	bash $(SCRIPTS_DIR)/system-info.sh
 
 monitor: ## Detailed monitoring for local environment
-	bash $(DEVOPS_DIR)/monitor.sh
+	bash $(SCRIPTS_DIR)/monitor.sh
 
 dev-logs: ## View all logs for development environment
-	bash $(DEVOPS_DIR)/logs-dev.sh
+	bash $(SCRIPTS_DIR)/logs-dev.sh
 
 # --- MANUTENÇÃO ---
 cache-clear: ## Clear Cache and Logs for dev environment
 	bash $(CLI_DIR)/cache-clear.sh
 
 docker-clean: ## Remove unused Docker resources (Prune)
-	bash $(DEVOPS_DIR)/docker-clean.sh
+	bash $(SCRIPTS_DIR)/docker-clean.sh
 
 # --- PRODUÇÃO ---
-deploy: ## Build images and deploy in production (alias for devops/deploy.sh)
-	bash $(DEVOPS_DIR)/deploy.sh
+deploy: ## Build images and deploy in production (alias for scripts/deploy.sh)
+	bash $(SCRIPTS_DIR)/deploy.sh
 
 update-prod: ## Update production environment
-	bash $(DEVOPS_DIR)/update.sh
+	bash $(SCRIPTS_DIR)/update.sh
 
 migrate-prod: ## Run migrations in production
 	$(PROD_SYMFONY) php bin/console doctrine:migrations:migrate --no-interaction --env=prod
@@ -168,7 +168,7 @@ prod-logs: ## Monitor production logs (Basic)
 	$(COMPOSE_PROD_CMD) logs -f --tail=100
 
 prod-logs-all: ## Monitor production logs (Full Script)
-	bash $(DEVOPS_DIR)/logs-prod.sh
+	bash $(SCRIPTS_DIR)/logs-prod.sh
 
 prod-shell: ## Open shell in production symfony
 	$(COMPOSE_PROD_CMD) exec symfony sh
@@ -180,11 +180,11 @@ cache-clear-prod: ## Clear production cache
 	$(PROD_SYMFONY) php bin/console cache:clear --env=prod
 
 backup-db: ## Generate database backup with rotation
-	bash $(DEVOPS_DIR)/backup.sh
+	bash $(SCRIPTS_DIR)/backup.sh
 
 ssl-renew: ## Renew SSL certificates
 	$(COMPOSE_PROD_CMD) run --rm certbot renew
 	$(COMPOSE_PROD_CMD) exec nginx nginx -s reload
 
-setup-prod-env: ## Cria .env na raiz a partir de devops/.env.prod.example
-	@test -f $(ENV_PROD_FILE) || (cp devops/.env.prod.example $(ENV_PROD_FILE) && echo "⚠️  Configure o $(ENV_PROD_FILE) antes de continuar!")
+setup-prod-env: ## Cria .env na raiz a partir de .tooling/env/.env.prod.example
+	@test -f $(ENV_PROD_FILE) || (cp .tooling/env/.env.prod.example $(ENV_PROD_FILE) && echo "⚠️  Configure o $(ENV_PROD_FILE) antes de continuar!")

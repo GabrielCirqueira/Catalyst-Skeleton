@@ -1,5 +1,5 @@
 #!/bin/bash
-# devops/logs-prod.sh — Visualizador de logs do ambiente de produção
+# scripts/logs-prod.sh — Visualizador de logs do ambiente de produção
 #
 # Arquitetura de logs em prod:
 #   - Nginx (interno ao container) → stdout do container (via supervisord)
@@ -8,8 +8,8 @@
 #   - MySQL                       → stderr do container database
 #
 # Uso:
-#   bash devops/logs-prod.sh          menu interativo
-#   bash devops/logs-prod.sh <opção>  vai direto para a opção
+#   bash scripts/logs-prod.sh          menu interativo
+#   bash scripts/logs-prod.sh <opção>  vai direto para a opção
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -36,7 +36,7 @@ _check_container() {
   if ! docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
     echo ""
     echo "  ⚠️  Container '$name' não está rodando."
-    echo "  Inicie com: bash devops/deploy.sh"
+    echo "  Inicie com: bash scripts/deploy.sh"
     echo ""
     read -rp "  [Enter para voltar]"
     return 1

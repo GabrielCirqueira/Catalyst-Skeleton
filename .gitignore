@@ -52,6 +52,7 @@ yarn-error.log
 
 ###> produção ###
 /.env
+/.env.test
 ###< produção ###
 
 ###> gerados automaticamente ###

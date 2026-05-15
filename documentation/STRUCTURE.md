@@ -13,15 +13,15 @@ A raiz foi organizada para manter apenas arquivos essenciais e pastas principais
 ├── 📂 .tooling/              # Todas as configurações centralizadas
 ├── 📂 assets/               # Assets Symfony (Stimulus)
 ├── 📂 bin/                  # Executáveis (console, phpunit)
-├── 📂 cli/                  # Scripts CLI de desenvolvimento
+├── 📂 cli/                  # 🔥 Comandos rápidos (uso diário)
 ├── 📂 config/               # Configurações Symfony (bundles, services)
-├── 📂 devops/               # Scripts de deploy e operações
+├── 📂 devops/               # (Apenas symlink .env.prod.example)
 ├── 📂 docker/               # Dockerfiles e compose
 ├── 📂 documentation/        # Documentação técnica detalhada
-├── 📂 leading/              # Guias e padrões de desenvolvimento
+├── 📂 guides/               # Guias práticos e padrões de desenvolvimento
 ├── 📂 migrations/           # Migrations do Doctrine
 ├── 📂 public/               # Entry point web (index.php)
-├── 📂 scripts/              # Scripts de setup e automação
+├── 📂 scripts/              # 📜 Processos grandes (uso esporádico)
 ├── 📂 src/                  # Código-fonte PHP/Symfony
 ├── 📂 templates/            # Templates Twig
 ├── 📂 tests/                # Testes PHPUnit
@@ -64,6 +64,42 @@ Todas as configurações de ferramentas foram centralizadas em `.tooling/` para 
 └── .setup-progress                # Estado do setup
 
 ```
+
+---
+
+## 🔥 Pasta `cli/` vs 📜 Pasta `scripts/`
+
+O projeto mantém **duas pastas** distintas para scripts executáveis, cada uma com propósito específico:
+
+### `cli/` - Comandos Rápidos (Uso Diário)
+
+Scripts curtos e rápidos usados **frequentemente** durante o desenvolvimento:
+
+- **Finalidade**: Comandos de linha de comando para tarefas cotidianas
+- **Frequência**: Uso diário/constante
+- **Exemplos**:
+  - `symfony` - Wrapper para `bin/console`
+  - `phpstan.sh` - Análise estática
+  - `phpcs.sh` - Code sniffer
+  - `frontend-lint.sh` - Lint do frontend
+  - `db-reset.sh` - Reset rápido do banco
+  - `cache-clear.sh` - Limpa cache
+
+👉 Todos documentados em [CLI.md](CLI.md)
+
+### `scripts/` - Processos Grandes (Uso Esporádico)
+
+Scripts complexos executados **poucas vezes** ou em momentos específicos:
+
+- **Finalidade**: Processos de setup, deploy e operações complexas
+- **Frequência**: Uso raro (uma única vez ou esporadicamente)
+- **Exemplos**:
+  - `setup.sh` - Configuração inicial completa (executado 1x)
+  - `deploy.sh` - Deploy inicial em produção
+  - `update.sh` - Atualização incremental (produção)
+  - `new-feature.sh` - Scaffolding completo de features
+  - `backup.sh` - Backup do banco com rotação
+  - `logs-prod.sh` - Visualizador interativo de logs
 
 ---
 

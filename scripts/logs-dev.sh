@@ -1,5 +1,5 @@
 #!/bin/bash
-# devops/logs-dev.sh — Visualizador de logs do ambiente de desenvolvimento
+# scripts/logs-dev.sh — Visualizador de logs do ambiente de desenvolvimento
 #
 # Arquitetura de logs em dev:
 #   - skeleton_nginx      → container Nginx separado (proxy reverso HTTP)
@@ -12,8 +12,8 @@
 #   PHP-FPM eventos       → docker logs skeleton_symfony (stderr)
 #
 # Uso:
-#   bash devops/logs-dev.sh          menu interativo
-#   bash devops/logs-dev.sh <opção>  vai direto para a opção
+#   bash scripts/logs-dev.sh          menu interativo
+#   bash scripts/logs-dev.sh <opção>  vai direto para a opção
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

@@ -1,11 +1,11 @@
 #!/bin/bash
-# devops/update.sh — Atualização incremental em produção (execute na VPS)
+# scripts/update.sh — Atualização incremental em produção (execute na VPS)
 #
 # Uso (na VPS, a partir da raiz do projeto):
-#   bash devops/update.sh
+#   bash scripts/update.sh
 #
 # Execute este script toda vez que levar novas versões de código para produção.
-# Para o primeiro deploy, use: bash devops/deploy.sh
+# Para o primeiro deploy, use: bash scripts/deploy.sh
 #
 # O que faz:
 #   1. Puxa o código atualizado (git pull)
@@ -55,7 +55,7 @@ echo -e "${BOLD}${BLUE}  ╚═════════════════�
 echo ""
 
 # ─── Validação ────────────────────────────────────────────────────────────────
-[[ -f "$PROJECT_ROOT/.env" ]] || die ".env não encontrado.\n  Execute primeiro: bash devops/deploy.sh"
+[[ -f "$PROJECT_ROOT/.env" ]] || die ".env não encontrado.\n  Execute primeiro: bash scripts/deploy.sh"
 
 if ! docker info &>/dev/null; then
   die "Docker daemon não está rodando."
@@ -67,7 +67,7 @@ DEPLOY_DOMAIN=$(grep "^DEPLOY_DOMAIN=" "$PROJECT_ROOT/.env" | cut -d= -f2 | xarg
 
 if [[ -z "$DEPLOY_PORT" ]]; then
   warn "DEPLOY_PORT não encontrado no .env — usando porta padrão 8080."
-  warn "Re-execute devops/deploy.sh para regenerar o .env com a porta correta."
+  warn "Re-execute scripts/deploy.sh para regenerar o .env com a porta correta."
   DEPLOY_PORT=8080
 fi
 export DEPLOY_PORT  # necessário para o docker compose ler \${DEPLOY_PORT} no compose file
@@ -202,5 +202,5 @@ echo ""
 echo -e "  ${BOLD}Commit:${RESET}         $(git log --oneline -1)"
 echo -e "  ${BOLD}Log salvo em:${RESET}   $LOG_FILE"
 echo ""
-echo -e "  ${CYAN}Logs:${RESET}           bash devops/logs-prod.sh"
+echo -e "  ${CYAN}Logs:${RESET}           bash scripts/logs-prod.sh"
 echo ""
