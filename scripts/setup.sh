@@ -234,7 +234,7 @@ else
 
   # Lê valores atuais do ports.env para usar como default
   GET_PORT() {
-    grep "^$1=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]'
+    grep "^$1=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true
   }
 
   _BACKEND_DEF=$(GET_PORT "BACKEND_PORT")
