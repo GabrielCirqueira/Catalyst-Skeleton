@@ -25,7 +25,7 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
     "incremental": true,
-    "baseUrl": "../../",
+    "baseUrl": ".",
     "paths": {
       "@app/*": [
         "web/*"
@@ -112,8 +112,8 @@
     ]
   },
   "include": [
-    "../../web/**/*.ts",
-    "../../web/**/*.tsx"
+    "web/**/*.ts",
+    "web/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

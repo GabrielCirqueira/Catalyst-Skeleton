@@ -6,10 +6,12 @@
 # Exemplo: cli/sf make:entity
 # Exemplo: cli/sf doctrine:migrations:migrate
 
+COMPOSE_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file devops/ports.env -f devops/docker-compose.yaml"}
+
 if [ $# -eq 0 ]; then
     # Se não passar argumentos, lista os comandos disponíveis
-    docker compose exec symfony php bin/console list
+    $COMPOSE_CMD exec symfony php bin/console list
 else
     # Executa o comando Symfony console
-    docker compose exec symfony php bin/console "$@"
+    $COMPOSE_CMD exec symfony php bin/console "$@"
 fi

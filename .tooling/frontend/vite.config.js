@@ -11,7 +11,7 @@ export default defineConfig((config) => ({
     react(),
     symfonyPlugin(),
     tsconfigPaths({
-      projects: [path.resolve(__dirname, 'tsconfig.json')],
+      projects: [path.resolve(__dirname, '..', '..', 'tsconfig.json')],
     }),
   ],
   build: {
