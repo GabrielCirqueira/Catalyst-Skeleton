@@ -284,7 +284,7 @@ else
   fi
   unset _seen_ports _port_labels _port _port_conflict
 
-  # Atualiza o arquivo devops/ports.env
+  # Atualiza ou cria o arquivo devops/ports.env
   if [[ -f "devops/ports.env" ]]; then
     sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" devops/ports.env
     sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" devops/ports.env
@@ -292,7 +292,10 @@ else
     sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" devops/ports.env
     ok "Arquivo devops/ports.env atualizado com as novas portas."
   else
-    warn "Arquivo devops/ports.env não encontrado. Usando variáveis locais."
+    printf 'BACKEND_PORT=%s\nFRONTEND_PORT=%s\nDATABASE_HOST_PORT=%s\nSUPERVISOR_PORT=%s\n' \
+      "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT" \
+      > devops/ports.env
+    ok "Arquivo devops/ports.env criado com as portas configuradas."
   fi
 
   save_state "BACKEND_PORT" "$BACKEND_PORT"
