@@ -225,85 +225,79 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # PASSO 1.5 — Portas do projeto
 # ═══════════════════════════════════════════════════════════════
-if is_step_done "1_5" && [[ -f "devops/ports.env" ]]; then
-  step "1.5/9 — Configuração de portas (Restaurado)"
-  BACKEND_PORT=$(grep "^BACKEND_PORT=" devops/ports.env | cut -d= -f2)
-  ok "Portas carregadas do devops/ports.env"
-else
-  step "1.5/9 — Configuração de portas"
+step "1.5/9 — Configuração de portas"
 
-  # Lê valores atuais do ports.env para usar como default
-  GET_PORT() {
-    grep "^$1=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true
-  }
+# Lê valores atuais do ports.env para usar como default
+GET_PORT() {
+  grep "^$1=" devops/ports.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true
+}
 
-  _BACKEND_DEF=$(GET_PORT "BACKEND_PORT")
-  _FRONTEND_DEF=$(GET_PORT "FRONTEND_PORT")
-  _DB_DEF=$(GET_PORT "DATABASE_HOST_PORT")
-  _SUPERVISOR_DEF=$(GET_PORT "SUPERVISOR_PORT")
+_BACKEND_DEF=$(GET_PORT "BACKEND_PORT")
+_FRONTEND_DEF=$(GET_PORT "FRONTEND_PORT")
+_DB_DEF=$(GET_PORT "DATABASE_HOST_PORT")
+_SUPERVISOR_DEF=$(GET_PORT "SUPERVISOR_PORT")
 
-  # Se falhar a leitura, usa os padrões históricos do Skeleton
-  _BACKEND_DEF=${_BACKEND_DEF:-1010}
-  _FRONTEND_DEF=${_FRONTEND_DEF:-1012}
-  _DB_DEF=${_DB_DEF:-1013}
-  _SUPERVISOR_DEF=${_SUPERVISOR_DEF:-1011}
+# Se falhar a leitura, usa os padrões históricos do Skeleton
+_BACKEND_DEF=${_BACKEND_DEF:-1010}
+_FRONTEND_DEF=${_FRONTEND_DEF:-1012}
+_DB_DEF=${_DB_DEF:-1013}
+_SUPERVISOR_DEF=${_SUPERVISOR_DEF:-1011}
 
-  echo "  Quais portas você deseja expor para o ambiente local?"
-  echo ""
+echo "  Quais portas você deseja expor para o ambiente local?"
+echo ""
 
-  read -rp "  Porta do Backend (Symfony) [$_BACKEND_DEF]: " BACKEND_PORT
-  BACKEND_PORT=${BACKEND_PORT:-$_BACKEND_DEF}
+read -rp "  Porta do Backend (Symfony) [$_BACKEND_DEF]: " BACKEND_PORT
+BACKEND_PORT=${BACKEND_PORT:-$_BACKEND_DEF}
 
-  read -rp "  Porta do Frontend (Vite) [$_FRONTEND_DEF]: " FRONTEND_PORT
-  FRONTEND_PORT=${FRONTEND_PORT:-$_FRONTEND_DEF}
+read -rp "  Porta do Frontend (Vite) [$_FRONTEND_DEF]: " FRONTEND_PORT
+FRONTEND_PORT=${FRONTEND_PORT:-$_FRONTEND_DEF}
 
-  read -rp "  Porta do Banco de Dados [$_DB_DEF]: " DB_PORT
-  DB_PORT=${DB_PORT:-$_DB_DEF}
+read -rp "  Porta do Banco de Dados [$_DB_DEF]: " DB_PORT
+DB_PORT=${DB_PORT:-$_DB_DEF}
 
-  read -rp "  Porta do Supervisor [$_SUPERVISOR_DEF]: " SUPERVISOR_PORT
-  SUPERVISOR_PORT=${SUPERVISOR_PORT:-$_SUPERVISOR_DEF}
+read -rp "  Porta do Supervisor [$_SUPERVISOR_DEF]: " SUPERVISOR_PORT
+SUPERVISOR_PORT=${SUPERVISOR_PORT:-$_SUPERVISOR_DEF}
 
-  # Valida que todas as portas são únicas entre si
-  declare -A _seen_ports=()
-  declare -A _port_labels=(
-    ["$BACKEND_PORT"]="Backend"
-    ["$FRONTEND_PORT"]="Frontend"
-    ["$DB_PORT"]="Banco de Dados"
-    ["$SUPERVISOR_PORT"]="Supervisor"
-  )
-  _port_conflict=false
-  for _port in "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT"; do
-    if [[ -n "${_seen_ports[$_port]+x}" ]]; then
-      warn "Conflito: a porta $_port foi atribuída a mais de um serviço."
-      _port_conflict=true
-    fi
-    _seen_ports[$_port]=1
-  done
-  if [[ "$_port_conflict" == "true" ]]; then
-    die "Portas duplicadas detectadas. Execute o setup novamente e escolha portas distintas para cada serviço."
+# Valida que todas as portas são únicas entre si
+declare -A _seen_ports=()
+declare -A _port_labels=(
+  ["$BACKEND_PORT"]="Backend"
+  ["$FRONTEND_PORT"]="Frontend"
+  ["$DB_PORT"]="Banco de Dados"
+  ["$SUPERVISOR_PORT"]="Supervisor"
+)
+_port_conflict=false
+for _port in "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT"; do
+  if [[ -n "${_seen_ports[$_port]+x}" ]]; then
+    warn "Conflito: a porta $_port foi atribuída a mais de um serviço."
+    _port_conflict=true
   fi
-  unset _seen_ports _port_labels _port _port_conflict
-
-  # Atualiza ou cria o arquivo devops/ports.env
-  if [[ -f "devops/ports.env" ]]; then
-    sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" devops/ports.env
-    sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" devops/ports.env
-    sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" devops/ports.env
-    sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" devops/ports.env
-    ok "Arquivo devops/ports.env atualizado com as novas portas."
-  else
-    printf 'BACKEND_PORT=%s\nFRONTEND_PORT=%s\nDATABASE_HOST_PORT=%s\nSUPERVISOR_PORT=%s\n' \
-      "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT" \
-      > devops/ports.env
-    ok "Arquivo devops/ports.env criado com as portas configuradas."
-  fi
-
-  save_state "BACKEND_PORT" "$BACKEND_PORT"
-  save_state "FRONTEND_PORT" "$FRONTEND_PORT"
-  save_state "DB_PORT" "$DB_PORT"
-  save_state "SUPERVISOR_PORT" "$SUPERVISOR_PORT"
-  mark_step "1_5"
+  _seen_ports[$_port]=1
+done
+if [[ "$_port_conflict" == "true" ]]; then
+  die "Portas duplicadas detectadas. Execute o setup novamente e escolha portas distintas para cada serviço."
 fi
+unset _seen_ports _port_labels _port _port_conflict
+
+# Atualiza ou cria o arquivo devops/ports.env
+if [[ -f "devops/ports.env" ]]; then
+  sed -i "s/^BACKEND_PORT=.*/BACKEND_PORT=$BACKEND_PORT/" devops/ports.env
+  sed -i "s/^FRONTEND_PORT=.*/FRONTEND_PORT=$FRONTEND_PORT/" devops/ports.env
+  sed -i "s/^DATABASE_HOST_PORT=.*/DATABASE_HOST_PORT=$DB_PORT/" devops/ports.env
+  sed -i "s/^SUPERVISOR_PORT=.*/SUPERVISOR_PORT=$SUPERVISOR_PORT/" devops/ports.env
+  ok "Arquivo devops/ports.env atualizado com as novas portas."
+else
+  printf 'BACKEND_PORT=%s\nFRONTEND_PORT=%s\nDATABASE_HOST_PORT=%s\nSUPERVISOR_PORT=%s\n' \
+    "$BACKEND_PORT" "$FRONTEND_PORT" "$DB_PORT" "$SUPERVISOR_PORT" \
+    > devops/ports.env
+  ok "Arquivo devops/ports.env criado com as portas configuradas."
+fi
+
+save_state "BACKEND_PORT" "$BACKEND_PORT"
+save_state "FRONTEND_PORT" "$FRONTEND_PORT"
+save_state "DB_PORT" "$DB_PORT"
+save_state "SUPERVISOR_PORT" "$SUPERVISOR_PORT"
+mark_step "1_5"
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 2 — Pré-requisitos

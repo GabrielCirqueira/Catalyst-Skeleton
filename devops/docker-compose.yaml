@@ -23,6 +23,7 @@ services:
     restart: always
     env_file:
       - ./ports.env
+      - ../.env
     environment:
       TZ: America/Sao_Paulo
     ports:
