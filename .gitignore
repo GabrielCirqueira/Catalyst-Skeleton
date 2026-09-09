@@ -3,6 +3,10 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
+###> devops ###
+devops/.env
+###< devops ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

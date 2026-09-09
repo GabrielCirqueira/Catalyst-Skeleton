@@ -1,3 +1,0 @@
-gesdinet_jwt_refresh_token:
-    resource: "@GesdinetJWTRefreshTokenBundle/Resources/config/routing.xml"
-    prefix: /api/v1
