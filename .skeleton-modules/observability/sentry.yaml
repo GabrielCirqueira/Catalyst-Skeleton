@@ -1,0 +1,7 @@
+sentry:
+    dsn: '%env(default::SENTRY_DSN)%'
+    register_error_listener: true
+    options:
+        environment: '%kernel.environment%'
+        release: '%env(default:APP_VERSION)%'
+        traces_sample_rate: 0.1
