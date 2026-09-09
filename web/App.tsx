@@ -16,7 +16,10 @@ const router = createBrowserRouter(
       <Route element={<MainLayout />}>
         <Route index lazy={() => lazyWithRetry(() => import('@/features/home/Home'))} />
         <Route path="login" lazy={() => lazyWithRetry(() => import('@/features/auth/Login'))} />
-        <Route path="cadastro" lazy={() => lazyWithRetry(() => import('@/features/cadastro/Cadastro'))} />
+        <Route
+          path="cadastro"
+          lazy={() => lazyWithRetry(() => import('@/features/cadastro/Cadastro'))}
+        />
         <Route path="*" lazy={() => lazyWithRetry(() => import('@/features/not-found/NotFound'))} />
       </Route>
 
