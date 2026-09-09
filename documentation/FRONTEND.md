@@ -3,58 +3,115 @@
 Este documento explica a estrutura e o fluxo do frontend React que vive em `web/`.
 
 ## Tecnologias
-- **React 19** + **TypeScript 5.9** (strict mode)
-- **Vite 7** (HMR ultra-rápido, build escalável)
-- **Tailwind CSS 4** (configuração nativa CSS-first)
-- **Shadcn/ui** (componentes acessíveis e customizáveis em `web/shadcn/`)
-- **React Router 7** (roteamento centralizado via `createBrowserRouter`)
-- **TanStack Query 5** (gerenciamento de estado do servidor, cache e invalidação)
-- **Zustand 5** (estado global leve com persistência opcional)
-- **Zod 4** (validação de schemas para formulários e respostas de API)
-- **Biome 1.9** (linter, formatter e organizador de imports unificado)
+
+**Core (sempre instalado):**
+
+| Tecnologia | Papel |
+| :--- | :--- |
+| **React 19** + **TypeScript 5.9** | UI reativa, modo strict |
+| **Vite 7** | Build tool e dev server com HMR |
+| **Tailwind CSS 3.4** | Utilitários CSS ? config em `.tooling/frontend/tailwind.config.cjs` |
+| **Shadcn/ui** | Componentes acessíveis e customizáveis em `web/shadcn/` |
+| **React Router 7** | Roteamento via `createBrowserRouter` + lazy loading |
+| **TanStack Query 5** | Estado de servidor, cache e invalidação |
+| **Zustand 5** | Estado global leve com persistência opcional |
+| **Zod 4** | Validação de schemas (forms, respostas de API) |
+| **Axios** | HTTP client centralizado com interceptores JWT |
+| **Sonner** | Toasts e notificações (usado no fluxo de auth) |
+| **Biome 1.9** | Linter, formatter e organizador de imports |
+
+**Módulo `ui-extra` (opt-in ? ative no setup.sh):**
+
+| Tecnologia | Papel |
+| :--- | :--- |
+| **Framer Motion** | Animações declarativas |
+| **Recharts** | Gráficos SVG reativos (+ `web/shadcn/components/ui/chart.tsx`) |
 
 ## Estrutura de Diretórios
-- `web/main.tsx`: Entry point. Inicializa QueryClient e renderiza a App.
-- `web/App.tsx`: Raiz da aplicação. Configura o roteamento e provedores globais (Tema).
-- `web/features/`: Módulos funcionais autossuficientes. Cada feature (ex: `auth`) agrupa seus hooks, components, API e types.
-- `web/pages/`: Páginas "folha" carregadas via lazy loading para otimização de bundle.
-- `web/layouts/`: Layouts reutilizáveis que envolvem as páginas (ex: `MainLayout` com Header/Footer).
-- `web/shared/`: Hooks, componentes UI (shadcn) e funções utilitárias compartilhadas.
-- `web/stores/`: Definições de estado global via Zustand (ex: `useAuthStore`).
-- `web/config/`: Configurações centrais, incluindo a instância Axios (`api.ts`).
 
-## Regras de Ouro (Cultura de Engenharia)
-1. **Banimento do `useEffect`**: O uso direto de `useEffect` em páginas e features é proibido.
-   - Use **Estado Derivado** ou **useMemo** para cálculos.
-   - Use **Event Handlers** (`onClick`, `onSubmit`) para disparar ações.
-   - Use **TanStack Query** para busca de dados.
-   - Para sincronização com o browser na montagem, use o hook abstraído `useMountEffect`.
-2. **Componentes Atômicos**: Mantenha os componentes focados. Lógica pesada deve ser extraída para hooks no diretório `hooks` da própria feature.
-3. **Tipagem Estrita**: Evite o uso de `any`. Toda resposta de API deve ter um schema Zod correspondente para validação em runtime.
+```
+web/
+??? main.tsx              Entry point ? inicializa QueryClient e renderiza App
+??? App.tsx               Router raiz + provedores globais (ThemeProvider)
+??? index.css             CSS global + design tokens (variáveis HSL)
+??? config/api.ts         Instância Axios centralizada com interceptores JWT
+??? contexts/             ThemeContext (dark/light mode)
+??? features/             Módulos por domínio (ex: auth/)
+?   ??? auth/             hooks, api, components, types
+??? layouts/              MainLayout, AuthLayout, AppContainer
+??? pages/                Páginas folha carregadas via lazy()
+?   ??? Home/             Landing page pública
+?   ??? Login/            Página de login
+?   ??? Cadastro/         Página de cadastro
+?   ??? NotFound/         404
+??? routes/               RotaProtegida.tsx ? redireciona para /login se não autenticado
+??? shadcn/               Componentes Shadcn UI (Radix UI) customizados
+??? shared/               Hooks, utils e componentes reutilizáveis
+??? stores/useAuthStore.ts Estado de autenticação (Zustand + localStorage)
+```
 
-## Roteamento
-Utilizamos o padrão **Remix Router** no `web/App.tsx`:
-- Definição via `createBrowserRouter` + `createRoutesFromElements`.
-- Uso de `lazy()` para code-splitting automático por rota.
-- Guardas de rota (ex: `RotaProtegida.tsx`) interceptam acessos baseados no estado do `useAuthStore`.
+## Roteamento (`web/App.tsx`)
+
+```tsx
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      {/* Rotas públicas */}
+      <Route element={<MainLayout />}>
+        <Route index lazy={() => import('@pages/Home/Home')} />
+        <Route path="login" lazy={() => import('@pages/Login/Login')} />
+        <Route path="cadastro" lazy={() => import('@pages/Cadastro/Cadastro')} />
+        <Route path="*" lazy={() => import('@pages/NotFound/NotFound')} />
+      </Route>
+
+      {/* Rotas protegidas ? substitua MainLayout por DashboardLayout quando criar área logada */}
+      <Route element={<MainLayout />}>
+        <Route element={<RotaProtegida />}>
+          <Route path="app" lazy={() => import('@pages/Home/Home')} />
+        </Route>
+      </Route>
+    </Route>
+  )
+)
+```
+
+`RotaProtegida` redireciona para `/login` se `useAuthStore.autenticado === false`.
 
 ## Aliases de Importação
-Configurados no `.tooling/frontend/tsconfig.json` para evitar caminhos relativos complexos:
-- `@/`: `web/`
-- `@features/`: `web/features/`
-- `@shared/`: `web/shared/`
-- `@stores/`: `web/stores/`
-- `@config/`: `web/config/`
-- `@layouts/`: `web/layouts/`
-- `@pages/`: `web/pages/`
-- `@shadcn/`: `web/shadcn/`
+
+Configurados em `tsconfig.json` e espelhados em `.tooling/frontend/vite.config.js`:
+
+| Alias | Resolve para |
+| :--- | :--- |
+| `@/` | `web/` |
+| `@app/` | `web/` |
+| `@pages` | `web/pages/` |
+| `@layouts` | `web/layouts/` |
+| `@features/` | `web/features/` |
+| `@shared/` | `web/shared/` |
+| `@stores` | `web/stores/` |
+| `@config` | `web/config/` |
+| `@routes` | `web/routes/` |
+| `@shadcn/*` | `web/shadcn/components/ui/*` |
+
+## Regras de Ouro
+
+1. **Sem `useEffect` direto em pages/features**: Use TanStack Query para data fetching, event handlers para ações, `useMemo` para estado derivado. Se precisar sincronizar com o browser na montagem, use `useMountEffect` de `web/shared/hooks/`.
+2. **Componentes atômicos**: Lógica pesada vai para hooks no diretório `hooks/` da própria feature.
+3. **Tipagem estrita**: Sem `any`. Respostas de API validadas com schema Zod.
 
 ## Execução e Build
-- **Desenvolvimento**: `npm run dev` (rodando localmente ou via `make up-d` no container `vite-react`).
-- **Verificação de Tipos**: `npm run type-check`.
-- **Análise Final**: `npm run validate` (roda type-check + lint).
-- **Build de Produção**: `npm run build`.
+
+```bash
+npm run dev          # Dev server com HMR (ou make up-d no container)
+npm run build        # Build de produção ? public/build/
+npm run type-check   # tsc --noEmit
+npm run validate     # type-check + lint (Biome)
+```
 
 ## Lint e Qualidade
-- **Lint/Check**: `npx biome check web` (ou `make lint-tsx`).
-- **Auto-fix**: `npx biome check --write web` (ou `make fix-tsx`).
+
+```bash
+make lint-tsx        # biome check web
+make fix-tsx         # biome check --write web
+```

@@ -29,26 +29,25 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 
 ### Backend
 
-| Tecnologia | Versão | Papel |
-| :--- | :--- | :--- |
-| PHP | 8.4 | Runtime; usa Readonly Classes, Enums, Typed Properties e Attributes |
-| Symfony | 7.3 | Framework principal (HTTP, DI container, Console, Scheduler, Mailer, Notifier) |
-| Doctrine ORM | 3.x | ORM; mapeamento objeto-relacional, Unit of Work, migrations |
-| MySQL | 8.3 | Banco de dados relacional (container `db`) |
-| Apache | 2.4 | Servidor web em desenvolvimento (container `webserver`) |
-| Nginx | 1.x | Servidor web em produção (TLS 1.2/1.3 + Certbot) |
-| Supervisor | 4.x | Gerenciador de processos (workers Messenger) |
-| LexikJWTAuthenticationBundle | 3.2 | Emissão e validação de access tokens JWT (RS256) |
-| GesdinetJWTRefreshTokenBundle | 1.5 | Refresh token de 30 dias com renovação automática |
-| Symfony Messenger | 7.x | Fila de mensagens com transporte Doctrine (padrão) |
-| Symfony Scheduler | 7.x | Tarefas agendadas nativas |
-| Symfony Rate Limiter | 7.x | Proteção contra brute-force em login e endpoints |
-| NelmioCorsBundle | 3.x | Configuração CORS para todos os endpoints `/api/*` |
-| Monolog | 3.x | Logs estruturados (JSON em produção) |
-| Sentry SDK | 4.x | Rastreamento de erros (instalado, desativado por padrão) |
-| PHPStan | 2.x | Análise estática — nível 6 |
-| PHP_CodeSniffer | 3.x | Estilo de código PSR-12 |
-| PHPUnit | 9.x | Testes unitários e de integração |
+| Tecnologia | Versão | Papel | Core? |
+| :--- | :--- | :--- | :--- |
+| PHP | 8.4 | Runtime; usa Readonly Classes, Enums, Typed Properties e Attributes | ✅ Core |
+| Symfony | 7.3 | Framework principal (HTTP, DI container, Console) | ✅ Core |
+| Doctrine ORM | 3.x | ORM; mapeamento objeto-relacional, Unit of Work, migrations | ✅ Core |
+| MySQL | 8.3 | Banco de dados relacional (container `database`) | ✅ Core |
+| Nginx | 1.x | Servidor web em produção (TLS 1.2/1.3 + Certbot) | ✅ Core |
+| LexikJWTAuthenticationBundle | 3.2 | Emissão e validação de access tokens JWT (RS256) | ✅ Core |
+| GesdinetJWTRefreshTokenBundle | 1.5 | Refresh token de 30 dias com renovação automática | ✅ Core |
+| Symfony Rate Limiter | 7.x | Proteção contra brute-force em login e endpoints | ✅ Core |
+| NelmioCorsBundle | 3.x | Configuração CORS para todos os endpoints `/api/*` | ✅ Core |
+| Monolog | 3.x | Logs estruturados (JSON em produção) | ✅ Core |
+| PHPStan | 2.x | Análise estática — nível 6 | ✅ Core |
+| PHP_CodeSniffer | 3.x | Estilo de código PSR-12 | ✅ Core |
+| PHPUnit | 11.x | Testes unitários e de integração | ✅ Core |
+| Symfony Messenger | 7.x | Fila de mensagens com transporte Doctrine | 🔧 Módulo `async` |
+| Symfony Scheduler | 7.x | Tarefas agendadas nativas | 🔧 Módulo `async` |
+| Supervisor | 4.x | Gerenciador de processos (workers Messenger) | 🔧 Módulo `async` |
+| Sentry SDK | 5.x | Rastreamento de erros em produção | 🔧 Módulo `observability` |
 
 ### Frontend
 
@@ -64,13 +63,13 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | React Hook Form | 7.66 | Formulários performáticos com validação Zod |
 | Zod | 4.1 | Validação de schemas (forms, respostas de API) |
 | Shadcn / Radix UI | — | Componentes UI acessíveis e sem-opinião de estilo |
-| Tailwind CSS | 3.4 | Utilitários CSS — configuração customizada em `.tooling/frontend/tailwind.config.cjs` |
-| Framer Motion | 12.23 | Animações declarativas |
-| Sonner | 2.0 | Sistema de toasts/notificações |
-| Recharts | 2.15 | Gráficos reativos baseados em SVG |
-| next-themes | 0.4 | Suporte a tema claro/escuro sem flash |
-| Lucide / FontAwesome / Heroicons | — | Conjuntos de ícones |
-| Biome | 1.9 | Linter + formatter + organizador de imports |
+| Tailwind CSS | 3.4 | Utilitários CSS — configuração em `.tooling/frontend/tailwind.config.cjs` | ✅ Core |
+| Sonner | 2.0 | Sistema de toasts/notificações (usado no fluxo de auth) | ✅ Core |
+| next-themes | 0.4 | Suporte a tema claro/escuro (usado pelo Sonner) | ✅ Core |
+| Lucide React | — | Conjunto de ícones | ✅ Core |
+| Biome | 1.9 | Linter + formatter + organizador de imports | ✅ Core |
+| Framer Motion | 12.x | Animações declarativas | 🔧 Módulo `ui-extra` |
+| Recharts | 2.x | Gráficos reativos baseados em SVG | 🔧 Módulo `ui-extra` |
 | Husky | 9.x | Git hooks (pre-commit) |
 | lint-staged | 15.x | Executa linters apenas nos arquivos staged |
 | Commitlint | 20.x | Enforça Conventional Commits na mensagem do commit |
@@ -111,11 +110,11 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │       ├── security.yaml                      # Firewalls, voters, role hierarchy
 │       ├── lexik_jwt_authentication.yaml      # TTL do access token
 │       ├── gesdinet_jwt_refresh_token.yaml    # TTL do refresh token (30 dias)
-│       ├── messenger.yaml                     # Transports e routing de mensagens
 │       ├── rate_limiter.yaml                  # Limitadores (login/api)
 │       ├── nelmio_cors.yaml                   # Regras CORS
 │       ├── monolog.yaml                       # Canais de log e handlers
-│       └── sentry.yaml                        # Configuração do Sentry (DSN via .env)
+│       ├── messenger.yaml                     # [módulo async]  Transports e routing de mensagens
+│       └── sentry.yaml                        # [módulo observability] Configuração do Sentry
 │
 ├── devops/
 │   ├── docker-compose.yaml       # Stack de desenvolvimento
@@ -139,19 +138,18 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── Command/              # Comandos CLI (Console Component)
 │   ├── Controller/           # Controllers da API REST
 │   ├── DataObject/           # DTOs: entrada validada de dados
-│   ├── Domain/               # Lógica de domínio pura (opcional)
 │   ├── Entity/               # Entidades Doctrine (UUID v7 como PK)
 │   ├── Enum/                 # Enums PHP 8.1+ usados em entidades e DTOs
 │   ├── Event/                # Eventos de domínio dispatched via EventDispatcher
 │   ├── EventListener/        # Listeners (KernelExceptionListener, etc.)
-│   ├── Message/              # Payloads de mensagens para o Messenger
-│   ├── MessageHandler/       # Handlers que consomem as mensagens
 │   ├── Repository/           # Acesso ao banco de dados via Doctrine
-│   ├── Schedule/             # Tarefas agendadas (Symfony Scheduler)
 │   ├── Serializer/           # Normalizadores para o JSON de saída (contrato da API)
 │   ├── Service/              # Lógica de negócio e orquestração
-│   ├── Specification/        # Padrão Specification para regras combináveis
-│   └── ValueObject/          # Tipos primitivos com validação embutida no construtor
+│   │
+│   │   [módulo async — copiados pelo setup.sh quando --async é ativado]
+│   ├── Message/              # Payloads de mensagens para o Messenger
+│   ├── MessageHandler/       # Handlers que consomem as mensagens
+│   └── Schedule/             # Tarefas agendadas (Symfony Scheduler)
 │
 ├── templates/
 │   └── base.html.twig        # Base para e-mails e fallback server-side
@@ -188,7 +186,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 ├── package.json              # Dependências Node + scripts npm
 ├── ports.env                 # Mapeamento de portas do ambiente local
 ├── scripts/setup.sh          # Script de bootstrap inicial completo
-├── supervisord.conf          # Configuração do Supervisor (workers Messenger)
+├── .skeleton-modules/        # Módulos opcionais (async, observability, ui-extra)
 └── STRUCTURE.md              # Documentação da estrutura de pastas
 ```
 
@@ -270,17 +268,15 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 | Camada | Pasta | Regra de ouro |
 | :--- | :--- | :--- |
 | **Entidades** | `src/Entity/` | Domínio rico. Invariantes e regras de negócio internas. PK em UUID v7. Sem getters/setters anêmicos. |
-| **Value Objects** | `src/ValueObject/` | Tipos primitivos com validação no construtor. Imutáveis. |
 | **DTOs** | `src/DataObject/` | Mapeiam o payload HTTP para um objeto tipado antes de chegar ao Service. |
 | **Repositórios** | `src/Repository/` | Único lugar onde o `EntityManager` é injetado. Queries em DQL/QueryBuilder. |
 | **Services** | `src/Service/` | Orquestração de operações de negócio. Retornam `Resultado`. Um service = uma ação (`executar()`). |
 | **Serializers** | `src/Serializer/` | Definem o contrato JSON de saída. Protegem o frontend de mudanças internas no banco. |
 | **Controllers** | `src/Controller/` | Lógica zero. Recebem request, chamam Service, retornam `JsonResponse`. |
 | **Events / Listeners** | `src/Event/`, `src/EventListener/` | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
-| **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. |
+| **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. **Módulo `async` — só existe se ativado no setup.** |
 | **Commands** | `src/Command/` | CLI da aplicação via `php bin/console`. |
-| **Schedule** | `src/Schedule/` | Tarefas recorrentes nativas do Symfony Scheduler. |
-| **Specifications** | `src/Specification/` | Regras de negócio encapsuladas e combináveis. |
+| **Schedule** | `src/Schedule/` | Tarefas recorrentes nativas do Symfony Scheduler. **Módulo `async` — só existe se ativado no setup.** |
 
 ### 5.2 Padrão `Resultado`
 
@@ -360,7 +356,7 @@ O sistema usa dois tokens:
 POST /api/v1/auth/login    →  { token, refreshToken }
 GET  /api/v1/recurso       →  Authorization: Bearer <access_token>
      [401 access expirado]
-POST /api/v1/auth/refresh  →  { token }  (novo access token)
+POST /api/v1/token/refresh  →  { token }  (novo access token)
      [refresh expirado]    →  redireciona para /login
 ```
 
@@ -377,8 +373,8 @@ Configurações:
 
 Endpoints públicos configurados em `access_control` (sem token necessário):
 - `POST /api/v1/auth/login`
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/refresh`
+- `POST /api/v1/auth/registro`
+- `POST /api/v1/token/refresh`
 - `GET  /api/v1/health`
 
 ### 5.6 Rate Limiting
@@ -500,7 +496,7 @@ config.headers.Authorization = `Bearer ${useAuthStore.getState().token}`;
 **Response interceptor** — gerencia o fluxo de refresh token:
 1. Se a resposta for `401` e não for para `/auth/refresh`:
    - Enfileira as requisições concorrentes (evita múltiplos refreshes simultâneos)
-   - Faz `POST /api/v1/auth/refresh` com o `refreshToken` do store
+   - Faz `POST /api/v1/token/refresh` com o `refreshToken` do store
    - **Sucesso:** atualiza o token no store e drena a fila com o novo token
    - **Falha:** chama `store.limpar()` e redireciona para `/login`
 2. Todas as outras respostas seguem o fluxo normal
@@ -621,13 +617,22 @@ O interceptor já cuida do refresh — **não é necessário tratar 401 manualme
 #### 4. Configuração das rotas (`web/App.tsx`)
 
 ```tsx
-<Routes>
-  <Route path="/login" element={<Login />} />
-  <Route element={<RotaProtegida />}>
-    <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/produtos" element={<ListarProdutos />} />
-  </Route>
-</Routes>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      {/* Rotas públicas */}
+      <Route element={<MainLayout />}>
+        <Route path="login" element={<Login />} />
+      </Route>
+
+      {/* Rotas protegidas */}
+      <Route element={<RotaProtegida />}>
+        <Route path="app/dashboard" element={<Dashboard />} />
+        <Route path="app/produtos" element={<ListarProdutos />} />
+      </Route>
+    </Route>
+  )
+)
 ```
 
 **Resumo do fluxo:**
@@ -642,7 +647,7 @@ Usuário submete form
             → RotaProtegida verifica autenticado === true → renderiza
 
 Token expira (401)
-  → interceptor faz POST /api/v1/auth/refresh
+  → interceptor faz POST /api/v1/token/refresh
     → sucesso: setToken(novoToken), drena fila
     → falha:   limpar() → RotaProtegida redireciona para /login
 ```
@@ -805,6 +810,8 @@ export function useProdutos(pagina: number) {
 ---
 
 ## 8. Mensageria Assíncrona
+
+> **Módulo Opcional:** Messenger + Scheduler são opt-in na v5. Ative com `--async` no `setup.sh` ou instale manualmente: `composer require symfony/doctrine-messenger symfony/scheduler`. Arquivos de configuração disponíveis em `.skeleton-modules/async/`.
 
 ### Symfony Messenger
 
@@ -1272,7 +1279,8 @@ O Catalyst Skeleton é versionado via **branches Git** no mesmo repositório. Ca
 
 | Branch | Versão | Status |
 | :--- | :--- | :--- |
-| `main` | **v4** (atual) | Desenvolvimento ativo — sempre a versão mais recente |
+| `main` | **v5** (atual) | Desenvolvimento ativo — núcleo enxuto + módulos opt-in |
+| `skeleton-V4` | v4 | Estável — Symfony 7.3, React 19, stack monolítica |
 | `skeleton-v3` | v3 | Estável — somente bugfixes críticos |
 | `skeleton-v2` | v2 | Legado — sem manutenção |
 | `skeleton-v1` | v1 | Legado — sem manutenção |

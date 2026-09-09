@@ -18,10 +18,10 @@ php bin/console lexik:jwt:generate-keypair
 ```
 
 ### Endpoints de Autenticação
-1. `POST /api/auth/login`: Recebe `username` e `senha`, retorna `token` e `refresh_token`.
-2. `POST /api/auth/registro`: Cria novo usuário (público).
-3. `POST /api/token/refresh`: Recebe o `refresh_token` e retorna um novo `access_token`.
-4. `GET /api/auth/me`: Retorna os dados do usuário logado (requer `Bearer` token).
+1. `POST /api/v1/auth/login`: Recebe `username` e `senha`, retorna `token` e `refresh_token`.
+2. `POST /api/v1/auth/registro`: Cria novo usuário (público).
+3. `POST /api/v1/token/refresh`: Recebe o `refresh_token` e retorna um novo `access_token`.
+4. `GET /api/v1/auth/me`: Retorna os dados do usuário logado (requer `Bearer` token).
 
 ---
 
@@ -36,7 +36,7 @@ O `useAuthStore` utiliza o middleware `persist`. Ao carregar a página:
 ### Fluxo do Refresh Automático (`web/config/api.ts`)
 Caso uma requisição retorne `401 Unauthorized`:
 1. O interceptor de resposta pausa as requisições pendentes.
-2. Dispara uma chamada silenciosa para `/api/token/refresh`.
+2. Dispara uma chamada silenciosa para `/api/v1/token/refresh`.
 3. Se bem-sucedido, atualiza o Store e re-executa as requisições pausadas.
 4. Se falhar (refresh token expirado), o Store é limpo e o usuário é redirecionado para o login.
 

@@ -1,170 +1,157 @@
-# 📁 Estrutura do Projeto
+# Estrutura do Projeto
 
-Este documento descreve a organização de diretórios e arquivos do **Catalyst Skeleton**.
+Este documento descreve a organização de diretórios e arquivos do **Catalyst Skeleton v5**.
 
 ---
 
-## 🗂️ Raiz do Projeto
-
-A raiz foi organizada para manter apenas arquivos essenciais e pastas principais:
+## Raiz do Projeto
 
 ```
-📦 catalyst-skeleton/
-├── 📂 .tooling/              # Todas as configurações centralizadas
-├── 📂 assets/               # Assets Symfony (Stimulus)
-├── 📂 bin/                  # Executáveis (console, phpunit)
-├── 📂 cli/                  # 🔥 Comandos rápidos (uso diário)
-├── 📂 config/               # Configurações Symfony (bundles, services)
-├── 📂 devops/               # Dockerfiles e compose + configurações
-├── 📂 documentation/        # Documentação técnica detalhada
-├── 📂 guides/               # Guias práticos e padrões de desenvolvimento
-├── 📂 migrations/           # Migrations do Doctrine
-├── 📂 public/               # Entry point web (index.php)
-├── 📂 scripts/              # 📜 Processos grandes (uso espodrádico)
-├── 📂 src/                  # Código-fonte PHP/Symfony
-├── 📂 templates/            # Templates Twig
-├── 📂 tests/                # Testes PHPUnit
-├── 📂 var/                  # Cache e logs (gitignored)
-├── 📂 vendor/               # Dependências Composer (gitignored)
-├── 📂 web/                  # Código-fonte React/TypeScript
-├── 🔧 composer.json         # Dependências PHP
-├── 🔧 package.json          # Dependências Node
-├── 📄 LICENSE
-├── 📄 Makefile              # Comandos make para desenvolvimento
-└── 📖 README.md             # Documentação principal
+catalyst-skeleton/
+??? .skeleton-modules/      # Módulos opcionais (async, observability, ui-extra)
+??? .tooling/               # Todas as configurações de ferramentas centralizadas
+??? bin/                    # Executáveis (console, phpunit)
+??? cli/                    # Comandos rápidos (uso diário)
+??? config/                 # Configurações Symfony (bundles, services, packages)
+??? devops/                 # Dockerfiles, docker-compose e configurações de infra
+??? documentation/          # Documentação técnica detalhada
+??? migrations/             # Migrations do Doctrine
+??? public/                 # Entry point web (index.php)
+??? scripts/                # Processos pesados de uso esporádico (setup, deploy)
+??? src/                    # Código-fonte PHP/Symfony
+??? tests/                  # Testes PHPUnit
+??? web/                    # Código-fonte React/TypeScript
+??? composer.json
+??? package.json
+??? Makefile
+??? README.md
 ```
 
 ---
 
-## ⚙️ Pasta `.tooling/` (Novo!)
+## Pasta `.skeleton-modules/`
 
-Todas as configurações de ferramentas foram centralizadas em `.tooling/` para reduzir poluição na raiz e evitar confusão com `config/` do Symfony:
+Contém os **módulos opcionais** do skeleton. Nenhum destes arquivos é carregado automaticamente ? eles só são copiados/instalados quando o módulo é ativado via `setup.sh`.
+
+```
+.skeleton-modules/
+??? async/
+?   ??? README.md
+?   ??? messenger.yaml                    # config/packages/messenger.yaml
+?   ??? supervisord-messenger.conf        # appended to devops/php/supervisord-prod.conf
+?   ??? src/
+?       ??? Message/                      # ? src/Message/
+?       ??? MessageHandler/               # ? src/MessageHandler/
+?       ??? Schedule/                     # ? src/Schedule/
+??? observability/
+?   ??? README.md
+?   ??? sentry.yaml                       # config/packages/sentry.yaml
+??? ui-extra/
+    ??? README.md
+    ??? package.deps.json                 # framer-motion, recharts
+    ??? chart.tsx                         # ? web/shadcn/components/ui/chart.tsx
+```
+
+---
+
+## Pasta `.tooling/`
+
+Configurações de ferramentas centralizadas para reduzir poluição na raiz:
 
 ```
 .tooling/
-├── backend/
-│   └── importmap.php              # Importmap do Asset Mapper
-├── docker/
-│   └── .dockerignore              # Arquivos ignorados pelo Docker
-├── frontend/
-│   ├── biome.json                 # Configuração Biome (lint/format)
-│   ├── postcss.config.cjs         # PostCSS
-│   ├── tailwind.config.cjs        # Tailwind CSS
-│   ├── tsconfig.json              # TypeScript compiler
-│   └── vite.config.js             # Vite bundler
-├── git/
-│   └── commitlint.config.js       # Validação de commits
-├── quality/
-│   ├── phpcs.xml                  # PHP CodeSniffer
-│   ├── phpstan.neon               # PHPStan (análise estática)
-│   └── phpunit.xml.dist           # PHPUnit (testes)
-├── .editorconfig                  # EditorConfig
-├── .setup-done                    # Marcador de setup concluído
-└── .setup-progress                # Estado do setup
-
+??? backend/
+??? docker/
+?   ??? .dockerignore
+??? frontend/
+?   ??? biome.json
+?   ??? postcss.config.cjs
+?   ??? tailwind.config.cjs
+?   ??? tsconfig.json
+?   ??? vite.config.js
+??? git/
+?   ??? commitlint.config.js
+??? quality/
+?   ??? phpcs.xml
+?   ??? phpstan.neon
+?   ??? phpunit.xml.dist
+??? .editorconfig
+??? .setup-done
+??? .setup-progress
 ```
 
 ---
 
-## 🔥 Pasta `cli/` vs 📜 Pasta `scripts/`
+## Pasta `src/` (Backend)
 
-O projeto mantém **duas pastas** distintas para scripts executáveis, cada uma com propósito específico:
+```
+src/
+??? Command/            CLI: AppSeedCommand, CronHeartbeatCommand, JwtMasterCommand
+??? Controller/         API REST ? roteamento e orquestração leve
+??? DataObject/         DTOs de entrada tipados e validados
+??? Entity/             Entidades Doctrine (Usuario, RefreshToken)
+??? Enum/               Enums PHP 8.1+
+??? Event/              Eventos de domínio
+??? EventListener/      KernelExceptionListener ? padroniza respostas de erro
+??? Repository/         Acesso ao banco, queries DQL/QueryBuilder
+??? Serializer/         Contratos JSON de saída
+??? Service/            Lógica de negócio (um service = uma ação)
+??? Kernel.php
+??? Resultado.php       Padrão Resultado (sucesso/falha)
+```
 
-### `cli/` - Comandos Rápidos (Uso Diário)
-
-Scripts curtos e rápidos usados **frequentemente** durante o desenvolvimento:
-
-- **Finalidade**: Comandos de linha de comando para tarefas cotidianas
-- **Frequência**: Uso diário/constante
-- **Exemplos**:
-  - `symfony` - Wrapper para `bin/console`
-  - `phpstan.sh` - Análise estática
-  - `phpcs.sh` - Code sniffer
-  - `frontend-lint.sh` - Lint do frontend
-  - `db-reset.sh` - Reset rápido do banco
-  - `cache-clear.sh` - Limpa cache
-
-👉 Todos documentados em [CLI.md](CLI.md)
-
-### `scripts/` - Processos Grandes (Uso Esporádico)
-
-Scripts complexos executados **poucas vezes** ou em momentos específicos:
-
-- **Finalidade**: Processos de setup, deploy e operações complexas
-- **Frequência**: Uso raro (uma única vez ou esporadicamente)
-- **Exemplos**:
-  - `setup.sh` - Configuração inicial completa (executado 1x)
-  - `deploy.sh` - Deploy inicial em produção
-  - `update.sh` - Atualização incremental (produção)
-  - `new-feature.sh` - Scaffolding completo de features
-  - `backup.sh` - Backup do banco com rotação
-  - `logs-prod.sh` - Visualizador interativo de logs
+> Se o módulo **`async`** estiver ativo:
+> `src/Message/`, `src/MessageHandler/`, `src/Schedule/` também existirão
 
 ---
 
-## 🎯 Benefícios da Nova Organização
+## Pasta `web/` (Frontend)
 
-### ✅ Antes
-- **18+ arquivos** de configuração espalhados na raiz
-- Difícil identificar o propósito de cada arquivo
-- Poluição visual ao abrir o projeto
-
-### ✅ Depois
-- Raiz limpa com **apenas 5 arquivos** principais visíveis
-- Configurações agrupadas por contexto (frontend, backend, quality, etc)
-- Fácil navegação e manutenção
+```
+web/
+??? config/api.ts       Instância Axios com interceptores JWT
+??? contexts/           ThemeContext (dark/light)
+??? features/auth/      Hooks, API, components e types de autenticação
+??? layouts/            MainLayout, AuthLayout, AppContainer
+??? pages/              Páginas lazy ? Home, Login, Cadastro, NotFound
+??? routes/             RotaProtegida.tsx
+??? shadcn/             Componentes Shadcn UI (Radix)
+??? shared/             Hooks, utils e componentes compartilhados
+??? stores/             useAuthStore (Zustand + localStorage)
+??? App.tsx             Router raiz + provedores globais
+??? index.css           CSS global + design tokens
+??? main.tsx            Entry point
+```
 
 ---
 
-## 🔄 Como os Arquivos São Referenciados
+## Pasta `cli/` vs `scripts/`
 
-Todos os scripts e ferramentas foram atualizados para referenciar os novos caminhos:
+| | `cli/` | `scripts/` |
+| :--- | :--- | :--- |
+| **Frequência** | Uso diário | Uso esporádico (1x ou raramente) |
+| **Exemplos** | `phpstan.sh`, `phpcs.sh`, `db-reset.sh` | `setup.sh`, `deploy.sh`, `backup.sh` |
 
-### Frontend (npm scripts)
+Documentação dos comandos CLI: [CLI.md](CLI.md)
+
+---
+
+## Como os Arquivos são Referenciados
+
 ```json
-"scripts": {
-  "dev": "vite --host --config .tooling/frontend/vite.config.js",
-  "build": "vite build --config .tooling/frontend/vite.config.js",
-  "lint": "biome lint web --config-path=.tooling/frontend",
-  "type-check": "tsc --noEmit --project .tooling/frontend/tsconfig.json"
-}
+// package.json (npm scripts)
+"dev": "vite --host --config .tooling/frontend/vite.config.js"
+"type-check": "tsc --noEmit --project .tooling/frontend/tsconfig.json"
 ```
 
-### Backend (scripts CLI)
 ```bash
 # cli/phpstan.sh
 phpstan analyse --configuration=.tooling/quality/phpstan.neon
 
-# cli/phpcs.sh
-phpcs --standard=/var/www/html/.tooling/quality/phpcs.xml
-```
-
-### Setup
-```bash
-# Execute o setup a partir da raiz
+# Executar setup
 bash scripts/setup.sh
 ```
 
 ---
 
-## 📚 Documentação Relacionada
-
-- [README.md](README.md) - Visão geral e quick start
-- [GUIA-GERAL.md](leading/GUIA-GERAL.md) - Padrões de desenvolvimento
-- [DOCUMENTACAO_TECNICA.md](documentation/DOCUMENTACAO_TECNICA.md) - Referência técnica completa
-
----
-
-## 🧹 Arquivos Mantidos na Raiz (obrigatórios)
-
-Alguns arquivos **devem** permanecer na raiz por exigência das ferramentas:
-
-- `composer.json` / `composer.lock` - Composer procura na raiz
-- `package.json` / `package-lock.json` - npm procura na raiz
-- `symfony.lock` - Symfony Flex gerencia na raiz
-- `.env` / `.env.example` - Symfony procura na raiz
-- `Makefile` - Make procura na raiz
-
----
-
-**Atualizado em:** 15 de maio de 2026
+**Atualizado em:** 9 de setembro de 2026 (v5)
