@@ -51,18 +51,18 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 
 ### Frontend
 
-| Tecnologia | Versão | Papel |
-| :--- | :--- | :--- |
-| React | 19.1 | UI reativa com Concurrent Mode |
-| TypeScript | 5.9 | Tipagem estática — modo strict |
-| Vite | 7.2 | Build tool e dev server (HMR ultra-rápido) |
-| TanStack Query | 5.90 | Cache de dados do servidor, refetching, invalidação |
-| Zustand | 5.0 | Estado global leve com middleware `persist` (localStorage) |
-| Axios | 1.12 | HTTP client centralizado com interceptores de JWT |
-| React Router DOM | 7.9 | Roteamento client-side com lazy loading |
-| React Hook Form | 7.66 | Formulários performáticos com validação Zod |
-| Zod | 4.1 | Validação de schemas (forms, respostas de API) |
-| Shadcn / Radix UI | — | Componentes UI acessíveis e sem-opinião de estilo |
+| Tecnologia | Versão | Papel | Core? |
+| :--- | :--- | :--- | :--- |
+| React | 19.1 | UI reativa com Concurrent Mode | ✅ Core |
+| TypeScript | 5.9 | Tipagem estática — modo strict | ✅ Core |
+| Vite | 7.2 | Build tool e dev server (HMR ultra-rápido) | ✅ Core |
+| TanStack Query | 5.90 | Cache de dados do servidor, refetching, invalidação | ✅ Core |
+| Zustand | 5.0 | Estado global leve com middleware `persist` (localStorage) | ✅ Core |
+| Axios | 1.12 | HTTP client centralizado com interceptores de JWT | ✅ Core |
+| React Router DOM | 7.9 | Roteamento client-side com lazy loading | ✅ Core |
+| React Hook Form | 7.66 | Formulários performáticos com validação Zod | ✅ Core |
+| Zod | 4.1 | Validação de schemas (forms, respostas de API) | ✅ Core |
+| Shadcn / Radix UI | — | Componentes UI acessíveis e sem-opinião de estilo | ✅ Core |
 | Tailwind CSS | 3.4 | Utilitários CSS — configuração em `.tooling/frontend/tailwind.config.cjs` | ✅ Core |
 | Sonner | 2.0 | Sistema de toasts/notificações (usado no fluxo de auth) | ✅ Core |
 | next-themes | 0.4 | Suporte a tema claro/escuro (usado pelo Sonner) | ✅ Core |
@@ -70,9 +70,9 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | Biome | 1.9 | Linter + formatter + organizador de imports | ✅ Core |
 | Framer Motion | 12.x | Animações declarativas | 🔧 Módulo `ui-extra` |
 | Recharts | 2.x | Gráficos reativos baseados em SVG | 🔧 Módulo `ui-extra` |
-| Husky | 9.x | Git hooks (pre-commit) |
-| lint-staged | 15.x | Executa linters apenas nos arquivos staged |
-| Commitlint | 20.x | Enforça Conventional Commits na mensagem do commit |
+| Husky | 9.x | Git hooks (pre-commit) | ✅ Core |
+| lint-staged | 15.x | Executa linters apenas nos arquivos staged | ✅ Core |
+| Commitlint | 20.x | Enforça Conventional Commits na mensagem do commit | ✅ Core |
 
 ---
 

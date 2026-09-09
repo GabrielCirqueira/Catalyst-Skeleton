@@ -7,21 +7,22 @@ Este documento explica como a stack Docker está configurada e como executar o p
 | Serviço | Imagem | Descrição |
 | :--- | :--- | :--- |
 | **`db`** | `mysql:8.3` | Banco de dados; porta, usuário e senha via `ports.env` e `.env` |
-| **`symfony`** | `php:8.4-fpm` (imagem custom) | PHP-FPM + Nginx; bootstrap inicial + Supervisord |
+| **`symfony`** | `php:8.4` (imagem custom) | Apache (dev) / Nginx (prod); bootstrap inicial + Supervisord |
 | **`vite-react`** | `node:20` | Dev server Vite com HMR; porta via `ports.env` |
 
 ### Container `symfony`
 
 - **Bootstrap** (`devops/bootstrap.sh`): ajusta permissões de cache/logs e gera chaves JWT se necessário
-- **Supervisord**: gerencia PHP-FPM em dev e produção
+- **Supervisord**: gerencia Apache (dev) / Nginx (prod) e workers
+- Apache em dev (`devops/apache/000-default.conf`) — já tem as regras de rewrite para o `index.php`, sem dependência do `.htaccess`
 - Se o módulo **`async`** estiver ativo, o Supervisord também gerencia o worker Messenger (`php bin/console messenger:consume async scheduler_default`)
 
 ## Dockerfile Multi-stage (`devops/php/Dockerfile`)
 
 | Stage | Base | Conteúdo |
 | :--- | :--- | :--- |
-| `base` | `php:8.4-fpm-alpine` | Extensões essenciais: pdo_mysql, opcache, intl, zip |
-| `dev` | `base` | Xdebug + ferramentas CLI (git, unzip) |
+| `base` | `php:8.4-alpine` | Extensões essenciais: pdo_mysql, opcache, intl, zip |
+| `dev` | `base` + Apache | Xdebug + ferramentas CLI (git, unzip) |
 | `builder` | `base` + Composer | Instala dependências sem `--dev` |
 | `prod` | `base` + Nginx | Copia output do `builder`; sem root, sem ferramentas dev |
 
