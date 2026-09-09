@@ -62,13 +62,12 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | React Router DOM | 7.9 | Roteamento client-side com lazy loading | ✅ Core |
 | React Hook Form | 7.66 | Formulários performáticos com validação Zod | ✅ Core |
 | Zod | 4.1 | Validação de schemas (forms, respostas de API) | ✅ Core |
-| Shadcn / Radix UI | — | Componentes UI acessíveis e sem-opinião de estilo | ✅ Core |
-| Tailwind CSS | 3.4 | Utilitários CSS — configuração em `.tooling/frontend/tailwind.config.cjs` | ✅ Core |
-| Sonner | 2.0 | Sistema de toasts/notificações (usado no fluxo de auth) | ✅ Core |
-| next-themes | 0.4 | Suporte a tema claro/escuro (usado pelo Sonner) | ✅ Core |
+| HeroUI v3 | 3.2 | Componentes UI acessíveis e prontos (substitui Shadcn/Radix) | ✅ Core |
+| Tailwind CSS | 4.x | Motor de estilo CSS-first — sem `tailwind.config.js` | ✅ Core |
+| tailwindcss-motion | 1.x | Animações simples via classe Tailwind — zero JS | ✅ Core |
 | Lucide React | — | Conjunto de ícones | ✅ Core |
 | Biome | 1.9 | Linter + formatter + organizador de imports | ✅ Core |
-| Framer Motion | 12.x | Animações declarativas | 🔧 Módulo `ui-extra` |
+| Motion (Framer) | — | Animações com `AnimatePresence` | 🔧 Módulo `ui-extra` |
 | Recharts | 2.x | Gráficos reativos baseados em SVG | 🔧 Módulo `ui-extra` |
 | Husky | 9.x | Git hooks (pre-commit) | ✅ Core |
 | lint-staged | 15.x | Executa linters apenas nos arquivos staged | ✅ Core |
@@ -172,7 +171,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── layouts/              # Layouts base (sidebar, main content, etc.)
 │   ├── pages/                # Páginas folha carregadas via React.lazy()
 │   ├── routes/RotaProtegida.tsx  # Guard: redireciona para /login se não autenticado
-│   ├── shadcn/               # Componentes Shadcn UI (Radix UI) customizados
+│   ├── shared/ui/layout.tsx  # Primitivos: Flex, HStack, VStack, Box, Container
 │   ├── shared/               # Componentes, hooks e utils reutilizáveis
 │   └── stores/useAuthStore.ts    # Estado de autenticação (Zustand + persist)
 │
@@ -546,7 +545,7 @@ Configurados em `.tooling/frontend/vite.config.js` e `.tooling/frontend/tsconfig
 | `@shared/` | `web/shared/` |
 | `@stores/` | `web/stores/` |
 | `@config/` | `web/config/` |
-| `@shadcn/` | `web/shadcn/` |
+| `@shared/ui` | `web/shared/ui/` (primitivos de layout) |
 
 ### 6.6 TanStack Query
 
@@ -563,9 +562,9 @@ const queryClient = new QueryClient({
 });
 ```
 
-### 6.7 Tema (next-themes)
+### 6.7 Tema (HeroUI)
 
-`web/contexts/ThemeProvider.tsx` envolve a aplicação com o `ThemeProvider` do `next-themes`. O tema ativo é armazenado no `localStorage` e aplicado como classe `dark`/`light` no `<html>`. O Tailwind está configurado para `darkMode: 'class'`.
+O tema é gerenciado pelo `HeroUIProvider` (em `web/main.tsx`). O modo escuro é ativado adicionando a classe `dark` ao elemento `<html>` — o `web/contexts/ThemeContext.tsx` fornece o hook `useTheme()` para alternar entre `light` e `dark`. Tailwind v4 respeita a mesma convenção de classe.
 
 ### 6.8 Fluxo Completo de Autenticação
 

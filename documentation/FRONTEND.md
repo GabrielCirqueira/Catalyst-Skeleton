@@ -2,52 +2,86 @@
 
 Este documento explica a estrutura e o fluxo do frontend React que vive em `web/`.
 
+> Versão enxuta — prioriza o mínimo necessário pra rodar bem, com uma trilha clara do que adicionar depois e em que ordem, em vez de instalar tudo de uma vez.
+
 ## Tecnologias
 
-**Core (sempre instalado):**
+### Núcleo (sempre instalado)
 
 | Tecnologia | Papel |
 | :--- | :--- |
 | **React 19** + **TypeScript 5.9** | UI reativa, modo strict |
-| **Vite 7** | Build tool e dev server com HMR |
-| **Tailwind CSS 3.4** | Utilitários CSS ? config em `.tooling/frontend/tailwind.config.cjs` |
-| **Shadcn/ui** | Componentes acessíveis e customizáveis em `web/shadcn/` |
+| **Vite 7** | Build tool e dev server com HMR ultra-rápido |
+| **Tailwind CSS 4** | Motor de estilo CSS-first; sem `tailwind.config.js` |
+| **HeroUI v3** (`@heroui/react` + `@heroui/styles`) | Componentes prontos e acessíveis |
 | **React Router 7** | Roteamento via `createBrowserRouter` + lazy loading |
-| **TanStack Query 5** | Estado de servidor, cache e invalidação |
-| **Zustand 5** | Estado global leve com persistência opcional |
-| **Zod 4** | Validação de schemas (forms, respostas de API) |
+| **TanStack Query 5** | Estado do servidor, cache e invalidação |
+| **Zustand 5** | Estado global — só para o que não vem da API (auth, UI global) |
+| **Zod 4** | Validação de respostas da API e de formulários críticos |
 | **Axios** | HTTP client centralizado com interceptores JWT |
-| **Sonner** | Toasts e notificações (usado no fluxo de auth) |
+| **tailwindcss-motion** | Animações simples via classe Tailwind — zero JS |
 | **Biome 1.9** | Linter, formatter e organizador de imports |
 
-**Módulo `ui-extra` (opt-in ? ative no setup.sh):**
+> **Regra de Zustand**: não criar store por feature "por precaução". Começar com estado local/Context e migrar pra Zustand só quando sentir dor real de estado espalhado.
+>
+> **Regra de animação**: `tailwindcss-motion` é o padrão. `motion`/`AnimatePresence` do Framer Motion (módulo `ui-extra`) só entra quando há necessidade concreta de animar montagem/desmontagem condicional.
+
+### Módulo `ui-extra` (opt-in — ative no setup.sh)
 
 | Tecnologia | Papel |
 | :--- | :--- |
-| **Framer Motion** | Animações declarativas |
+| **Framer Motion** | Animações declarativas com `AnimatePresence` |
 | **Recharts** | Gráficos SVG reativos (+ `web/shadcn/components/ui/chart.tsx`) |
 
 ## Estrutura de Diretórios
 
 ```
 web/
-??? main.tsx              Entry point ? inicializa QueryClient e renderiza App
-??? App.tsx               Router raiz + provedores globais (ThemeProvider)
-??? index.css             CSS global + design tokens (variáveis HSL)
-??? config/api.ts         Instância Axios centralizada com interceptores JWT
-??? contexts/             ThemeContext (dark/light mode)
-??? features/             Módulos por domínio (ex: auth/)
-?   ??? auth/             hooks, api, components, types
-??? layouts/              MainLayout, AuthLayout, AppContainer
-??? pages/                Páginas folha carregadas via lazy()
-?   ??? Home/             Landing page pública
-?   ??? Login/            Página de login
-?   ??? Cadastro/         Página de cadastro
-?   ??? NotFound/         404
-??? routes/               RotaProtegida.tsx ? redireciona para /login se não autenticado
-??? shadcn/               Componentes Shadcn UI (Radix UI) customizados
-??? shared/               Hooks, utils e componentes reutilizáveis
-??? stores/useAuthStore.ts Estado de autenticação (Zustand + localStorage)
+├── main.tsx              Entry point — QueryClient, HeroUIProvider, ToastProvider
+├── App.tsx               Router raiz (createBrowserRouter)
+├── index.css             @import tailwindcss + @heroui/styles + tailwindcss-motion
+├── config/api.ts         Instância Axios centralizada com interceptores JWT
+├── features/auth/        hooks, api, types de autenticação
+├── layouts/
+│   ├── MainLayout.tsx    Layout base (Outlet)
+│   ├── AuthLayout.tsx    Layout centrado para Login/Cadastro
+│   └── AppContainer.tsx  Container responsivo de conteúdo
+├── pages/
+│   ├── Home/             Landing page pública
+│   ├── Login/            Página de login
+│   ├── Cadastro/         Página de cadastro
+│   └── NotFound/         404
+├── routes/               RotaProtegida.tsx
+├── shared/
+│   ├── lib/cn.ts         Utilitário cn() — clsx + tailwind-merge
+│   ├── ui/layout.tsx     Primitivos: Flex, HStack, VStack, Box, Grid, Container
+│   ├── hooks/            useDebounce, useMountEffect, useMediaQuery, useFiltrosUrl
+│   ├── components/       ErrorBoundary, DialogOuDrawer
+│   └── utils/            lazyWithRetry, animacoes, formatadores
+└── stores/useAuthStore.ts Estado de autenticação (Zustand + localStorage)
+```
+
+> `web/test/`, `e2e/` e `.storybook/` só passam a existir quando a ferramenta correspondente for adicionada — ver Apêndice.
+
+## Setup do CSS (`web/index.css`)
+
+Tailwind v4 é CSS-first — nenhum `tailwind.config.js` necessário:
+
+```css
+@import "tailwindcss";
+@import "@heroui/styles";
+@plugin "tailwindcss-motion";
+```
+
+## Primitivos de Layout (`web/shared/ui/layout.tsx`)
+
+```tsx
+import { Flex, HStack, VStack, Box, Grid, Container } from '@shared/ui/layout'
+
+// Exemplos
+<HStack className="justify-between">...</HStack>
+<VStack className="gap-4">...</VStack>
+<Container size="lg">...</Container>
 ```
 
 ## Roteamento (`web/App.tsx`)
@@ -56,15 +90,12 @@ web/
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
-      {/* Rotas públicas */}
       <Route element={<MainLayout />}>
         <Route index lazy={() => import('@pages/Home/Home')} />
         <Route path="login" lazy={() => import('@pages/Login/Login')} />
         <Route path="cadastro" lazy={() => import('@pages/Cadastro/Cadastro')} />
         <Route path="*" lazy={() => import('@pages/NotFound/NotFound')} />
       </Route>
-
-      {/* Rotas protegidas ? substitua MainLayout por DashboardLayout quando criar área logada */}
       <Route element={<MainLayout />}>
         <Route element={<RotaProtegida />}>
           <Route path="app" lazy={() => import('@pages/Home/Home')} />
@@ -75,11 +106,7 @@ const router = createBrowserRouter(
 )
 ```
 
-`RotaProtegida` redireciona para `/login` se `useAuthStore.autenticado === false`.
-
 ## Aliases de Importação
-
-Configurados em `tsconfig.json` e espelhados em `.tooling/frontend/vite.config.js`:
 
 | Alias | Resolve para |
 | :--- | :--- |
@@ -92,26 +119,29 @@ Configurados em `tsconfig.json` e espelhados em `.tooling/frontend/vite.config.j
 | `@stores` | `web/stores/` |
 | `@config` | `web/config/` |
 | `@routes` | `web/routes/` |
-| `@shadcn/*` | `web/shadcn/components/ui/*` |
 
 ## Regras de Ouro
 
-1. **Sem `useEffect` direto em pages/features**: Use TanStack Query para data fetching, event handlers para ações, `useMemo` para estado derivado. Se precisar sincronizar com o browser na montagem, use `useMountEffect` de `web/shared/hooks/`.
-2. **Componentes atômicos**: Lógica pesada vai para hooks no diretório `hooks/` da própria feature.
-3. **Tipagem estrita**: Sem `any`. Respostas de API validadas com schema Zod.
+1. **Sem `useEffect` em pages/features**: use TanStack Query para dados, event handlers para ações, `useMemo` para derivações, `useMountEffect` para efeitos de montagem.
+2. **Componentes atômicos**: lógica pesada vai para hooks no diretório `hooks/` da própria feature.
+3. **Tipagem estrita**: sem `any`. Respostas de API validadas com schema Zod.
+4. **Nunca editar `node_modules/@heroui`**: customização via `className` (Tailwind), CSS variables e slots expostos.
 
 ## Execução e Build
 
 ```bash
-npm run dev          # Dev server com HMR (ou make up-d no container)
-npm run build        # Build de produção ? public/build/
-npm run type-check   # tsc --noEmit
-npm run validate     # type-check + lint (Biome)
+npm run dev        # Dev server (ou make up-d no container)
+npm run build      # Build de produção
+npm run type-check # tsc --noEmit
+npm run validate   # type-check + lint Biome
 ```
 
-## Lint e Qualidade
+## Apêndice: quando adicionar cada peça opcional
 
-```bash
-make lint-tsx        # biome check web
-make fix-tsx         # biome check --write web
-```
+| Ferramenta | Gatilho | Instalação |
+| :--- | :--- | :--- |
+| Vitest + RTL | Primeira lógica que dói quebrar | `npm i -D vitest @testing-library/react` |
+| Motion (Framer) | Primeira necessidade real de `AnimatePresence` | módulo `ui-extra` no setup.sh |
+| Husky + lint-staged | Time cresce além de 1 pessoa | já incluso no skeleton |
+| Playwright | Primeiro fluxo crítico de negócio | `npm i -D @playwright/test` |
+| Storybook | Mais de uma pessoa nos mesmos componentes | `npm i -D storybook` |
