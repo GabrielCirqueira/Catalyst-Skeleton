@@ -88,6 +88,7 @@ export default defineConfig((config) => ({
         find: '@shadcn',
         replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'components', 'ui'),
       },
+      { find: '@app', replacement: path.resolve(__dirname, '..', '..', 'web') },
       { find: '@', replacement: path.resolve(__dirname, '..', '..', 'web') },
     ],
   },

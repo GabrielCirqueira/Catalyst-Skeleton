@@ -1,0 +1,18 @@
+{
+  "_comment": "Dependências do módulo ui-extra. Instaladas automaticamente pelo setup.sh quando o módulo é ativado.",
+  "dependencies": {
+    "framer-motion": "^12.23.22",
+    "recharts": "^2.15.4"
+  },
+  "files": [
+    {
+      "src": "chart.tsx",
+      "dest": "web/shadcn/components/ui/chart.tsx",
+      "description": "Componente de gráfico shadcn/ui (requer recharts)"
+    }
+  ],
+  "post_install": [
+    "Após instalar, descomente o import de framer-motion em web/shared/utils/animacoes.ts se quiser tipagem explícita.",
+    "O arquivo web/shadcn/components/ui/chart.tsx será copiado automaticamente para o projeto."
+  ]
+}
