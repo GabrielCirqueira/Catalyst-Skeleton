@@ -635,6 +635,77 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
+# PASSO 6.5 — Ativar módulos opcionais selecionados
+# ═══════════════════════════════════════════════════════════════
+step "6.5/9 — Ativando módulos opcionais"
+
+# Módulo: ui-extra (framer-motion + recharts)
+if [[ "${MODULE_UI_EXTRA:-0}" == "1" ]]; then
+  info "Instalando módulo ui-extra (Framer Motion + Recharts)..."
+  VITE_CONTAINER=$($COMPOSE ps -q vite-react 2>/dev/null || echo "")
+  if [[ -n "$VITE_CONTAINER" ]]; then
+    docker exec "$VITE_CONTAINER" sh -c "npm install framer-motion recharts --save" 2>/dev/null ||       warn "Falha ao instalar ui-extra. Execute manualmente: npm install framer-motion recharts"
+  else
+    warn "Container vite-react não encontrado. Execute: npm install framer-motion recharts"
+  fi
+  if [[ ! -f "web/shadcn/components/ui/chart.tsx" ]]; then
+    cp .skeleton-modules/ui-extra/chart.tsx web/shadcn/components/ui/chart.tsx
+    ok "chart.tsx instalado."
+  fi
+  ok "Módulo ui-extra ativado."
+else
+  info "Módulo ui-extra: ignorado."
+fi
+
+# Módulo: async (Messenger + Scheduler)
+if [[ "${MODULE_ASYNC:-0}" == "1" ]]; then
+  info "Instalando módulo async (Messenger + Scheduler)..."
+  $COMPOSE exec symfony composer require symfony/doctrine-messenger symfony/scheduler --no-interaction || \
+    warn "Falha ao instalar módulo async. Instale manualmente: composer require symfony/doctrine-messenger symfony/scheduler"
+
+  # config/packages/messenger.yaml
+  if [[ ! -f "config/packages/messenger.yaml" ]]; then
+    cp .skeleton-modules/async/messenger.yaml config/packages/messenger.yaml
+    ok "config/packages/messenger.yaml criado."
+  fi
+
+  # Pastas de código: Message, MessageHandler, Schedule
+  for dir in Message MessageHandler Schedule; do
+    if [[ -d ".skeleton-modules/async/src/$dir" && ! -d "src/$dir" ]]; then
+      cp -r ".skeleton-modules/async/src/$dir" "src/$dir"
+      ok "src/$dir copiado."
+    fi
+  done
+
+  # Adiciona workers Messenger ao supervisord de produção
+  if [[ -f "devops/php/supervisord-prod.conf" ]] && ! grep -q "messenger" devops/php/supervisord-prod.conf; then
+    cat .skeleton-modules/async/supervisord-messenger.conf >> devops/php/supervisord-prod.conf
+    ok "Workers Messenger adicionados ao supervisord-prod.conf."
+  fi
+
+  ok "Módulo async ativado."
+else
+  info "Módulo async: ignorado."
+fi
+
+# Módulo: observability (Sentry)
+if [[ "${MODULE_OBSERVABILITY:-0}" == "1" ]]; then
+  info "Instalando módulo observability (Sentry)..."
+  $COMPOSE exec symfony composer require sentry/sentry-symfony --no-interaction ||     warn "Falha ao instalar módulo observability. Instale manualmente: composer require sentry/sentry-symfony"
+  if [[ ! -f "config/packages/sentry.yaml" ]]; then
+    cp .skeleton-modules/observability/sentry.yaml config/packages/sentry.yaml
+    ok "config/packages/sentry.yaml criado."
+  fi
+  if ! grep -q "SentryBundle" config/bundles.php; then
+    sed -i "s|];|    Sentry\\\\SentryBundle\\\\SentryBundle::class => ['prod' => true],\n];|" config/bundles.php
+    ok "SentryBundle registrado em bundles.php."
+  fi
+  ok "Módulo observability ativado."
+else
+  info "Módulo observability: ignorado."
+fi
+
+# ═══════════════════════════════════════════════════════════════
 # PASSO 7 — Aguardar banco de dados ficar pronto
 # ═══════════════════════════════════════════════════════════════
 step "7/9 — Aguardando banco de dados"
