@@ -1,9 +1,9 @@
 import { api } from '@config/api'
 import { useAuthStore } from '@stores'
+import { addToast } from '@heroui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
 import type {
   CadastroInput,
   LoginInput,
@@ -18,12 +18,12 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (input: LoginInput): Promise<void> => {
-      const { data: loginData } = await api.post<RespostaLogin>('/api/auth/login', {
+      const { data: loginData } = await api.post<RespostaLogin>('/api/v1/auth/login', {
         username: input.username,
         senha: input.senha,
       })
 
-      const { data: meData } = await api.get<RespostaMe>('/api/auth/me', {
+      const { data: meData } = await api.get<RespostaMe>('/api/v1/auth/me', {
         headers: { Authorization: `Bearer ${loginData.token}` },
       })
 
@@ -40,14 +40,14 @@ export function useLogin() {
       )
     },
     onSuccess: () => {
-      toast.success('Bem-vindo de volta!')
-      navigate('/dashboard')
+      addToast({ title: 'Bem-vindo de volta!', color: 'success' })
+      navigate('/app')
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        toast.error('Usuário ou senha incorretos.')
+        addToast({ title: 'Usuário ou senha incorretos.', color: 'danger' })
       } else {
-        toast.error('Falha ao fazer login. Tente novamente.')
+        addToast({ title: 'Falha ao fazer login. Tente novamente.', color: 'danger' })
       }
     },
   })
@@ -58,7 +58,7 @@ export function useCadastro() {
 
   return useMutation({
     mutationFn: async (input: CadastroInput): Promise<RespostaCadastro> => {
-      const { data } = await api.post<RespostaCadastro>('/api/auth/registro', {
+      const { data } = await api.post<RespostaCadastro>('/api/v1/auth/registro', {
         nomeCompleto: input.nomeCompleto,
         username: input.username,
         senha: input.senha,
@@ -66,16 +66,16 @@ export function useCadastro() {
       return data
     },
     onSuccess: () => {
-      toast.success('Cadastro realizado! Faça login para continuar.')
+      addToast({ title: 'Cadastro realizado! Faça login para continuar.', color: 'success' })
       navigate('/login')
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        toast.error('Este nome de usuário já está em uso.')
+        addToast({ title: 'Este nome de usuário já está em uso.', color: 'danger' })
       } else if (axios.isAxiosError(err) && err.response?.status === 422) {
-        toast.error('Corrija os campos destacados e tente novamente.')
+        addToast({ title: 'Corrija os campos e tente novamente.', color: 'danger' })
       } else {
-        toast.error('Falha no cadastro. Tente novamente.')
+        addToast({ title: 'Falha no cadastro. Tente novamente.', color: 'danger' })
       }
     },
   })

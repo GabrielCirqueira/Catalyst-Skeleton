@@ -1,11 +1,6 @@
 import { useCadastro } from '@features/auth'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@shadcn/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shadcn/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@shadcn/form'
-import { Input } from '@shadcn/input'
-import { Spinner } from '@shadcn/spinner'
-import { useForm } from 'react-hook-form'
+import { Button, Card, CardBody, CardHeader, Input } from '@heroui/react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
 
@@ -27,128 +22,108 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>
 
+const emptyForm: FormValues = {
+  nomeCompleto: '',
+  username: '',
+  senha: '',
+  confirmacaoSenha: '',
+}
+
 export function Component() {
   const cadastro = useCadastro()
+  const [form, setForm] = useState(emptyForm)
+  const [erros, setErros] = useState<Record<string, string>>({})
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      nomeCompleto: '',
-      username: '',
-      senha: '',
-      confirmacaoSenha: '',
-    },
-  })
+  function handleChange(campo: string, valor: string) {
+    setForm((prev) => ({ ...prev, [campo]: valor }))
+    setErros((prev) => ({ ...prev, [campo]: '' }))
+  }
 
-  function onSubmit(values: FormValues) {
-    cadastro.mutate(values)
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const result = schema.safeParse(form)
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      for (const issue of result.error.issues) {
+        fieldErrors[issue.path[0] as string] = issue.message
+      }
+      setErros(fieldErrors)
+      return
+    }
+    cadastro.mutate(result.data)
   }
 
   return (
-    <Card className="w-full shadow-hard-2">
-      <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-2xl font-heading font-bold text-center">Criar conta</CardTitle>
-        <CardDescription className="text-center">
+    <Card className="w-full max-w-sm shadow-md">
+      <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
+        <h1 className="text-2xl font-bold font-sans">Criar conta</h1>
+        <p className="text-sm text-default-500 text-center">
           Preencha os dados abaixo para se cadastrar
-        </CardDescription>
+        </p>
       </CardHeader>
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="nomeCompleto"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome completo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="João da Silva" autoComplete="name" autoFocus {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <CardBody className="px-6 py-6">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+          <Input
+            label="Nome completo"
+            placeholder="João da Silva"
+            value={form.nomeCompleto}
+            onValueChange={(v) => handleChange('nomeCompleto', v)}
+            isInvalid={!!erros.nomeCompleto}
+            errorMessage={erros.nomeCompleto}
+            autoComplete="name"
+            autoFocus
+          />
 
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Usuário</FormLabel>
-                  <FormControl>
-                    <Input placeholder="joao.silva" autoComplete="username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Usuário"
+            placeholder="joao.silva"
+            value={form.username}
+            onValueChange={(v) => handleChange('username', v)}
+            isInvalid={!!erros.username}
+            errorMessage={erros.username}
+            autoComplete="username"
+          />
 
-            <FormField
-              control={form.control}
-              name="senha"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Senha</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Mínimo 8 caracteres"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Senha"
+            type="password"
+            placeholder="Mínimo 8 caracteres"
+            value={form.senha}
+            onValueChange={(v) => handleChange('senha', v)}
+            isInvalid={!!erros.senha}
+            errorMessage={erros.senha}
+            autoComplete="new-password"
+          />
 
-            <FormField
-              control={form.control}
-              name="confirmacaoSenha"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirmar senha</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Repita a senha"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Confirmar senha"
+            type="password"
+            placeholder="Repita a senha"
+            value={form.confirmacaoSenha}
+            onValueChange={(v) => handleChange('confirmacaoSenha', v)}
+            isInvalid={!!erros.confirmacaoSenha}
+            errorMessage={erros.confirmacaoSenha}
+            autoComplete="new-password"
+          />
 
-            <Button
-              type="submit"
-              className="w-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white font-semibold"
-              disabled={cadastro.isPending}
-            >
-              {cadastro.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Spinner className="size-4" />
-                  Criando conta…
-                </span>
-              ) : (
-                'Criar conta'
-              )}
-            </Button>
-          </form>
-        </Form>
-
-        <p className="mt-6 text-center text-sm text-typography-500 dark:text-typography-400">
-          Já tem uma conta?{' '}
-          <Link
-            to="/login"
-            className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 underline-offset-4 hover:underline"
+          <Button
+            type="submit"
+            color="primary"
+            className="w-full font-semibold"
+            isLoading={cadastro.isPending}
           >
+            Criar conta
+          </Button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-default-500">
+          Já tem uma conta?{' '}
+          <Link to="/login" className="font-medium text-primary hover:underline">
             Fazer login
           </Link>
         </p>
-      </CardContent>
+      </CardBody>
     </Card>
   )
 }
