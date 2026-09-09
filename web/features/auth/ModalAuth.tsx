@@ -1,3 +1,5 @@
+import { api } from '@/config/api'
+import { useAuthStore } from '@/stores'
 import { toast } from '@heroui/react'
 import {
   Button,
@@ -18,14 +20,18 @@ import {
   Tabs,
   TextField,
 } from '@heroui/react'
-import { api } from '@/config/api'
-import { useAuthStore } from '@/stores'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { Code2 } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
-import type { CadastroInput, LoginInput, RespostaCadastro, RespostaLogin, RespostaMe } from './types'
+import type {
+  CadastroInput,
+  LoginInput,
+  RespostaCadastro,
+  RespostaLogin,
+  RespostaMe,
+} from './types'
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Informe o usuário.'),
@@ -35,7 +41,10 @@ const loginSchema = z.object({
 const cadastroSchema = z
   .object({
     nomeCompleto: z.string().min(3, 'Mínimo 3 caracteres.'),
-    username: z.string().min(3, 'Mínimo 3 caracteres.').regex(/^[a-zA-Z0-9._-]+$/),
+    username: z
+      .string()
+      .min(3, 'Mínimo 3 caracteres.')
+      .regex(/^[a-zA-Z0-9._-]+$/),
     senha: z.string().min(8, 'Mínimo 8 caracteres.'),
     confirmacaoSenha: z.string().min(1, 'Confirme a senha.'),
   })
@@ -63,7 +72,13 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
         headers: { Authorization: `Bearer ${loginData.token}` },
       })
       setAutenticado(
-        { id: meData.id, nomeCompleto: meData.nomeCompleto, username: meData.username, roles: meData.roles, criadoEm: meData.criadoEm },
+        {
+          id: meData.id,
+          nomeCompleto: meData.nomeCompleto,
+          username: meData.username,
+          roles: meData.roles,
+          criadoEm: meData.criadoEm,
+        },
         loginData.token,
         loginData.refresh_token
       )
@@ -95,7 +110,10 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
 
   // ─── Cadastro ──────────────────────────────────────────────────────────────
   const [cadastroForm, setCadastroForm] = useState<CadastroInput>({
-    nomeCompleto: '', username: '', senha: '', confirmacaoSenha: '',
+    nomeCompleto: '',
+    username: '',
+    senha: '',
+    confirmacaoSenha: '',
   })
   const [cadastroErros, setCadastroErros] = useState<Record<string, string>>({})
 
@@ -130,7 +148,12 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
   }
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
       <ModalBackdrop isDismissable>
         <ModalContainer placement="center" size="sm">
           <ModalDialog>
@@ -151,12 +174,19 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                 </TabListContainer>
 
                 <TabPanel id="login">
-                  <form onSubmit={handleLoginSubmit} className="flex flex-col gap-3 pt-2" noValidate>
+                  <form
+                    onSubmit={handleLoginSubmit}
+                    className="flex flex-col gap-3 pt-2"
+                    noValidate
+                  >
                     <TextField isInvalid={!!loginErros.username}>
                       <Label className="text-sm font-medium">Usuário</Label>
                       <Input
                         value={loginForm.username}
-                        onChange={(e) => { setLoginForm((p) => ({ ...p, username: e.target.value })); setLoginErros((p) => ({ ...p, username: '' })) }}
+                        onChange={(e) => {
+                          setLoginForm((p) => ({ ...p, username: e.target.value }))
+                          setLoginErros((p) => ({ ...p, username: '' }))
+                        }}
                         autoFocus
                         className="w-full"
                       />
@@ -168,45 +198,102 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                       <Input
                         type="password"
                         value={loginForm.senha}
-                        onChange={(e) => { setLoginForm((p) => ({ ...p, senha: e.target.value })); setLoginErros((p) => ({ ...p, senha: '' })) }}
+                        onChange={(e) => {
+                          setLoginForm((p) => ({ ...p, senha: e.target.value }))
+                          setLoginErros((p) => ({ ...p, senha: '' }))
+                        }}
                         className="w-full"
                       />
                       <FieldError className="text-xs text-danger">{loginErros.senha}</FieldError>
                     </TextField>
 
-                    <Button type="submit" variant="primary" fullWidth isPending={loginMutation.isPending} isDisabled={loginMutation.isPending} className="mt-1">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      fullWidth
+                      isPending={loginMutation.isPending}
+                      isDisabled={loginMutation.isPending}
+                      className="mt-1"
+                    >
                       Entrar
                     </Button>
                   </form>
                 </TabPanel>
 
                 <TabPanel id="cadastro">
-                  <form onSubmit={handleCadastroSubmit} className="flex flex-col gap-3 pt-2" noValidate>
+                  <form
+                    onSubmit={handleCadastroSubmit}
+                    className="flex flex-col gap-3 pt-2"
+                    noValidate
+                  >
                     <TextField isInvalid={!!cadastroErros.nomeCompleto}>
                       <Label className="text-sm font-medium">Nome completo</Label>
-                      <Input value={cadastroForm.nomeCompleto} onChange={(e) => { setCadastroForm((p) => ({ ...p, nomeCompleto: e.target.value })); setCadastroErros((p) => ({ ...p, nomeCompleto: '' })) }} className="w-full" />
-                      <FieldError className="text-xs text-danger">{cadastroErros.nomeCompleto}</FieldError>
+                      <Input
+                        value={cadastroForm.nomeCompleto}
+                        onChange={(e) => {
+                          setCadastroForm((p) => ({ ...p, nomeCompleto: e.target.value }))
+                          setCadastroErros((p) => ({ ...p, nomeCompleto: '' }))
+                        }}
+                        className="w-full"
+                      />
+                      <FieldError className="text-xs text-danger">
+                        {cadastroErros.nomeCompleto}
+                      </FieldError>
                     </TextField>
 
                     <TextField isInvalid={!!cadastroErros.username}>
                       <Label className="text-sm font-medium">Usuário</Label>
-                      <Input value={cadastroForm.username} onChange={(e) => { setCadastroForm((p) => ({ ...p, username: e.target.value })); setCadastroErros((p) => ({ ...p, username: '' })) }} className="w-full" />
-                      <FieldError className="text-xs text-danger">{cadastroErros.username}</FieldError>
+                      <Input
+                        value={cadastroForm.username}
+                        onChange={(e) => {
+                          setCadastroForm((p) => ({ ...p, username: e.target.value }))
+                          setCadastroErros((p) => ({ ...p, username: '' }))
+                        }}
+                        className="w-full"
+                      />
+                      <FieldError className="text-xs text-danger">
+                        {cadastroErros.username}
+                      </FieldError>
                     </TextField>
 
                     <TextField isInvalid={!!cadastroErros.senha}>
                       <Label className="text-sm font-medium">Senha</Label>
-                      <Input type="password" value={cadastroForm.senha} onChange={(e) => { setCadastroForm((p) => ({ ...p, senha: e.target.value })); setCadastroErros((p) => ({ ...p, senha: '' })) }} className="w-full" />
+                      <Input
+                        type="password"
+                        value={cadastroForm.senha}
+                        onChange={(e) => {
+                          setCadastroForm((p) => ({ ...p, senha: e.target.value }))
+                          setCadastroErros((p) => ({ ...p, senha: '' }))
+                        }}
+                        className="w-full"
+                      />
                       <FieldError className="text-xs text-danger">{cadastroErros.senha}</FieldError>
                     </TextField>
 
                     <TextField isInvalid={!!cadastroErros.confirmacaoSenha}>
                       <Label className="text-sm font-medium">Confirmar senha</Label>
-                      <Input type="password" value={cadastroForm.confirmacaoSenha} onChange={(e) => { setCadastroForm((p) => ({ ...p, confirmacaoSenha: e.target.value })); setCadastroErros((p) => ({ ...p, confirmacaoSenha: '' })) }} className="w-full" />
-                      <FieldError className="text-xs text-danger">{cadastroErros.confirmacaoSenha}</FieldError>
+                      <Input
+                        type="password"
+                        value={cadastroForm.confirmacaoSenha}
+                        onChange={(e) => {
+                          setCadastroForm((p) => ({ ...p, confirmacaoSenha: e.target.value }))
+                          setCadastroErros((p) => ({ ...p, confirmacaoSenha: '' }))
+                        }}
+                        className="w-full"
+                      />
+                      <FieldError className="text-xs text-danger">
+                        {cadastroErros.confirmacaoSenha}
+                      </FieldError>
                     </TextField>
 
-                    <Button type="submit" variant="primary" fullWidth isPending={cadastroMutation.isPending} isDisabled={cadastroMutation.isPending} className="mt-1">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      fullWidth
+                      isPending={cadastroMutation.isPending}
+                      isDisabled={cadastroMutation.isPending}
+                      className="mt-1"
+                    >
                       Criar conta
                     </Button>
                   </form>

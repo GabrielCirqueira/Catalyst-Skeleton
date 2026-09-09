@@ -1,5 +1,14 @@
 import { useLogin } from '@/features/auth'
-import { Button, Card, CardContent, CardHeader, FieldError, Input, Label, TextField } from '@heroui/react'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  FieldError,
+  Input,
+  Label,
+  TextField,
+} from '@heroui/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
@@ -37,9 +46,7 @@ export function Component() {
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
         <h1 className="text-2xl font-bold font-sans">Entrar</h1>
-        <p className="text-sm text-center text-muted">
-          Acesse sua conta com seu usuário e senha
-        </p>
+        <p className="text-sm text-center text-muted">Acesse sua conta com seu usuário e senha</p>
       </CardHeader>
 
       <CardContent className="px-6 py-6">
