@@ -17,5 +17,6 @@
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "snyk.advanced.autoSelectOrganization": true
+  "snyk.advanced.autoSelectOrganization": true,
+  "files.encoding": "utf8"
 }
