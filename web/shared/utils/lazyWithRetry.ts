@@ -18,7 +18,9 @@ export function lazyWithRetry<T>(
       .catch((error) => {
         if (retries > 0) {
           setTimeout(() => {
-            lazyWithRetry(importFn, retries - 1, interval).then(resolve).catch(reject)
+            lazyWithRetry(importFn, retries - 1, interval)
+              .then(resolve)
+              .catch(reject)
           }, interval)
         } else {
           reject(error)
