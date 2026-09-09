@@ -24,11 +24,11 @@ security:
             security: false
 
         login:
-            pattern: ^/api/auth/login
+            pattern: ^/api/v1/auth/login
             stateless: true
             provider: app_chained_provider
             json_login:
-                check_path: /api/auth/login
+                check_path: /api/v1/auth/login
                 username_path: username
                 password_path: senha
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -38,11 +38,11 @@ security:
                 interval: '1 minute'
 
         refresh:
-            pattern: ^/api/token/refresh
+            pattern: ^/api/v1/token/refresh
             stateless: true
             provider: app_chained_provider
             refresh_jwt:
-                check_path: /api/token/refresh
+                check_path: /api/v1/token/refresh
 
         api:
             pattern: ^/api
@@ -55,11 +55,11 @@ security:
             provider: app_usuario_provider
 
     access_control:
-        - { path: ^/api/v1/health,     roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/login,    roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/registro, roles: PUBLIC_ACCESS }
-        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
-        - { path: ^/api,               roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/v1/health,          roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/login,      roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/registro,   roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/token/refresh,   roles: PUBLIC_ACCESS }
+        - { path: ^/api,                    roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
