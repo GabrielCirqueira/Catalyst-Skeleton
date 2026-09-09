@@ -1,5 +1,5 @@
-import { api } from '@config/api'
-import { useAuthStore } from '@stores'
+import { api } from '@/config/api'
+import { useAuthStore } from '@/stores'
 import { toast } from '@heroui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'

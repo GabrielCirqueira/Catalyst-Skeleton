@@ -1,4 +1,4 @@
-import { cn } from '@shared/lib/cn'
+import { cn } from '@/shared/lib/cn'
 import { Code2 } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 

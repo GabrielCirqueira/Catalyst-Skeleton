@@ -1,4 +1,4 @@
-import { cn } from '@shared/lib/cn'
+import { cn } from '@/shared/lib/cn'
 import * as React from 'react'
 
 export interface AppContainerProps extends React.HTMLAttributes<HTMLDivElement> {

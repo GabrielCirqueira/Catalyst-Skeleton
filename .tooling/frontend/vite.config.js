@@ -1,4 +1,3 @@
-import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -31,18 +30,5 @@ export default defineConfig((config) => ({
       port: frontendPort,
     },
     port: frontendPort,
-  },
-  resolve: {
-    alias: [
-      { find: '@layouts', replacement: path.resolve(__dirname, '..', '..', 'web', 'layouts') },
-      { find: '@pages', replacement: path.resolve(__dirname, '..', '..', 'web', 'pages') },
-      { find: '@config', replacement: path.resolve(__dirname, '..', '..', 'web', 'config') },
-      { find: '@stores', replacement: path.resolve(__dirname, '..', '..', 'web', 'stores') },
-      { find: '@routes', replacement: path.resolve(__dirname, '..', '..', 'web', 'routes') },
-      { find: '@features', replacement: path.resolve(__dirname, '..', '..', 'web', 'features') },
-      { find: '@shared', replacement: path.resolve(__dirname, '..', '..', 'web', 'shared') },
-      { find: '@app', replacement: path.resolve(__dirname, '..', '..', 'web') },
-      { find: '@', replacement: path.resolve(__dirname, '..', '..', 'web') },
-    ],
   },
 }))

@@ -1,4 +1,4 @@
-import { cn } from '@shared/lib/cn'
+import { cn } from '@/shared/lib/cn'
 import * as React from 'react'
 import { Outlet } from 'react-router-dom'
 

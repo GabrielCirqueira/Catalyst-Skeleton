@@ -1,5 +1,5 @@
-import { ModalAuth } from '@features/auth/ModalAuth'
-import { useAuthStore } from '@stores/useAuthStore'
+import { ModalAuth } from '@/features/auth/ModalAuth'
+import { useAuthStore } from '@/stores/useAuthStore'
 import {
   Accordion,
   AccordionBody,

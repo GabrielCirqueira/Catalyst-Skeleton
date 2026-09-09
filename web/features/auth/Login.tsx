@@ -1,4 +1,4 @@
-import { useLogin } from '@features/auth'
+import { useLogin } from '@/features/auth'
 import { Button, Card, CardContent, CardHeader, FieldError, Input, Label, TextField } from '@heroui/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'

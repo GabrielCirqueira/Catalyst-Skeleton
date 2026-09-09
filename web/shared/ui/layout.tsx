@@ -1,4 +1,4 @@
-import { cn } from '@shared/lib/cn'
+import { cn } from '@/shared/lib/cn'
 import type { ComponentProps } from 'react'
 
 // ─── Flex primitivos ─────────────────────────────────────────────────────────

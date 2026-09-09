@@ -18,8 +18,8 @@ import {
   Tabs,
   TextField,
 } from '@heroui/react'
-import { api } from '@config/api'
-import { useAuthStore } from '@stores'
+import { api } from '@/config/api'
+import { useAuthStore } from '@/stores'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { Code2 } from 'lucide-react'

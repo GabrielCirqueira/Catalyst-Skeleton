@@ -1,5 +1,5 @@
-import type { RespostaRefresh } from '@features/auth/types'
-import { useAuthStore } from '@stores'
+import type { RespostaRefresh } from '@/features/auth/types'
+import { useAuthStore } from '@/stores'
 import axios from 'axios'
 
 /**
