@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/api/auth', name: 'auth_')]
+#[Route('/api/v1/auth', name: 'auth_')]
 final class AuthController extends AbstractController
 {
     public function __construct(
