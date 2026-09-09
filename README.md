@@ -1,4 +1,4 @@
-# 🚀 Catalyst Skeleton v4.0.0 — Symfony 7.3 & React 19
+# 🚀 Catalyst Skeleton v5.0.0 — Symfony 7.3 & React 19
 
 **O ponto de partida definitivo para aplicações empresariais sólidas, escaláveis e resilientes.**
 
@@ -14,7 +14,8 @@ O roadmap do Catalyst Skeleton é focado em estabilidade e modernização consta
 
 | Versão | Data de Lançamento | Destaque Principal |
 | :--- | :--- | :--- |
-| **Skeleton V4** | 23 de março 2026 | **Atual** — Symfony 7.3, React 19, Biome. |
+| **Skeleton V5** | 9 de setembro 2026 | **Atual** — Núcleo enxuto + módulos opt-in. Rotas padronizadas `/api/v1/`. |
+| **Skeleton V4** | 23 de março 2026 | Estável — Symfony 7.3, React 19, Biome. |
 | **Skeleton V3** | 6 de outubro 2025 | Estabilização de Message Bus e Workers. |
 | **Skeleton V2** | 1 de junho 2025 | Introdução de Shadcn UI e Lucide Icons. |
 | **Skeleton V1** | 30 de janeiro 2025 | Release inicial (Symfony 6.4 + React 18). |
