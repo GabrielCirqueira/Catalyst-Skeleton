@@ -298,6 +298,56 @@ save_state "FRONTEND_PORT" "$FRONTEND_PORT"
 save_state "DB_PORT" "$DB_PORT"
 save_state "SUPERVISOR_PORT" "$SUPERVISOR_PORT"
 mark_step "1_5"
+# ───────────────────────────────────────────────────────────────
+# PASSO 1.6 – Seleção de Módulos Opcionais
+# ───────────────────────────────────────────────────────────────
+step "1.6/9 – Módulos opcionais"
+echo ""
+echo "  O Catalyst Skeleton v5 possui um núcleo enxuto."
+echo "  Selecione os módulos extras que deseja ativar (Enter = não ativar):"
+echo ""
+
+# Módulo: async (Messenger + Scheduler)
+if [[ "${MODULE_ASYNC:-}" == "1" ]]; then
+  step "1.6/9 – Módulos (Restaurado)"
+  ok "async=${MODULE_ASYNC} | observability=${MODULE_OBSERVABILITY:-0}"
+else
+  read -rp "  [async]         Messenger + Scheduler (filas, workers, tarefas agendadas)?  [s/N]: " _MOD_ASYNC
+  _MOD_ASYNC="${_MOD_ASYNC,,}"
+  if [[ "$_MOD_ASYNC" =~ ^s$ ]]; then
+    save_state "MODULE_ASYNC" "1"
+    ok "Módulo async ativado."
+  else
+    save_state "MODULE_ASYNC" "0"
+    info "Módulo async ignorado."
+  fi
+
+  read -rp "  [observability]  Sentry (rastreamento de erros em produção)?                [s/N]: " _MOD_OBS
+  _MOD_OBS="${_MOD_OBS,,}"
+  if [[ "$_MOD_OBS" =~ ^s$ ]]; then
+    save_state "MODULE_OBSERVABILITY" "1"
+    ok "Módulo observability ativado."
+  else
+    save_state "MODULE_OBSERVABILITY" "0"
+    info "Módulo observability ignorado."
+  fi
+
+  read -rp "  [ui-extra]       Framer Motion + Recharts (animações e gráficos)?            [s/N]: " _MOD_UI
+  _MOD_UI="${_MOD_UI,,}"
+  if [[ "$_MOD_UI" =~ ^s$ ]]; then
+    save_state "MODULE_UI_EXTRA" "1"
+    ok "Módulo ui-extra ativado."
+  else
+    save_state "MODULE_UI_EXTRA" "0"
+    info "Módulo ui-extra ignorado."
+  fi
+
+  echo ""
+  info "Módulos: async=${MODULE_ASYNC:-0} | observability=${MODULE_OBSERVABILITY:-0} | ui-extra=${MODULE_UI_EXTRA:-0}"
+fi
+mark_step "1_6"
+
+
 
 # ═══════════════════════════════════════════════════════════════
 # PASSO 2 — Pré-requisitos
