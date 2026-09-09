@@ -1,6 +1,6 @@
 import { api } from '@config/api'
 import { useAuthStore } from '@stores'
-import { addToast } from '@heroui/react'
+import { toast } from '@heroui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -40,14 +40,14 @@ export function useLogin() {
       )
     },
     onSuccess: () => {
-      addToast({ title: 'Bem-vindo de volta!', color: 'success' })
+      toast.success('Bem-vindo de volta!')
       navigate('/app')
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        addToast({ title: 'Usuário ou senha incorretos.', color: 'danger' })
+        toast.danger('Usuário ou senha incorretos.')
       } else {
-        addToast({ title: 'Falha ao fazer login. Tente novamente.', color: 'danger' })
+        toast.danger('Falha ao fazer login. Tente novamente.')
       }
     },
   })
@@ -66,16 +66,16 @@ export function useCadastro() {
       return data
     },
     onSuccess: () => {
-      addToast({ title: 'Cadastro realizado! Faça login para continuar.', color: 'success' })
+      toast.success('Cadastro realizado! Faça login para continuar.')
       navigate('/login')
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        addToast({ title: 'Este nome de usuário já está em uso.', color: 'danger' })
+        toast.danger('Este nome de usuário já está em uso.')
       } else if (axios.isAxiosError(err) && err.response?.status === 422) {
-        addToast({ title: 'Corrija os campos e tente novamente.', color: 'danger' })
+        toast.danger('Corrija os campos e tente novamente.')
       } else {
-        addToast({ title: 'Falha no cadastro. Tente novamente.', color: 'danger' })
+        toast.danger('Falha no cadastro. Tente novamente.')
       }
     },
   })

@@ -1,81 +1,55 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/shadcn/components/ui/dialog'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/shadcn/components/ui/drawer'
-import { useMediaQuery } from '@/shared/hooks'
-import type * as React from 'react'
-
-interface DialogOuDrawerProps {
-  aberto: boolean
-  aoFechar: () => void
-  titulo: string
-  descricao?: string
-  children: React.ReactNode
-  /**
-   * Largura máxima do Dialog no desktop.
-   * @default "sm:max-w-lg"
-   */
-  maxWidth?: string
-}
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContainer,
+  ModalDialog,
+  ModalFooter,
+  ModalHeader,
+  ModalHeading,
+  type UseOverlayStateReturn,
+  useMediaQuery,
+} from '@heroui/react'
+import type { ReactNode } from 'react'
 
 /**
- * Modal responsivo: Dialog no desktop, Drawer (bottom sheet) no mobile.
+ * DialogOuDrawer — em desktop abre um Modal centralizado;
+ * em mobile (< md) abre um Modal com posicionamento bottom para imitar drawer.
  *
- * Uso obrigatório em qualquer modal do sistema — nunca usar Dialog isolado,
- * pois em mobile ele ocupa a tela toda de forma inadequada.
- *
- * @example
- * <DialogOuDrawer
- *   aberto={modalAberto}
- *   aoFechar={() => setModalAberto(false)}
- *   titulo="Criar recurso"
- * >
- *   <FormularioCriarRecurso />
- * </DialogOuDrawer>
+ * Uso:
+ *   const state = useOverlayState()
+ *   <DialogOuDrawer state={state} titulo="Título" footer={<Button>Fechar</Button>}>
+ *     conteúdo
+ *   </DialogOuDrawer>
  */
-export function DialogOuDrawer({
-  aberto,
-  aoFechar,
-  titulo,
-  descricao,
-  children,
-  maxWidth = 'sm:max-w-lg',
-}: DialogOuDrawerProps) {
-  const isDesktop = useMediaQuery('(min-width: 768px)')
+export interface DialogOuDrawerProps {
+  state: UseOverlayStateReturn
+  titulo: string
+  descricao?: string
+  children: ReactNode
+  footer?: ReactNode
+}
 
-  if (isDesktop) {
-    return (
-      <Dialog open={aberto} onOpenChange={(open) => !open && aoFechar()}>
-        <DialogContent className={maxWidth}>
-          <DialogHeader>
-            <DialogTitle>{titulo}</DialogTitle>
-            {descricao && <DialogDescription>{descricao}</DialogDescription>}
-          </DialogHeader>
-          {children}
-        </DialogContent>
-      </Dialog>
-    )
-  }
+export function DialogOuDrawer({ state, titulo, descricao, children, footer }: DialogOuDrawerProps) {
+  const isMobile = useMediaQuery('(max-width: 767px)')
 
   return (
-    <Drawer open={aberto} onOpenChange={(open) => !open && aoFechar()}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>{titulo}</DrawerTitle>
-          {descricao && <DrawerDescription>{descricao}</DrawerDescription>}
-        </DrawerHeader>
-        <div className="px-4 pb-6">{children}</div>
-      </DrawerContent>
-    </Drawer>
+    <Modal isOpen={state.isOpen} onOpenChange={state.setOpen}>
+      <ModalBackdrop isDismissable>
+        <ModalContainer
+          placement={isMobile ? 'bottom' : 'center'}
+          className={isMobile ? 'rounded-b-none rounded-t-2xl m-0 max-w-full' : ''}
+        >
+          <ModalDialog>
+            <ModalHeader className="flex flex-col gap-1">
+              <ModalHeading>{titulo}</ModalHeading>
+              {descricao && <p className="text-sm opacity-60 font-normal">{descricao}</p>}
+            </ModalHeader>
+            <ModalBody>{children}</ModalBody>
+            {footer && <ModalFooter>{footer}</ModalFooter>}
+          </ModalDialog>
+        </ModalContainer>
+      </ModalBackdrop>
+    </Modal>
   )
 }

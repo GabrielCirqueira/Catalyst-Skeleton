@@ -1,5 +1,5 @@
 import { useCadastro } from '@features/auth'
-import { Button, Card, CardBody, CardHeader, Input } from '@heroui/react'
+import { Button, Card, CardContent, CardHeader, FieldError, Input, Label, TextField } from '@heroui/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
@@ -57,73 +57,83 @@ export function Component() {
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
         <h1 className="text-2xl font-bold font-sans">Criar conta</h1>
-        <p className="text-sm text-default-500 text-center">
+        <p className="text-sm text-center text-muted">
           Preencha os dados abaixo para se cadastrar
         </p>
       </CardHeader>
 
-      <CardBody className="px-6 py-6">
+      <CardContent className="px-6 py-6">
         <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Nome completo"
-            placeholder="João da Silva"
-            value={form.nomeCompleto}
-            onValueChange={(v) => handleChange('nomeCompleto', v)}
-            isInvalid={!!erros.nomeCompleto}
-            errorMessage={erros.nomeCompleto}
-            autoComplete="name"
-            autoFocus
-          />
+          <TextField isInvalid={!!erros.nomeCompleto}>
+            <Label className="text-sm font-medium">Nome completo</Label>
+            <Input
+              placeholder="João da Silva"
+              value={form.nomeCompleto}
+              onChange={(e) => handleChange('nomeCompleto', e.target.value)}
+              autoComplete="name"
+              autoFocus
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.nomeCompleto}</FieldError>
+          </TextField>
 
-          <Input
-            label="Usuário"
-            placeholder="joao.silva"
-            value={form.username}
-            onValueChange={(v) => handleChange('username', v)}
-            isInvalid={!!erros.username}
-            errorMessage={erros.username}
-            autoComplete="username"
-          />
+          <TextField isInvalid={!!erros.username}>
+            <Label className="text-sm font-medium">Usuário</Label>
+            <Input
+              placeholder="joao.silva"
+              value={form.username}
+              onChange={(e) => handleChange('username', e.target.value)}
+              autoComplete="username"
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.username}</FieldError>
+          </TextField>
 
-          <Input
-            label="Senha"
-            type="password"
-            placeholder="Mínimo 8 caracteres"
-            value={form.senha}
-            onValueChange={(v) => handleChange('senha', v)}
-            isInvalid={!!erros.senha}
-            errorMessage={erros.senha}
-            autoComplete="new-password"
-          />
+          <TextField isInvalid={!!erros.senha}>
+            <Label className="text-sm font-medium">Senha</Label>
+            <Input
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              value={form.senha}
+              onChange={(e) => handleChange('senha', e.target.value)}
+              autoComplete="new-password"
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.senha}</FieldError>
+          </TextField>
 
-          <Input
-            label="Confirmar senha"
-            type="password"
-            placeholder="Repita a senha"
-            value={form.confirmacaoSenha}
-            onValueChange={(v) => handleChange('confirmacaoSenha', v)}
-            isInvalid={!!erros.confirmacaoSenha}
-            errorMessage={erros.confirmacaoSenha}
-            autoComplete="new-password"
-          />
+          <TextField isInvalid={!!erros.confirmacaoSenha}>
+            <Label className="text-sm font-medium">Confirmar senha</Label>
+            <Input
+              type="password"
+              placeholder="Repita a senha"
+              value={form.confirmacaoSenha}
+              onChange={(e) => handleChange('confirmacaoSenha', e.target.value)}
+              autoComplete="new-password"
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.confirmacaoSenha}</FieldError>
+          </TextField>
 
           <Button
             type="submit"
-            color="primary"
-            className="w-full font-semibold"
-            isLoading={cadastro.isPending}
+            variant="primary"
+            fullWidth
+            className="font-semibold"
+            isPending={cadastro.isPending}
+            isDisabled={cadastro.isPending}
           >
             Criar conta
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-default-500">
+        <p className="mt-5 text-center text-sm text-muted">
           Já tem uma conta?{' '}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium text-accent hover:underline">
             Fazer login
           </Link>
         </p>
-      </CardBody>
+      </CardContent>
     </Card>
   )
 }

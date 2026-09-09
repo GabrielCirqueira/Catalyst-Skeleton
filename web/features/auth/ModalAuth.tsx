@@ -1,13 +1,22 @@
-import { addToast } from '@heroui/react'
+import { toast } from '@heroui/react'
 import {
   Button,
+  FieldError,
   Input,
+  Label,
   Modal,
+  ModalBackdrop,
   ModalBody,
-  ModalContent,
+  ModalContainer,
+  ModalDialog,
   ModalHeader,
+  ModalHeading,
   Tab,
+  TabList,
+  TabListContainer,
+  TabPanel,
   Tabs,
+  TextField,
 } from '@heroui/react'
 import { api } from '@config/api'
 import { useAuthStore } from '@stores'
@@ -60,14 +69,14 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
       )
     },
     onSuccess: () => {
-      addToast({ title: 'Bem-vindo!', color: 'success' })
+      toast.success('Bem-vindo!')
       onClose()
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        addToast({ title: 'Usuário ou senha incorretos.', color: 'danger' })
+        toast.danger('Usuário ou senha incorretos.')
       } else {
-        addToast({ title: 'Falha ao entrar. Tente novamente.', color: 'danger' })
+        toast.danger('Falha ao entrar. Tente novamente.')
       }
     },
   })
@@ -96,14 +105,14 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
       return data
     },
     onSuccess: () => {
-      addToast({ title: 'Conta criada! Faça login.', color: 'success' })
+      toast.success('Conta criada! Faça login.')
       onClose()
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        addToast({ title: 'Usuário já existe.', color: 'danger' })
+        toast.danger('Usuário já existe.')
       } else {
-        addToast({ title: 'Falha no cadastro. Tente novamente.', color: 'danger' })
+        toast.danger('Falha no cadastro. Tente novamente.')
       }
     },
   })
@@ -121,53 +130,92 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} placement="center" size="sm">
-      <ModalContent>
-        <ModalHeader className="flex items-center gap-2">
-          <div className="size-7 rounded-lg bg-primary flex items-center justify-center">
-            <Code2 className="size-4 text-white" strokeWidth={2.5} />
-          </div>
-          Catalyst Skeleton
-        </ModalHeader>
-        <ModalBody className="pb-6">
-          <Tabs fullWidth aria-label="Autenticação">
-            <Tab key="login" title="Entrar">
-              <form onSubmit={handleLoginSubmit} className="flex flex-col gap-3 pt-2" noValidate>
-                <Input
-                  label="Usuário"
-                  value={loginForm.username}
-                  onValueChange={(v) => { setLoginForm((p) => ({ ...p, username: v })); setLoginErros((p) => ({ ...p, username: '' })) }}
-                  isInvalid={!!loginErros.username}
-                  errorMessage={loginErros.username}
-                  autoFocus
-                />
-                <Input
-                  label="Senha"
-                  type="password"
-                  value={loginForm.senha}
-                  onValueChange={(v) => { setLoginForm((p) => ({ ...p, senha: v })); setLoginErros((p) => ({ ...p, senha: '' })) }}
-                  isInvalid={!!loginErros.senha}
-                  errorMessage={loginErros.senha}
-                />
-                <Button type="submit" color="primary" isLoading={loginMutation.isPending} className="mt-1">
-                  Entrar
-                </Button>
-              </form>
-            </Tab>
-            <Tab key="cadastro" title="Criar conta">
-              <form onSubmit={handleCadastroSubmit} className="flex flex-col gap-3 pt-2" noValidate>
-                <Input label="Nome completo" value={cadastroForm.nomeCompleto} onValueChange={(v) => { setCadastroForm((p) => ({ ...p, nomeCompleto: v })); setCadastroErros((p) => ({ ...p, nomeCompleto: '' })) }} isInvalid={!!cadastroErros.nomeCompleto} errorMessage={cadastroErros.nomeCompleto} />
-                <Input label="Usuário" value={cadastroForm.username} onValueChange={(v) => { setCadastroForm((p) => ({ ...p, username: v })); setCadastroErros((p) => ({ ...p, username: '' })) }} isInvalid={!!cadastroErros.username} errorMessage={cadastroErros.username} />
-                <Input label="Senha" type="password" value={cadastroForm.senha} onValueChange={(v) => { setCadastroForm((p) => ({ ...p, senha: v })); setCadastroErros((p) => ({ ...p, senha: '' })) }} isInvalid={!!cadastroErros.senha} errorMessage={cadastroErros.senha} />
-                <Input label="Confirmar senha" type="password" value={cadastroForm.confirmacaoSenha} onValueChange={(v) => { setCadastroForm((p) => ({ ...p, confirmacaoSenha: v })); setCadastroErros((p) => ({ ...p, confirmacaoSenha: '' })) }} isInvalid={!!cadastroErros.confirmacaoSenha} errorMessage={cadastroErros.confirmacaoSenha} />
-                <Button type="submit" color="primary" isLoading={cadastroMutation.isPending} className="mt-1">
-                  Criar conta
-                </Button>
-              </form>
-            </Tab>
-          </Tabs>
-        </ModalBody>
-      </ModalContent>
+    <Modal isOpen={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+      <ModalBackdrop isDismissable>
+        <ModalContainer placement="center" size="sm">
+          <ModalDialog>
+            <ModalHeader className="flex items-center gap-2">
+              <div className="size-7 rounded-lg bg-accent flex items-center justify-center">
+                <Code2 className="size-4 text-white" strokeWidth={2.5} />
+              </div>
+              <ModalHeading>Catalyst Skeleton</ModalHeading>
+            </ModalHeader>
+
+            <ModalBody className="pb-6">
+              <Tabs>
+                <TabListContainer>
+                  <TabList>
+                    <Tab id="login">Entrar</Tab>
+                    <Tab id="cadastro">Criar conta</Tab>
+                  </TabList>
+                </TabListContainer>
+
+                <TabPanel id="login">
+                  <form onSubmit={handleLoginSubmit} className="flex flex-col gap-3 pt-2" noValidate>
+                    <TextField isInvalid={!!loginErros.username}>
+                      <Label className="text-sm font-medium">Usuário</Label>
+                      <Input
+                        value={loginForm.username}
+                        onChange={(e) => { setLoginForm((p) => ({ ...p, username: e.target.value })); setLoginErros((p) => ({ ...p, username: '' })) }}
+                        autoFocus
+                        className="w-full"
+                      />
+                      <FieldError className="text-xs text-danger">{loginErros.username}</FieldError>
+                    </TextField>
+
+                    <TextField isInvalid={!!loginErros.senha}>
+                      <Label className="text-sm font-medium">Senha</Label>
+                      <Input
+                        type="password"
+                        value={loginForm.senha}
+                        onChange={(e) => { setLoginForm((p) => ({ ...p, senha: e.target.value })); setLoginErros((p) => ({ ...p, senha: '' })) }}
+                        className="w-full"
+                      />
+                      <FieldError className="text-xs text-danger">{loginErros.senha}</FieldError>
+                    </TextField>
+
+                    <Button type="submit" variant="primary" fullWidth isPending={loginMutation.isPending} isDisabled={loginMutation.isPending} className="mt-1">
+                      Entrar
+                    </Button>
+                  </form>
+                </TabPanel>
+
+                <TabPanel id="cadastro">
+                  <form onSubmit={handleCadastroSubmit} className="flex flex-col gap-3 pt-2" noValidate>
+                    <TextField isInvalid={!!cadastroErros.nomeCompleto}>
+                      <Label className="text-sm font-medium">Nome completo</Label>
+                      <Input value={cadastroForm.nomeCompleto} onChange={(e) => { setCadastroForm((p) => ({ ...p, nomeCompleto: e.target.value })); setCadastroErros((p) => ({ ...p, nomeCompleto: '' })) }} className="w-full" />
+                      <FieldError className="text-xs text-danger">{cadastroErros.nomeCompleto}</FieldError>
+                    </TextField>
+
+                    <TextField isInvalid={!!cadastroErros.username}>
+                      <Label className="text-sm font-medium">Usuário</Label>
+                      <Input value={cadastroForm.username} onChange={(e) => { setCadastroForm((p) => ({ ...p, username: e.target.value })); setCadastroErros((p) => ({ ...p, username: '' })) }} className="w-full" />
+                      <FieldError className="text-xs text-danger">{cadastroErros.username}</FieldError>
+                    </TextField>
+
+                    <TextField isInvalid={!!cadastroErros.senha}>
+                      <Label className="text-sm font-medium">Senha</Label>
+                      <Input type="password" value={cadastroForm.senha} onChange={(e) => { setCadastroForm((p) => ({ ...p, senha: e.target.value })); setCadastroErros((p) => ({ ...p, senha: '' })) }} className="w-full" />
+                      <FieldError className="text-xs text-danger">{cadastroErros.senha}</FieldError>
+                    </TextField>
+
+                    <TextField isInvalid={!!cadastroErros.confirmacaoSenha}>
+                      <Label className="text-sm font-medium">Confirmar senha</Label>
+                      <Input type="password" value={cadastroForm.confirmacaoSenha} onChange={(e) => { setCadastroForm((p) => ({ ...p, confirmacaoSenha: e.target.value })); setCadastroErros((p) => ({ ...p, confirmacaoSenha: '' })) }} className="w-full" />
+                      <FieldError className="text-xs text-danger">{cadastroErros.confirmacaoSenha}</FieldError>
+                    </TextField>
+
+                    <Button type="submit" variant="primary" fullWidth isPending={cadastroMutation.isPending} isDisabled={cadastroMutation.isPending} className="mt-1">
+                      Criar conta
+                    </Button>
+                  </form>
+                </TabPanel>
+              </Tabs>
+            </ModalBody>
+          </ModalDialog>
+        </ModalContainer>
+      </ModalBackdrop>
     </Modal>
   )
 }

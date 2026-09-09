@@ -1,5 +1,5 @@
 import { useLogin } from '@features/auth'
-import { Button, Card, CardBody, CardHeader, Input } from '@heroui/react'
+import { Button, Card, CardContent, CardHeader, FieldError, Input, Label, TextField } from '@heroui/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
@@ -37,52 +37,58 @@ export function Component() {
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
         <h1 className="text-2xl font-bold font-sans">Entrar</h1>
-        <p className="text-sm text-default-500 text-center">
+        <p className="text-sm text-center text-muted">
           Acesse sua conta com seu usuário e senha
         </p>
       </CardHeader>
 
-      <CardBody className="px-6 py-6">
+      <CardContent className="px-6 py-6">
         <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Usuário"
-            placeholder="seu.usuario"
-            value={form.username}
-            onValueChange={(v) => handleChange('username', v)}
-            isInvalid={!!erros.username}
-            errorMessage={erros.username}
-            autoComplete="username"
-            autoFocus
-          />
+          <TextField isInvalid={!!erros.username}>
+            <Label className="text-sm font-medium">Usuário</Label>
+            <Input
+              placeholder="seu.usuario"
+              value={form.username}
+              onChange={(e) => handleChange('username', e.target.value)}
+              autoComplete="username"
+              autoFocus
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.username}</FieldError>
+          </TextField>
 
-          <Input
-            label="Senha"
-            type="password"
-            placeholder="••••••••"
-            value={form.senha}
-            onValueChange={(v) => handleChange('senha', v)}
-            isInvalid={!!erros.senha}
-            errorMessage={erros.senha}
-            autoComplete="current-password"
-          />
+          <TextField isInvalid={!!erros.senha}>
+            <Label className="text-sm font-medium">Senha</Label>
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={form.senha}
+              onChange={(e) => handleChange('senha', e.target.value)}
+              autoComplete="current-password"
+              className="w-full"
+            />
+            <FieldError className="text-xs text-danger">{erros.senha}</FieldError>
+          </TextField>
 
           <Button
             type="submit"
-            color="primary"
-            className="w-full font-semibold"
-            isLoading={login.isPending}
+            variant="primary"
+            fullWidth
+            className="font-semibold"
+            isPending={login.isPending}
+            isDisabled={login.isPending}
           >
             Entrar
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-default-500">
+        <p className="mt-5 text-center text-sm text-muted">
           Não tem uma conta?{' '}
-          <Link to="/cadastro" className="font-medium text-primary hover:underline">
+          <Link to="/cadastro" className="font-medium text-accent hover:underline">
             Criar conta
           </Link>
         </p>
-      </CardBody>
+      </CardContent>
     </Card>
   )
 }
