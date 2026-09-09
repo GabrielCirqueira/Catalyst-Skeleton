@@ -10,7 +10,7 @@
    ───────────────────────────────────────────────── */
 @theme {
   /* Exemplo: paleta "brand" (troque os valores pelos da sua identidade visual) */
-  --color-brand-50:  #eff6ff;
+  --color-brand-50: #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-200: #bfdbfe;
   --color-brand-300: #93c5fd;
@@ -23,8 +23,8 @@
   --color-brand-950: #172554;
 
   /* Fontes */
-  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Lato', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Lato", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -32,7 +32,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-sans);
   }
 }

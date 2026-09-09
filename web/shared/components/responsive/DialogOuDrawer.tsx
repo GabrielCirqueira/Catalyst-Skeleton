@@ -30,7 +30,13 @@ export interface DialogOuDrawerProps {
   footer?: ReactNode
 }
 
-export function DialogOuDrawer({ state, titulo, descricao, children, footer }: DialogOuDrawerProps) {
+export function DialogOuDrawer({
+  state,
+  titulo,
+  descricao,
+  children,
+  footer,
+}: DialogOuDrawerProps) {
   const isMobile = useMediaQuery('(max-width: 767px)')
 
   return (

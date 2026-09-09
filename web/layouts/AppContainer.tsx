@@ -22,14 +22,39 @@ const maxWidthMap = {
   lg: 'max-w-lg',
 }
 
-const paddingYMap = { '0': 'py-0', '4': 'py-4', '6': 'py-6', '8': 'py-8', '12': 'py-12', '16': 'py-16' }
+const paddingYMap = {
+  '0': 'py-0',
+  '4': 'py-4',
+  '6': 'py-6',
+  '8': 'py-8',
+  '12': 'py-12',
+  '16': 'py-16',
+}
 const paddingXMap = { '0': 'px-0', '4': 'px-4', '6': 'px-6', '8': 'px-8', '12': 'px-12' }
 
 export const AppContainer = React.forwardRef<HTMLDivElement, AppContainerProps>(
-  ({ children, className, maxWidth = 'full', paddingY = '8', paddingX = '6', centered = true, ...props }, ref) => (
+  (
+    {
+      children,
+      className,
+      maxWidth = 'full',
+      paddingY = '8',
+      paddingX = '6',
+      centered = true,
+      ...props
+    },
+    ref
+  ) => (
     <div
       ref={ref}
-      className={cn('w-full', maxWidthMap[maxWidth], paddingYMap[paddingY], paddingXMap[paddingX], centered && 'mx-auto', className)}
+      className={cn(
+        'w-full',
+        maxWidthMap[maxWidth],
+        paddingYMap[paddingY],
+        paddingXMap[paddingX],
+        centered && 'mx-auto',
+        className
+      )}
       {...props}
     >
       {children}
