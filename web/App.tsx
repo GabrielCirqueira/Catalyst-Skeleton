@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@/contexts'
 import { MainLayout } from '@layouts'
 import { RotaProtegida } from '@routes'
 import {
@@ -22,10 +21,8 @@ const router = createBrowserRouter(
       </Route>
 
       {/*
-       * Rotas protegidas ? RotaProtegida redireciona para /login se não autenticado.
+       * Rotas protegidas — RotaProtegida redireciona para /login se não autenticado.
        * Substitua MainLayout por um DashboardLayout quando criar a área logada.
-       * Adicione sub-rotas dentro de RotaProtegida:
-       *   <Route path="app/dashboard" element={<Dashboard />} />
        */}
       <Route element={<MainLayout />}>
         <Route element={<RotaProtegida />}>
@@ -37,9 +34,5 @@ const router = createBrowserRouter(
 )
 
 export default function App() {
-  return (
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  )
+  return <RouterProvider router={router} />
 }

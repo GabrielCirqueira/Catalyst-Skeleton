@@ -1,4 +1,4 @@
-import { Toaster } from '@/shadcn/components/ui/sonner'
+import { HeroUIProvider, ToastProvider } from '@heroui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -36,8 +36,10 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
-      <Toaster richColors position="top-right" />
+      <HeroUIProvider>
+        <ToastProvider placement="top-right" />
+        <App />
+      </HeroUIProvider>
     </QueryClientProvider>
   </StrictMode>
 )
