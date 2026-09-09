@@ -1,4 +1,5 @@
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import symfonyPlugin from 'vite-plugin-symfony'
@@ -8,6 +9,7 @@ const frontendPort = Number.parseInt(process.env.FRONTEND_PORT ?? '', 10) || 517
 
 export default defineConfig((config) => ({
   plugins: [
+    tailwindcss(),
     react(),
     symfonyPlugin(),
     tsconfigPaths({
@@ -21,9 +23,6 @@ export default defineConfig((config) => ({
       },
     },
     sourcemap: config.mode === 'development',
-  },
-  css: {
-    postcss: path.resolve(__dirname, 'postcss.config.cjs'),
   },
   server: {
     cors: true,
@@ -42,52 +41,6 @@ export default defineConfig((config) => ({
       { find: '@routes', replacement: path.resolve(__dirname, '..', '..', 'web', 'routes') },
       { find: '@features', replacement: path.resolve(__dirname, '..', '..', 'web', 'features') },
       { find: '@shared', replacement: path.resolve(__dirname, '..', '..', 'web', 'shared') },
-      {
-        find: '@shadcn/lib',
-        replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'lib'),
-      },
-      {
-        find: '@shadcn/hooks',
-        replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'hooks'),
-      },
-      {
-        find: '@shadcn/components/ui',
-        replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'components', 'ui'),
-      },
-      {
-        find: '@shadcn/components',
-        replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'components', 'ui'),
-      },
-      {
-        find: '@shadcn/layout',
-        replacement: path.resolve(
-          __dirname,
-          '..',
-          '..',
-          'web',
-          'shadcn',
-          'components',
-          'ui',
-          'layout'
-        ),
-      },
-      {
-        find: '@shadcn/typography',
-        replacement: path.resolve(
-          __dirname,
-          '..',
-          '..',
-          'web',
-          'shadcn',
-          'components',
-          'ui',
-          'typography'
-        ),
-      },
-      {
-        find: '@shadcn',
-        replacement: path.resolve(__dirname, '..', '..', 'web', 'shadcn', 'components', 'ui'),
-      },
       { find: '@app', replacement: path.resolve(__dirname, '..', '..', 'web') },
       { find: '@', replacement: path.resolve(__dirname, '..', '..', 'web') },
     ],
