@@ -22,7 +22,7 @@ O roadmap do Catalyst Skeleton é focado em estabilidade e modernização consta
 
 ---
 
-> Para documentação técnica detalhada (arquitetura, variáveis de ambiente, DevOps, deploy, logs, etc.) consulte [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).
+> Índice da documentação: [documentation/README.md](documentation/README.md). Visão técnica global: [DOCUMENTACAO_TECNICA.md](documentation/referencia/DOCUMENTACAO_TECNICA.md).
 
 ---
 
@@ -103,16 +103,17 @@ O Catalyst Skeleton impõe uma separação rigorosa de interesses:
 
 Para uma imersão profunda em cada área do projeto, consulte nossos guias específicos:
 
-- [**Progresso e Roadmap**](documentation/PROGRESSO.md): índices paginados e `make progresso`.
-- [**Guia de Autenticação**](documentation/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
-- [**Guia de Frontend**](documentation/FRONTEND.md): React 19, Shadcn/ui e "No useEffect".
-- [**Guia de Backend**](documentation/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
-- [**Arquitetura e Padrões**](documentation/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
-- [**Testes Automatizados**](documentation/TESTING.md): PHPUnit (Unit & Integration).
-- [**Mensageria (Async)**](documentation/MESSENGER.md): Symfony Messenger e Workers.
-- [**Docker e DevOps**](documentation/DOCKER.md): Infraestrutura e multi-stage builds.
-- [**Makefile e CLI**](documentation/MAKEFILE.md): Comandos de produtividade e Scaffolding.
-- [**Lint e Formatação**](documentation/FORMATTING.md): Biome e PHP-CS-Fixer.
+- [**Índice**](documentation/README.md): mapa de pastas (`guias/`, `stack/`, `ops/`, `referencia/`, `progresso/`).
+- [**Progresso e Roadmap**](documentation/progresso/README.md): índices paginados e `make progresso`.
+- [**Guia de Autenticação**](documentation/stack/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
+- [**Guia de Frontend**](documentation/stack/FRONTEND.md): React 19, HeroUI v3 e primitivos de layout.
+- [**Guia de Backend**](documentation/stack/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
+- [**Arquitetura e Padrões**](documentation/referencia/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
+- [**Testes Automatizados**](documentation/stack/TESTING.md): PHPUnit (Unit & Integration).
+- [**Mensageria (Async)**](documentation/stack/MESSENGER.md): Symfony Messenger e Workers.
+- [**Docker e DevOps**](documentation/ops/DOCKER.md): Infraestrutura e multi-stage builds.
+- [**Makefile e CLI**](documentation/ops/MAKEFILE.md): Comandos de produtividade e Scaffolding.
+- [**Lint e Formatação**](documentation/ops/FORMATTING.md): Biome e PHP-CS-Fixer.
 
 ---
 
@@ -125,4 +126,4 @@ Desenvolvido para ser *Production Ready*:
 
 ---
 
-*Para uma visão técnica global e variáveis de ambiente, veja [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).*
+*Para uma visão técnica global e variáveis de ambiente, veja [DOCUMENTACAO_TECNICA.md](documentation/referencia/DOCUMENTACAO_TECNICA.md).*

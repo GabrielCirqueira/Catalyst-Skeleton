@@ -32,7 +32,7 @@
 
 - **Status**: Concluído
 - **Implementação**: Rotas `/api/v1/auth/*` com DTOs e padrão Resultado. Controller sem regra de negócio.
-- **Arquivos**: `src/Controller/Auth/AuthController.php`, `documentation/AUTH.md`
+- **Arquivos**: `src/Controller/Auth/AuthController.php`, `documentation/stack/AUTH.md`
 
 ---
 
@@ -48,7 +48,7 @@
 
 - **Status**: Concluído
 - **Implementação**: `@heroui/styles` + paleta `--color-brand-*` violeta. Sem `tailwind.config.js`.
-- **Arquivos**: `web/index.css`, `documentation/FRONTEND.md`
+- **Arquivos**: `web/index.css`, `documentation/stack/FRONTEND.md`
 
 ---
 
@@ -64,7 +64,7 @@
 
 - **Status**: Concluído
 - **Implementação**: `Box`, `HStack`, `VStack`, `Flex`, `Grid`, `Container`, `Text as="h1"|span`. Proibido HTML bruto de layout/tipografia.
-- **Arquivos**: `web/shared/ui/layout.tsx`, `documentation/leading/Estruturação.md`
+- **Arquivos**: `web/shared/ui/layout.tsx`, `documentation/guias/Estruturação.md`
 
 ---
 
@@ -128,7 +128,7 @@
 
 - **Status**: Concluído
 - **Implementação**: Guias de frontend, backend, auth, testes, Docker e estruturação.
-- **Arquivos**: `documentation/FRONTEND.md`, `documentation/BACKEND.md`, `documentation/DOCUMENTACAO_TECNICA.md`, `documentation/leading/Estruturação.md`
+- **Arquivos**: `documentation/stack/FRONTEND.md`, `documentation/stack/BACKEND.md`, `documentation/referencia/DOCUMENTACAO_TECNICA.md`, `documentation/guias/Estruturação.md`
 
 ---
 

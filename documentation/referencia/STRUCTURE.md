@@ -133,27 +133,30 @@ web/
 | **Frequência** | Uso diário | Uso esporádico (1x ou raramente) |
 | **Exemplos** | `phpstan.sh`, `phpcs.sh`, `db-reset.sh` | `setup.sh`, `deploy.sh`, `backup.sh` |
 
-Documentação dos comandos CLI: [CLI.md](CLI.md)
+Documentação dos comandos CLI: [CLI.md](../ops/CLI.md)
 
 ---
 
-## Pasta `documentation/progresso/`
+## Pasta `documentation/`
 
-Índices: `ROADMAP.md` na raiz + `documentation/progresso/` paginado (20 itens):
+Índice: [README.md](../README.md).
 
 ```
-documentation/progresso/
-??? ROADMAP.TEMPLATE.md        # Modelo do lote (copiar para a raiz)
-??? PROGRESSO_ROADMAP.md       # Índice visual de todos os tópicos
-??? PROGRESSO_ROADMAP_1.md     # Tópicos 1–20
-??? melhorias/
-    ??? README.md              # Como registrar uma melhoria
-    ??? MELHORIAS.md           # Índice M1, M2, …
-    ??? MELHORIAS_1.md         # M1–M20
+documentation/
+├── README.md                 # Mapa de pastas
+├── guias/                    # Regras de código (pastas, UI, nova feature)
+├── stack/                    # Como o produto funciona (frontend, backend, auth…)
+├── ops/                      # Docker, deploy, Makefile, CLI, lint
+├── referencia/               # Visão global, árvore, padrões
+└── progresso/
+    ├── README.md             # Spec do formato + make progresso
+    ├── ROADMAP.TEMPLATE.md   # Modelo do lote (copiar para a raiz)
+    ├── PROGRESSO_ROADMAP.md  # Índice visual de todos os tópicos
+    ├── PROGRESSO_ROADMAP_1.md
+    └── melhorias/
 ```
 
-Modelo pronto para copiar: [progresso/ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md).
-Guia de formato: [PROGRESSO.md](PROGRESSO.md).
+Lote atual: `ROADMAP.md` na raiz. Guia de formato: [progresso/README.md](../progresso/README.md). Template: [ROADMAP.TEMPLATE.md](../progresso/ROADMAP.TEMPLATE.md).
 
 ---
 

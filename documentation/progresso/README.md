@@ -4,12 +4,12 @@ Dois fluxos, sempre com **índice central + arquivos paginados** (no máximo 20 
 
 | Fluxo | Quando usar | Índice | Páginas |
 | :--- | :--- | :--- | :--- |
-| **Roadmap** | Feature grande, épico, migração, regra de negócio | [PROGRESSO_ROADMAP.md](progresso/PROGRESSO_ROADMAP.md) | `PROGRESSO_ROADMAP_1.md`, `_2.md`, … |
-| **Melhorias** | Bug, ajuste de UI, script, refino pontual | [MELHORIAS.md](progresso/melhorias/MELHORIAS.md) | `MELHORIAS_1.md`, `_2.md`, … |
+| **Roadmap** | Feature grande, épico, migração, regra de negócio | [PROGRESSO_ROADMAP.md](PROGRESSO_ROADMAP.md) | `PROGRESSO_ROADMAP_1.md`, `_2.md`, … |
+| **Melhorias** | Bug, ajuste de UI, script, refino pontual | [MELHORIAS.md](melhorias/MELHORIAS.md) | `MELHORIAS_1.md`, `_2.md`, … |
 
-O arquivo [ROADMAP.md](../ROADMAP.md) na raiz é só o **lote que está em andamento**. Cada vez que começa um conjunto novo de tópicos, ele é **reescrito** — o histórico já concluído permanece no índice e nas páginas, não no `ROADMAP.md`.
+O arquivo [ROADMAP.md](../../ROADMAP.md) na raiz é só o **lote que está em andamento**. Cada vez que começa um conjunto novo de tópicos, ele é **reescrito** — o histórico já concluído permanece no índice e nas páginas, não no `ROADMAP.md`.
 
-Modelo pronto para copiar: [progresso/ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md).
+Modelo pronto para copiar: [ROADMAP.TEMPLATE.md](ROADMAP.TEMPLATE.md).
 
 ---
 
@@ -97,7 +97,7 @@ O script **não** lê essa seção. Ela existe para orientar a implementação. 
 
 ## Sequência de trabalho
 
-1. Copie [ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md) para a raiz como `ROADMAP.md` (ou reescreva o arquivo atual no mesmo formato).
+1. Copie [ROADMAP.TEMPLATE.md](ROADMAP.TEMPLATE.md) para a raiz como `ROADMAP.md` (ou reescreva o arquivo atual no mesmo formato).
 2. Preencha título, `Numeração`, índice, checklist e detalhamento do lote.
 3. `make progresso` — cria `PROGRESSO_ROADMAP_X.md` se ainda não existir e reconstrói o índice (sem apagar tópicos de lotes anteriores).
 4. Implemente. Ao fechar um tópico: `[x]` no checklist **e** preencha o `###` correspondente na página paginada.
@@ -114,10 +114,10 @@ Modelo na página paginada, depois de concluir:
 - **Arquivos**: `caminho/arquivo.tsx`, `caminho/arquivo.php`
 ```
 
-Se a mudança alterar contrato ou regra: frontend → [FRONTEND.md](FRONTEND.md); backend → [BACKEND.md](BACKEND.md); visão global → [DOCUMENTACAO_TECNICA.md](DOCUMENTACAO_TECNICA.md).
+Se a mudança alterar contrato ou regra: frontend → [FRONTEND.md](../stack/FRONTEND.md); backend → [BACKEND.md](../stack/BACKEND.md); visão global → [DOCUMENTACAO_TECNICA.md](../referencia/DOCUMENTACAO_TECNICA.md); pastas/UI → [Estruturação.md](../guias/Estruturação.md).
 
 ---
 
 ## Melhorias pontuais
 
-Não vão no `ROADMAP.md`. Fluxo em [progresso/melhorias/README.md](progresso/melhorias/README.md): ID `M1`, `M2`, …, 20 por arquivo.
+Não vão no `ROADMAP.md`. Fluxo em [melhorias/README.md](melhorias/README.md): ID `M1`, `M2`, …, 20 por arquivo.

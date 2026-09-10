@@ -140,7 +140,7 @@ def write_index(topics: list[Topic]) -> None:
         "# Progresso do Roadmap\n\n"
         "> [!IMPORTANT]\n"
         "> Sempre que detalhar um tópico concluído, atualize também "
-        "[FRONTEND.md](../FRONTEND.md) e/ou [BACKEND.md](../BACKEND.md) conforme o lado alterado.\n"
+        "[FRONTEND.md](../stack/FRONTEND.md) e/ou [BACKEND.md](../stack/BACKEND.md) conforme o lado alterado.\n"
         "> Melhorias pontuais ficam em [MELHORIAS.md](melhorias/MELHORIAS.md).\n\n"
         "> Os detalhes de cada tópico estão nos arquivos paginados desta pasta:\n"
         f"{file_list}\n"

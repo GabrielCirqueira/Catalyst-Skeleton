@@ -29,7 +29,7 @@ Este documento resume as principais receitas do `Makefile` para gerenciar a stac
 ## Progresso e Roadmap
 - `make progresso`: lê `ROADMAP.md`, cria a página paginada se faltar e reconstrói `documentation/progresso/PROGRESSO_ROADMAP.md`.
 
-Guia: [PROGRESSO.md](PROGRESSO.md). Script: `scripts/update_roadmap.py`.
+Guia: [progresso/README.md](../progresso/README.md). Script: `scripts/update_roadmap.py`.
 
 ## Testes Automatizados (PHPUnit)
 - `make test`: executa a suite completa de testes.

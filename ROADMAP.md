@@ -214,7 +214,7 @@
 
 ### Tópico 16 — Documentação técnica do skeleton
 
-**O que existe hoje:** `documentation/FRONTEND.md`, `BACKEND.md`, `DOCUMENTACAO_TECNICA.md`, `leading/Estruturação.md`.
+**O que existe hoje:** `documentation/stack/FRONTEND.md`, `documentation/stack/BACKEND.md`, `documentation/referencia/DOCUMENTACAO_TECNICA.md`, `documentation/guias/Estruturação.md`.
 
 **Por que importa:** IAs e o time seguem o mesmo contrato.
 

@@ -1611,7 +1611,7 @@
 
   ## 10) Testes
 
-  Toda funcionalidade **deve ter testes** antes de ser considerada pronta. O guia completo da arquitetura de testes está em [`documentation/TESTES.md`](./TESTES.md).
+  Toda funcionalidade **deve ter testes** antes de ser considerada pronta. O guia completo da arquitetura de testes está em [`documentation/stack/TESTING.md`](../stack/TESTING.md).
 
   ### O que testar obrigatoriamente
 

@@ -1,7 +1,7 @@
 # Progresso do Roadmap
 
 > [!IMPORTANT]
-> Sempre que detalhar um tópico concluído, atualize também [FRONTEND.md](../FRONTEND.md) e/ou [BACKEND.md](../BACKEND.md) conforme o lado alterado.
+> Sempre que detalhar um tópico concluído, atualize também [FRONTEND.md](../stack/FRONTEND.md) e/ou [BACKEND.md](../stack/BACKEND.md) conforme o lado alterado.
 > Melhorias pontuais ficam em [MELHORIAS.md](melhorias/MELHORIAS.md).
 
 > Os detalhes de cada tópico estão nos arquivos paginados desta pasta:

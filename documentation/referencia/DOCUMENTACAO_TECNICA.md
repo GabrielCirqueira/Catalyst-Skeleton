@@ -185,9 +185,10 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 ├── Makefile                  # Atalhos de comandos
 ├── package.json              # Dependências Node + scripts npm
 ├── ports.env                 # Mapeamento de portas do ambiente local
+├── documentation/            # Índice em README.md — guias, stack, ops, referencia, progresso
 ├── scripts/setup.sh          # Script de bootstrap inicial completo
 ├── .skeleton-modules/        # Módulos opcionais (async, observability, ui-extra)
-└── STRUCTURE.md              # Documentação da estrutura de pastas
+└── ROADMAP.md                # Backlog do lote atual
 ```
 
 ---
@@ -1363,18 +1364,18 @@ git cherry-pick <hash-do-commit-no-skeleton>
 
 ## 15. Progresso e Roadmap
 
-Índices centrais + arquivos paginados (20 itens). Guia de formato: [PROGRESSO.md](PROGRESSO.md). Template do lote: [progresso/ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md).
+Índices centrais + arquivos paginados (20 itens). Guia de formato: [progresso/README.md](../progresso/README.md). Template do lote: [ROADMAP.TEMPLATE.md](../progresso/ROADMAP.TEMPLATE.md).
 
 | Peça | Papel |
 | :--- | :--- |
-| `ROADMAP.md` | Backlog do lote atual (checklist + detalhamento). Formato: [PROGRESSO.md](PROGRESSO.md). |
+| `ROADMAP.md` | Backlog do lote atual (checklist + detalhamento). Formato: [progresso/README.md](../progresso/README.md). |
 | `documentation/progresso/PROGRESSO_ROADMAP.md` | Tabela consolidada com status e link `[ver]` |
 | `documentation/progresso/PROGRESSO_ROADMAP_X.md` | Detalhe dos tópicos (`ceil(ID / 20)`) |
 | `documentation/progresso/melhorias/` | Melhorias pontuais (M1, M2, …) |
 
 `make progresso` lê o `ROADMAP.md`, cria a página paginada se ela ainda não existir e reconstrói o índice. Script único: `scripts/update_roadmap.py`.
 
-Se o tópico mudar contrato técnico: frontend → `FRONTEND.md`; backend → `BACKEND.md`.
+Se o tópico mudar contrato técnico: frontend → `documentation/stack/FRONTEND.md`; backend → `documentation/stack/BACKEND.md`.
 
 ---
 

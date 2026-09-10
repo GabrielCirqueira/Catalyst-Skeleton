@@ -2,7 +2,7 @@
 
 > Substitua este arquivo na raiz (`ROADMAP.md`) a cada novo lote.
 > O histórico concluído não fica aqui — ele vive em `documentation/progresso/`.
-> Spec: [PROGRESSO.md](../PROGRESSO.md) · depois de preencher: `make progresso`
+> Spec: [README.md](README.md) · depois de preencher: `make progresso`
 
 **Numeração:** tópicos 21–40.
 

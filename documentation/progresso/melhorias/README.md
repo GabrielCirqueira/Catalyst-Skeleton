@@ -58,9 +58,9 @@ No final do arquivo escolhido:
 
 Se a melhoria alterar contrato ou regra de negócio:
 
-- Frontend (React / UI / Hooks) → [FRONTEND.md](../../FRONTEND.md)
-- Backend (Symfony / PHP) → [BACKEND.md](../../BACKEND.md)
-- Visão global → [DOCUMENTACAO_TECNICA.md](../../DOCUMENTACAO_TECNICA.md)
+- Frontend (React / UI / Hooks) → [FRONTEND.md](../../stack/FRONTEND.md)
+- Backend (Symfony / PHP) → [BACKEND.md](../../stack/BACKEND.md)
+- Visão global → [DOCUMENTACAO_TECNICA.md](../../referencia/DOCUMENTACAO_TECNICA.md)
 
 ## Convenções
 
