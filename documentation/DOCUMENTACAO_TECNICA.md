@@ -566,6 +566,47 @@ const queryClient = new QueryClient({
 
 O tema é gerenciado pelo `HeroUIProvider` (em `web/main.tsx`). O modo escuro é ativado adicionando a classe `dark` ao elemento `<html>` — o `web/contexts/ThemeContext.tsx` fornece o hook `useTheme()` para alternar entre `light` e `dark`. Tailwind v4 respeita a mesma convenção de classe.
 
+### 6.9 Primitivos de Layout e Texto — Regra Obrigatória
+
+O arquivo `web/shared/ui/layout.tsx` exporta todos os primitivos de UI do sistema. **Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente.**
+
+**Layout:**
+
+| Componente | Quando usar |
+| :--- | :--- |
+| `<Box>` | Container genérico (substituto de `<div>`) |
+| `<HStack>` | Filhos lado a lado (flex-row + items-center + gap) |
+| `<VStack>` | Filhos empilhados (flex-col + gap) |
+| `<Flex>` | Flex com controle manual de direção |
+| `<Grid>` | Layout em colunas (grid + gap) |
+| `<Container size="xl">` | Seção com max-width e padding horizontal automático |
+
+**Texto:**
+
+| Componente | Quando usar |
+| :--- | :--- |
+| `<Text>` | Parágrafo (substituto de `<p>`) |
+| `<Text as="h1">` … `<Text as="h6">` | Títulos (substituto de `<h1>`–`<h6>`) |
+| `<Text as="span">` | Texto inline (substituto de `<span>`) |
+| `<Text as="strong">` | Negrito semântico |
+| `<Text as="small">` | Texto auxiliar |
+
+Tags de estrutura de página (`<section>`, `<header>`, `<nav>`, `<main>`) são permitidas quando têm valor semântico real.
+
+```tsx
+import { Box, HStack, VStack, Grid, Container, Text } from '@/shared/ui/layout'
+
+<HStack className="justify-between px-6 h-14">
+  <Box className="size-8 rounded-lg bg-brand-500 flex items-center justify-center">
+    <Icon />
+  </Box>
+  <VStack className="gap-1">
+    <Text className="font-bold">Título</Text>
+    <Text className="text-sm text-muted">Subtítulo</Text>
+  </VStack>
+</HStack>
+```
+
 ### 6.8 Fluxo Completo de Autenticação
 
 Este é o ponto mais crítico da integração. O fluxo completo — login, proteção de rotas e logout — envolve três peças trabalhando juntas.

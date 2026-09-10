@@ -1,21 +1,17 @@
+import { Flex } from '@/shared/ui/layout'
 import { cn } from '@/shared/lib/cn'
-import * as React from 'react'
 import { Outlet } from 'react-router-dom'
 
-export interface MainLayoutProps {
+interface MainLayoutProps {
   className?: string
 }
 
-export const MainLayout = React.forwardRef<HTMLDivElement, MainLayoutProps>(
-  ({ className }, ref) => {
-    return (
-      <div ref={ref} className={cn('min-h-screen flex flex-col antialiased', className)}>
-        <main className="flex-1 flex flex-col">
-          <Outlet />
-        </main>
-      </div>
-    )
-  }
-)
-
-MainLayout.displayName = 'MainLayout'
+export function MainLayout({ className }: MainLayoutProps) {
+  return (
+    <Flex className={cn('min-h-screen flex-col gap-0 antialiased', className)}>
+      <main className="flex-1 flex flex-col">
+        <Outlet />
+      </main>
+    </Flex>
+  )
+}

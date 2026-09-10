@@ -1,4 +1,5 @@
 import { api } from '@/config/api'
+import { Box } from '@/shared/ui/layout'
 import { useAuthStore } from '@/stores'
 import { toast } from '@heroui/react'
 import {
@@ -156,9 +157,9 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
         <ModalContainer placement="center" size="sm">
           <ModalDialog>
             <ModalHeader className="flex items-center gap-2">
-              <div className="size-7 rounded-lg bg-accent flex items-center justify-center">
+              <Box className="size-7 rounded-lg bg-accent flex items-center justify-center">
                 <Code2 className="size-4 text-white" strokeWidth={2.5} />
-              </div>
+              </Box>
               <ModalHeading>Catalyst Skeleton</ModalHeading>
             </ModalHeader>
 

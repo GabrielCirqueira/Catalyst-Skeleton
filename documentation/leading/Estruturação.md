@@ -293,42 +293,68 @@ Exemplo:
 
 ## 9) Regras de UI (obrigatórias)
 
-### 9.1 Proibido usar tags HTML padrão
+### 9.1 Proibido usar tags HTML brutas
 
-Não usar tags HTML diretamente como:
+Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Sempre usar o componente correspondente de `web/shared/ui/layout.tsx`:
 
-* `div`
-* `span`
-* `p`
-* `h1`
-* `button`
-* etc.
+**Layout (estrutura):**
 
-### 9.2 Usar somente componentes do sistema
+| Situação | Componente |
+| :--- | :--- |
+| Container genérico | `<Box>` |
+| Filhos lado a lado | `<HStack>` |
+| Filhos empilhados | `<VStack>` |
+| Flex livre | `<Flex>` |
+| Grid de colunas | `<Grid>` |
+| Seção com max-width | `<Container>` |
 
-Sempre utilizar os componentes disponíveis em:
+**Texto (tipografia):**
+
+| Situação | Componente |
+| :--- | :--- |
+| Parágrafo (`<p>`) | `<Text>` |
+| Títulos (`<h1>`–`<h6>`) | `<Text as="h1">` … `<Text as="h6">` |
+| Inline (`<span>`) | `<Text as="span">` |
+| Negrito semântico | `<Text as="strong">` |
+| Texto pequeno | `<Text as="small">` |
+
+> **Exceção permitida:** tags de estrutura semântica de página (`<section>`, `<header>`, `<footer>`, `<nav>`, `<main>`, `<article>`, `<aside>`) são permitidas quando têm valor semântico real para acessibilidade/SEO. Componentes HeroUI (`TextField`, `Label`, `Input`, `Button`) gerenciam os elementos de formulário.
+
+### 9.2 Primitivos de layout e texto oficiais
+
+Todos os primitivos ficam em:
 
 ```text
-/web/shadcn/
+web/shared/ui/layout.tsx
 ```
 
-Exemplos permitidos:
+Importação:
 
-* `VStack`
-* `HStack`
-* `Box`
-* `Text`
-* `Title`
-* `Button`
-* `Spinner`
-* `Icon`
+```tsx
+import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
+```
+
+Referência:
+
+```tsx
+<Box className="p-4 rounded-xl bg-surface" />
+<HStack className="justify-between gap-4" />
+<VStack className="gap-6 items-start" />
+<Grid className="grid-cols-3 gap-4" />
+<Container size="lg" className="py-12" />
+<Text className="text-sm text-muted">Parágrafo</Text>
+<Text as="h1" className="text-4xl font-black">Título</Text>
+<Text as="span" className="text-brand-500">Destaque inline</Text>
+```
+
+Tamanhos disponíveis para `<Container>`: `sm`, `md`, `lg`, `xl` (padrão), `2xl`, `full`.
 
 ### 9.3 Estilização obrigatória
 
 * Todo estilo deve ser feito com:
 
   * `className`
-  * **TailwindCSS**
+  * **TailwindCSS v4**
 
 * O sistema deve sempre manter:
 
@@ -649,7 +675,7 @@ make auto-fix   # Corrige automaticamente o que é possível (biome e phpcbf)
 Antes de abrir PR:
 
 * [ ] Rode `make lint-all`
-* [ ] Não existe HTML puro no frontend (somente shadcn)
+* [ ] Não existe `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` direto no frontend (usar `Box`, `HStack`, `VStack`, `Grid`, `Container`, `Text` de `@/shared/ui/layout`)
 * [ ] Página segue padrão `AppContainer -> Container`
 * [ ] Hooks consumindo `api.ts`
 * [ ] Lógicas grandes movidas para `services/`

@@ -1,3 +1,4 @@
+import { Box, Text, VStack } from '@/shared/ui/layout'
 import { Button } from '@heroui/react'
 import { AlertTriangle } from 'lucide-react'
 import * as React from 'react'
@@ -31,16 +32,16 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       if (this.props.fallback) return this.props.fallback
 
       return (
-        <div className="min-h-50 flex flex-col items-center justify-center gap-4 p-8 text-center">
-          <div className="size-12 rounded-xl bg-danger/10 flex items-center justify-center">
+        <VStack className="min-h-50 items-center justify-center gap-4 p-8 text-center">
+          <Box className="size-12 rounded-xl bg-danger/10 flex items-center justify-center">
             <AlertTriangle className="size-6 text-danger" />
-          </div>
-          <div>
-            <p className="font-semibold">Algo deu errado</p>
-            <p className="text-sm text-muted mt-1">
+          </Box>
+          <VStack className="gap-1">
+            <Text className="font-semibold">Algo deu errado</Text>
+            <Text className="text-sm text-muted">
               {this.state.error?.message ?? 'Erro inesperado'}
-            </p>
-          </div>
+            </Text>
+          </VStack>
           <Button
             size="sm"
             variant="danger-soft"
@@ -48,7 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           >
             Tentar novamente
           </Button>
-        </div>
+        </VStack>
       )
     }
 

@@ -1,4 +1,5 @@
 import { useLogin } from '@/features/auth'
+import { Text } from '@/shared/ui/layout'
 import {
   Button,
   Card,
@@ -45,8 +46,8 @@ export function Component() {
   return (
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
-        <h1 className="text-2xl font-bold font-sans">Entrar</h1>
-        <p className="text-sm text-center text-muted">Acesse sua conta com seu usuário e senha</p>
+        <Text as="h1" className="text-2xl font-bold font-sans">Entrar</Text>
+        <Text className="text-sm text-center text-muted">Acesse sua conta com seu usuário e senha</Text>
       </CardHeader>
 
       <CardContent className="px-6 py-6">
@@ -89,12 +90,12 @@ export function Component() {
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-muted">
+        <Text className="mt-5 text-center text-sm text-muted">
           Não tem uma conta?{' '}
           <Link to="/cadastro" className="font-medium text-accent hover:underline">
             Criar conta
           </Link>
-        </p>
+        </Text>
       </CardContent>
     </Card>
   )

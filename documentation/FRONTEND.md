@@ -73,15 +73,46 @@ Tailwind v4 é CSS-first — nenhum `tailwind.config.js` necessário:
 @plugin "tailwindcss-motion";
 ```
 
-## Primitivos de Layout (`web/shared/ui/layout.tsx`)
+## Primitivos de Layout e Texto (`web/shared/ui/layout.tsx`)
+
+> **Regra obrigatória:** nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Usar sempre o componente correspondente.
 
 ```tsx
-import { Flex, HStack, VStack, Box, Grid, Container } from '@shared/ui/layout'
+import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
+```
 
-// Exemplos
+**Layout (estrutura):**
+
+| Componente | Equivalente | Quando usar |
+| :--- | :--- | :--- |
+| `<Box>` | `<div>` | Container genérico |
+| `<HStack>` | `<div className="flex flex-row items-center gap-2">` | Filhos lado a lado |
+| `<VStack>` | `<div className="flex flex-col gap-2">` | Filhos empilhados |
+| `<Flex>` | `<div className="flex gap-2">` | Flex com direção manual |
+| `<Grid>` | `<div className="grid gap-4">` | Grid de colunas |
+| `<Container>` | `<div className="mx-auto w-full px-4 max-w-screen-xl">` | Seção centralizada |
+
+**Texto (tipografia):**
+
+| Componente | Equivalente | Quando usar |
+| :--- | :--- | :--- |
+| `<Text>` | `<p>` | Parágrafo (padrão) |
+| `<Text as="h1">` … `<Text as="h6">` | `<h1>`–`<h6>` | Títulos |
+| `<Text as="span">` | `<span>` | Texto inline |
+| `<Text as="strong">` | `<strong>` | Negrito semântico |
+| `<Text as="small">` | `<small>` | Texto auxiliar |
+
+Tags de estrutura de página (`<section>`, `<header>`, `<nav>`, `<main>`) são permitidas. Componentes HeroUI gerenciam os elementos de formulário.
+
+```tsx
 <HStack className="justify-between">...</HStack>
 <VStack className="gap-4">...</VStack>
-<Container size="lg">...</Container>
+<Container size="lg" className="py-12">...</Container>
+<Box className="rounded-xl border p-4">...</Box>
+<Grid className="grid-cols-3 gap-6">...</Grid>
+<Text className="text-sm text-muted">Parágrafo</Text>
+<Text as="h1" className="text-4xl font-black">Título</Text>
+<Text as="span" className="text-brand-500">Inline</Text>
 ```
 
 ## Roteamento (`web/App.tsx`)
@@ -126,6 +157,7 @@ const router = createBrowserRouter(
 2. **Componentes atômicos**: lógica pesada vai para hooks no diretório `hooks/` da própria feature.
 3. **Tipagem estrita**: sem `any`. Respostas de API validadas com schema Zod.
 4. **Nunca editar `node_modules/@heroui`**: customização via `className` (Tailwind), CSS variables e slots expostos.
+5. **Sem tags HTML brutas**: nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` — usar `Box`/`HStack`/`VStack`/`Grid`/`Container` para layout e `Text`/`Text as="h1"`/`Text as="span"` para tipografia, todos de `@/shared/ui/layout`.
 
 ## Execução e Build
 

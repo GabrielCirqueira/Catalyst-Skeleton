@@ -1,5 +1,6 @@
 import { useTheme } from '@/contexts'
 import { ModalAuth } from '@/features/auth/ModalAuth'
+import { Box, Container, Grid, HStack, Text, VStack } from '@/shared/ui/layout'
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
   Accordion,
@@ -9,15 +10,12 @@ import {
   AccordionItem,
   AccordionPanel,
   AccordionTrigger,
-  AvatarFallback,
-  AvatarRoot,
   Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   Chip,
-  FieldError,
   Input,
   Label,
   ProgressBar,
@@ -38,11 +36,8 @@ import {
   BookOpen,
   CheckCircle2,
   Code2,
-  Database,
   Github,
   Globe,
-  KeyRound,
-  LayersIcon,
   Lock,
   LogIn,
   Mail,
@@ -152,20 +147,20 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
   const [formSenha, setFormSenha] = useState('')
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <Box className="min-h-screen bg-background text-foreground">
       {/* ════════════════════════════════════════════
           NAVBAR
       ════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="size-7 rounded-lg bg-brand-500 flex items-center justify-center">
+        <HStack className="max-w-6xl mx-auto px-6 h-14 justify-between">
+          <HStack>
+            <Box className="size-7 rounded-lg bg-brand-500 flex items-center justify-center">
               <Code2 className="size-4 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="font-black font-sans text-sm tracking-tight">
-              Catalyst <span className="text-brand-500">Skeleton</span>
-            </span>
-          </div>
+            </Box>
+            <Text as="span" className="font-black font-sans text-sm tracking-tight">
+              Catalyst <Text as="span" className="text-brand-500">Skeleton</Text>
+            </Text>
+          </HStack>
 
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
             <a href="#showcase" className="hover:text-foreground transition-colors">
@@ -179,7 +174,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             </a>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <HStack>
             <button
               type="button"
               onClick={toggleTheme}
@@ -204,18 +199,18 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 Entrar
               </button>
             )}
-          </div>
-        </div>
+          </HStack>
+        </HStack>
       </header>
 
       {/* ════════════════════════════════════════════
           HERO
       ════════════════════════════════════════════ */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-5%,color-mix(in_oklch,var(--color-brand-500)_20%,transparent),transparent)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_70%,var(--color-background))] pointer-events-none" />
+        <Box className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-5%,color-mix(in_oklch,var(--color-brand-500)_20%,transparent),transparent)] pointer-events-none" />
+        <Box className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_70%,var(--color-background))] pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-12 flex flex-col items-center text-center gap-6">
+        <VStack className="relative max-w-6xl mx-auto px-6 pt-20 pb-12 items-center text-center gap-6">
           <Chip
             variant="soft"
             size="sm"
@@ -225,24 +220,24 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             v5.0 · Tailwind 4 + HeroUI v3
           </Chip>
 
-          <div className="flex flex-col gap-3 motion-preset-slide-up motion-delay-100">
-            <h1 className="text-5xl sm:text-7xl font-black font-sans tracking-tight leading-none">
-              Catalyst <span className="text-brand-500">Skeleton</span>
-            </h1>
-            <p className="text-lg text-muted max-w-xl mx-auto">
+          <VStack className="gap-3 motion-preset-slide-up motion-delay-100">
+            <Text as="h1" className="text-5xl sm:text-7xl font-black font-sans tracking-tight leading-none">
+              Catalyst <Text as="span" className="text-brand-500">Skeleton</Text>
+            </Text>
+            <Text className="text-lg text-muted max-w-xl mx-auto">
               Fundação opinativa para aplicações{' '}
               <strong className="text-foreground font-semibold">Symfony + React</strong>. Core
               enxuto, módulos opt-in, pronto para produção.
-            </p>
-          </div>
+            </Text>
+          </VStack>
 
           {autenticado ? (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-success/10 border border-success/20 text-success text-sm font-medium">
+            <HStack className="px-4 py-2 rounded-xl bg-success/10 border border-success/20 text-success text-sm font-medium">
               <CheckCircle2 className="size-4" />
               Bem-vindo, {usuario?.nomeCompleto ?? usuario?.username}!
-            </div>
+            </HStack>
           ) : (
-            <div className="flex gap-3 flex-wrap justify-center motion-preset-fade motion-delay-200">
+            <HStack className="gap-3 flex-wrap justify-center motion-preset-fade motion-delay-200">
               <button
                 type="button"
                 onClick={onAbrirModal}
@@ -260,27 +255,30 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 <Github className="size-4" />
                 Ver no GitHub
               </a>
-            </div>
+            </HStack>
           )}
 
-          <div className="flex flex-wrap justify-center gap-2 motion-preset-fade motion-delay-300">
-            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Tailwind 4', 'Docker'].map((t) => (
-              <span
-                key={t}
-                className="px-3 py-1 rounded-full text-xs font-medium bg-surface-secondary border border-border text-muted"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
+          <HStack className="flex-wrap justify-center gap-2 motion-preset-fade motion-delay-300">
+            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Tailwind 4', 'Docker'].map(
+              (t) => (
+                <Text
+                  as="span"
+                  key={t}
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-surface-secondary border border-border text-muted"
+                >
+                  {t}
+                </Text>
+              ),
+            )}
+          </HStack>
+        </VStack>
       </section>
 
       {/* ════════════════════════════════════════════
           COMPONENT SHOWCASE
       ════════════════════════════════════════════ */}
       <section id="showcase" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center gap-2 mb-10 text-center">
+        <VStack className="items-center gap-2 mb-10 text-center">
           <Chip
             variant="soft"
             size="sm"
@@ -288,27 +286,27 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           >
             Componentes
           </Chip>
-          <h2 className="text-3xl font-bold font-sans">Tudo que você precisa, pronto</h2>
-          <p className="text-muted text-sm max-w-md">
+          <Text as="h2" className="text-3xl font-bold font-sans">Tudo que você precisa, pronto</Text>
+          <Text className="text-muted text-sm max-w-md">
             HeroUI v3 + Tailwind 4 integrados. Veja os componentes em ação.
-          </p>
-        </div>
+          </Text>
+        </VStack>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Grid className="grid-cols-1 md:grid-cols-3">
           <Card className="border border-border shadow-sm bg-surface">
             <CardHeader className="pb-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="size-7 rounded-lg bg-brand-500/10 flex items-center justify-center">
+              <HStack className="mb-1">
+                <Box className="size-7 rounded-lg bg-brand-500/10 flex items-center justify-center">
                   <Shield className="size-4 text-brand-500" strokeWidth={1.5} />
-                </div>
+                </Box>
                 <CardTitle className="text-sm font-semibold">Autenticação</CardTitle>
-              </div>
-              <p className="text-xs text-muted">JWT RS256 com refresh token integrado</p>
+              </HStack>
+              <Text className="text-xs text-muted">JWT RS256 com refresh token integrado</Text>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <TextField>
                 <Label className="text-xs font-medium">Email</Label>
-                <div className="relative">
+                <Box className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted pointer-events-none" />
                   <Input
                     type="email"
@@ -317,12 +315,12 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     onChange={(e) => setFormEmail(e.target.value)}
                     className="pl-8 w-full text-sm"
                   />
-                </div>
+                </Box>
               </TextField>
 
               <TextField>
                 <Label className="text-xs font-medium">Senha</Label>
-                <div className="relative">
+                <Box className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted pointer-events-none" />
                   <Input
                     type="password"
@@ -331,20 +329,20 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     onChange={(e) => setFormSenha(e.target.value)}
                     className="pl-8 w-full text-sm"
                   />
-                </div>
+                </Box>
               </TextField>
 
               <Button variant="primary" fullWidth size="sm" className="mt-1">
                 Entrar na conta
               </Button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-border" />
-                <span className="text-xs text-muted">ou</span>
-                <div className="flex-1 h-px bg-border" />
-              </div>
+              <HStack className="gap-3">
+                <Box className="flex-1 h-px bg-border" />
+                <Text as="span" className="text-xs text-muted">ou</Text>
+                <Box className="flex-1 h-px bg-border" />
+              </HStack>
 
-              <div className="grid grid-cols-2 gap-2">
+              <Grid className="grid-cols-2 gap-2">
                 <button
                   type="button"
                   className={buttonVariants({ variant: 'outline', size: 'sm' })}
@@ -359,34 +357,28 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                   <Github className="size-3.5" />
                   GitHub
                 </button>
-              </div>
+              </Grid>
 
-              <div className="flex flex-wrap gap-2 pt-1">
-                <Chip size="sm" variant="soft" color="success">
-                  ✓ Refresh Token
-                </Chip>
-                <Chip size="sm" variant="soft" color="accent">
-                  RS256
-                </Chip>
-                <Chip size="sm" variant="soft" color="default">
-                  Stateless
-                </Chip>
-              </div>
+              <HStack className="flex-wrap gap-2 pt-1">
+                <Chip size="sm" variant="soft" color="success">✓ Refresh Token</Chip>
+                <Chip size="sm" variant="soft" color="accent">RS256</Chip>
+                <Chip size="sm" variant="soft" color="default">Stateless</Chip>
+              </HStack>
             </CardContent>
           </Card>
 
           <Card className="border border-border shadow-sm bg-surface">
             <CardHeader className="pb-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="size-7 rounded-lg bg-accent/10 flex items-center justify-center">
+              <HStack className="mb-1">
+                <Box className="size-7 rounded-lg bg-accent/10 flex items-center justify-center">
                   <Activity className="size-4 text-accent" strokeWidth={1.5} />
-                </div>
+                </Box>
                 <CardTitle className="text-sm font-semibold">Controles & Progresso</CardTitle>
-              </div>
-              <p className="text-xs text-muted">Switches, barras de progresso e tema</p>
+              </HStack>
+              <Text className="text-xs text-muted">Switches, barras de progresso e tema</Text>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
+              <VStack className="gap-3">
                 <SwitchRoot
                   isSelected={theme === 'dark'}
                   onChange={toggleTheme}
@@ -426,11 +418,11 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     <SwitchThumb />
                   </SwitchControl>
                 </SwitchRoot>
-              </div>
+              </VStack>
 
               <Separator />
 
-              <div className="flex flex-col gap-3">
+              <VStack className="gap-3">
                 <ProgressBar value={78} color="accent">
                   <Label className="text-xs font-medium">CPU</Label>
                   <ProgressBarOutput className="text-xs text-muted" />
@@ -454,22 +446,22 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     <ProgressBarFill />
                   </ProgressBarTrack>
                 </ProgressBar>
-              </div>
+              </VStack>
             </CardContent>
           </Card>
 
           <Card className="border border-border shadow-sm bg-surface">
             <CardHeader className="pb-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="size-7 rounded-lg bg-success/10 flex items-center justify-center">
+              <HStack className="mb-1">
+                <Box className="size-7 rounded-lg bg-success/10 flex items-center justify-center">
                   <Zap className="size-4 text-success" strokeWidth={1.5} />
-                </div>
+                </Box>
                 <CardTitle className="text-sm font-semibold">Botões & Feedback</CardTitle>
-              </div>
-              <p className="text-xs text-muted">Variantes, estados e notificações</p>
+              </HStack>
+              <Text className="text-xs text-muted">Variantes, estados e notificações</Text>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
+              <VStack className="gap-2">
                 <Button variant="primary" size="sm" fullWidth>
                   <Rocket className="size-3.5" />
                   Deploy agora
@@ -484,109 +476,68 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 <Button variant="ghost" size="sm" fullWidth isDisabled>
                   Em desenvolvimento...
                 </Button>
-              </div>
+              </VStack>
 
               <Separator />
 
-              <div>
-                <p className="text-xs font-medium text-muted mb-3">Time do projeto</p>
-                <div className="flex flex-wrap gap-3">
+              <Box>
+                <Text className="text-xs font-medium text-muted mb-3">Time do projeto</Text>
+                <HStack className="flex-wrap gap-3">
                   {teamMembers.map((m) => (
-                    <div key={m.name} className="flex items-center gap-2">
-                      <div
+                    <HStack key={m.name} className="gap-2">
+                      <Box
                         className={`size-8 rounded-xl flex items-center justify-center text-xs font-black font-sans ${m.bg} ${m.text}`}
                       >
                         {m.initials}
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold leading-none">{m.name}</p>
-                        <p className="text-xs text-muted">{m.role}</p>
-                      </div>
-                    </div>
+                      </Box>
+                      <VStack className="gap-0">
+                        <Text className="text-xs font-semibold leading-none">{m.name}</Text>
+                        <Text className="text-xs text-muted">{m.role}</Text>
+                      </VStack>
+                    </HStack>
                   ))}
-                </div>
-              </div>
+                </HStack>
+              </Box>
 
               <Separator />
 
-              <div className="flex flex-col gap-2">
+              <VStack className="gap-2">
                 {[
-                  {
-                    color: 'bg-success/10 border-success/25 text-success',
-                    icon: '✓',
-                    msg: 'Deploy realizado com sucesso',
-                  },
-                  {
-                    color: 'bg-warning/10 border-warning/25 text-warning',
-                    icon: '⚠',
-                    msg: 'Rate limit em 80%',
-                  },
-                  {
-                    color: 'bg-danger/10 border-danger/25 text-danger',
-                    icon: '!',
-                    msg: 'Token expirado',
-                  },
+                  { color: 'bg-success/10 border-success/25 text-success', icon: '✓', msg: 'Deploy realizado com sucesso' },
+                  { color: 'bg-warning/10 border-warning/25 text-warning', icon: '⚠', msg: 'Rate limit em 80%' },
+                  { color: 'bg-danger/10 border-danger/25 text-danger', icon: '!', msg: 'Token expirado' },
                 ].map((a) => (
-                  <div
+                  <HStack
                     key={a.msg}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium ${a.color}`}
+                    className={`px-3 py-2 rounded-lg border text-xs font-medium ${a.color}`}
                   >
-                    <span className="shrink-0">{a.icon}</span>
+                    <Text as="span" className="shrink-0">{a.icon}</Text>
                     {a.msg}
-                  </div>
+                  </HStack>
                 ))}
-              </div>
+              </VStack>
             </CardContent>
           </Card>
-        </div>
+        </Grid>
 
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Grid className="mt-4 grid-cols-2 sm:grid-cols-4">
           {[
-            {
-              label: 'Linhas de código',
-              value: '< 2k',
-              icon: Code2,
-              color: 'text-brand-500',
-              bg: 'bg-brand-500/10',
-            },
-            {
-              label: 'Dependências core',
-              value: '18',
-              icon: Package,
-              color: 'text-success',
-              bg: 'bg-success/10',
-            },
-            {
-              label: 'Endpoints prontos',
-              value: '5',
-              icon: Globe,
-              color: 'text-warning',
-              bg: 'bg-warning/10',
-            },
-            {
-              label: 'Setup em minutos',
-              value: '< 3',
-              icon: Zap,
-              color: 'text-danger',
-              bg: 'bg-danger/10',
-            },
+            { label: 'Linhas de código', value: '< 2k', icon: Code2, color: 'text-brand-500', bg: 'bg-brand-500/10' },
+            { label: 'Dependências core', value: '18', icon: Package, color: 'text-success', bg: 'bg-success/10' },
+            { label: 'Endpoints prontos', value: '5', icon: Globe, color: 'text-warning', bg: 'bg-warning/10' },
+            { label: 'Setup em minutos', value: '< 3', icon: Zap, color: 'text-danger', bg: 'bg-danger/10' },
           ].map((s) => (
-            <div
-              key={s.label}
-              className="flex items-center gap-3 p-4 rounded-xl border border-border bg-surface shadow-sm"
-            >
-              <div
-                className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${s.bg}`}
-              >
+            <HStack key={s.label} className="gap-3 p-4 rounded-xl border border-border bg-surface shadow-sm">
+              <Box className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${s.bg}`}>
                 <s.icon className={`size-5 ${s.color}`} />
-              </div>
-              <div>
-                <p className="text-2xl font-black font-sans leading-none">{s.value}</p>
-                <p className="text-xs text-muted">{s.label}</p>
-              </div>
-            </div>
+              </Box>
+              <VStack className="gap-0">
+                <Text className="text-2xl font-black font-sans leading-none">{s.value}</Text>
+                <Text className="text-xs text-muted">{s.label}</Text>
+              </VStack>
+            </HStack>
           ))}
-        </div>
+        </Grid>
       </section>
 
       <Separator />
@@ -595,8 +546,8 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           STACK
       ════════════════════════════════════════════ */}
       <section id="stack" className="bg-surface-secondary border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="flex flex-col items-center gap-2 mb-10 text-center">
+        <Container className="px-6 py-16">
+          <VStack className="items-center gap-2 mb-10 text-center">
             <Chip
               variant="soft"
               size="sm"
@@ -604,42 +555,40 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             >
               Stack
             </Chip>
-            <h2 className="text-3xl font-bold font-sans">Tecnologias incluídas</h2>
-          </div>
+            <Text as="h2" className="text-3xl font-bold font-sans">Tecnologias incluídas</Text>
+          </VStack>
 
           <Accordion variant="surface" className="max-w-2xl mx-auto">
             {techStack.map((t) => (
               <AccordionItem key={t.category} id={t.category}>
                 <AccordionHeading>
                   <AccordionTrigger className="flex items-center gap-3 w-full text-left">
-                    <div className="size-8 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
+                    <Box className="size-8 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
                       <t.icon className="size-4 text-brand-500" />
-                    </div>
-                    <span className="font-semibold text-sm">{t.category}</span>
-                    <span className="ml-auto text-xs text-muted">{t.items.length} tecnologias</span>
+                    </Box>
+                    <Text as="span" className="font-semibold text-sm">{t.category}</Text>
+                    <Text as="span" className="ml-auto text-xs text-muted">{t.items.length} tecnologias</Text>
                     <AccordionIndicator className="shrink-0" />
                   </AccordionTrigger>
                 </AccordionHeading>
                 <AccordionPanel>
                   <AccordionBody className="flex flex-wrap gap-2 pb-4 pl-11">
                     {t.items.map((item) => (
-                      <Chip key={item} variant="soft" color="default" size="sm">
-                        {item}
-                      </Chip>
+                      <Chip key={item} variant="soft" color="default" size="sm">{item}</Chip>
                     ))}
                   </AccordionBody>
                 </AccordionPanel>
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
+        </Container>
       </section>
 
       {/* ════════════════════════════════════════════
           COMO FUNCIONA
       ════════════════════════════════════════════ */}
       <section id="steps" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center gap-2 mb-10 text-center">
+        <VStack className="items-center gap-2 mb-10 text-center">
           <Chip
             variant="soft"
             size="sm"
@@ -647,55 +596,55 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           >
             Como funciona
           </Chip>
-          <h2 className="text-3xl font-bold font-sans">3 passos para começar</h2>
-        </div>
+          <Text as="h2" className="text-3xl font-bold font-sans">3 passos para começar</Text>
+        </VStack>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <Grid className="grid-cols-1 sm:grid-cols-3 gap-6">
           {steps.map((s, i) => (
-            <div
+            <VStack
               key={s.n}
-              className="relative flex flex-col gap-4 p-6 rounded-2xl border border-border bg-surface shadow-sm"
+              className="relative gap-4 p-6 rounded-2xl border border-border bg-surface shadow-sm"
             >
               {i < steps.length - 1 && (
-                <div className="hidden sm:block absolute top-8 right-0 translate-x-1/2 text-border">
+                <Box className="hidden sm:block absolute top-8 right-0 translate-x-1/2 text-border">
                   <ArrowRight className="size-4" />
-                </div>
+                </Box>
               )}
-              <div className="size-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                <span className="text-sm font-black font-sans text-brand-500">{s.n}</span>
-              </div>
-              <div>
-                <h3 className="font-bold font-sans text-sm mb-2">{s.title}</h3>
-                <p className="text-xs text-muted leading-relaxed">{s.desc}</p>
-              </div>
-            </div>
+              <Box className="size-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
+                <Text as="span" className="text-sm font-black font-sans text-brand-500">{s.n}</Text>
+              </Box>
+              <Box>
+                <Text as="h3" className="font-bold font-sans text-sm mb-2">{s.title}</Text>
+                <Text className="text-xs text-muted leading-relaxed">{s.desc}</Text>
+              </Box>
+            </VStack>
           ))}
-        </div>
+        </Grid>
       </section>
 
       {/* ════════════════════════════════════════════
           CTA FINAL
       ════════════════════════════════════════════ */}
       <section className="border-t border-border bg-surface">
-        <div className="max-w-6xl mx-auto px-6 py-20 flex flex-col items-center gap-6 text-center">
-          <div className="size-16 rounded-2xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+        <VStack className="max-w-6xl mx-auto px-6 py-20 items-center gap-6 text-center">
+          <Box className="size-16 rounded-2xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
             <Rocket className="size-8 text-white" />
-          </div>
+          </Box>
 
-          <div>
-            <h2 className="text-4xl font-black font-sans mb-3">Pronto para começar?</h2>
-            <p className="text-muted max-w-md text-sm">
+          <Box>
+            <Text as="h2" className="text-4xl font-black font-sans mb-3">Pronto para começar?</Text>
+            <Text className="text-muted max-w-md text-sm">
               Clone, configure e tenha um projeto full-stack profissional rodando em minutos.
-            </p>
-          </div>
+            </Text>
+          </Box>
 
-          <div className="flex items-center gap-3 bg-surface-secondary border border-border rounded-xl px-5 py-3 font-mono text-sm w-full max-w-lg">
+          <HStack className="bg-surface-secondary border border-border rounded-xl px-5 py-3 font-mono text-sm w-full max-w-lg">
             <Terminal className="size-4 text-muted shrink-0" />
-            <span className="text-muted select-none">$</span>
-            <span className="text-foreground">git clone catalyst-skeleton && ./setup.sh</span>
-          </div>
+            <Text as="span" className="text-muted select-none">$</Text>
+            <Text as="span" className="text-foreground">git clone catalyst-skeleton && ./setup.sh</Text>
+          </HStack>
 
-          <div className="flex gap-3 flex-wrap justify-center">
+          <HStack className="gap-3 flex-wrap justify-center">
             {!autenticado && (
               <button
                 type="button"
@@ -719,14 +668,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               <BookOpen className="size-4" />
               Documentação
             </a>
-          </div>
+          </HStack>
 
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <HStack className="gap-2 text-xs text-muted">
             <CheckCircle2 className="size-3 text-success" />
             MIT License · Open Source · Sem vendor lock-in
-          </div>
-        </div>
+          </HStack>
+        </VStack>
       </section>
-    </div>
+    </Box>
   )
 })

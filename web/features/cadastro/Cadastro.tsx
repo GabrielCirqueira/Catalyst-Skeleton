@@ -1,4 +1,5 @@
 import { useCadastro } from '@/features/auth'
+import { Text } from '@/shared/ui/layout'
 import {
   Button,
   Card,
@@ -65,8 +66,8 @@ export function Component() {
   return (
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
-        <h1 className="text-2xl font-bold font-sans">Criar conta</h1>
-        <p className="text-sm text-center text-muted">Preencha os dados abaixo para se cadastrar</p>
+        <Text as="h1" className="text-2xl font-bold font-sans">Criar conta</Text>
+        <Text className="text-sm text-center text-muted">Preencha os dados abaixo para se cadastrar</Text>
       </CardHeader>
 
       <CardContent className="px-6 py-6">
@@ -134,12 +135,12 @@ export function Component() {
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-muted">
+        <Text className="mt-5 text-center text-sm text-muted">
           Já tem uma conta?{' '}
           <Link to="/login" className="font-medium text-accent hover:underline">
             Fazer login
           </Link>
-        </p>
+        </Text>
       </CardContent>
     </Card>
   )

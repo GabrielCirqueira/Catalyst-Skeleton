@@ -39,3 +39,15 @@ interface ContainerProps extends ComponentProps<'div'> {
 export const Container = ({ size = 'xl', className, ...props }: ContainerProps) => (
   <div className={cn('mx-auto w-full px-4', containerSizes[size], className)} {...props} />
 )
+
+
+type TextElement = 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'strong' | 'em' | 'small'
+
+interface TextProps extends ComponentProps<'p'> {
+  as?: TextElement
+}
+
+export const Text = ({ as: Tag = 'p', className, ...props }: TextProps) => (
+  // biome-ignore lint/suspicious/noExplicitAny: polimorfismo via prop `as`
+  <Tag className={cn(className)} {...(props as any)} />
+)
