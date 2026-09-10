@@ -4,7 +4,3 @@ twig:
         timezone: America/Sao_Paulo
         format: 'd/m/Y H:i:s'
         interval_format: '%d days'
-
-when@test:
-    twig:
-        strict_variables: true

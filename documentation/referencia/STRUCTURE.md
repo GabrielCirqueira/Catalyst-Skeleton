@@ -10,7 +10,7 @@ Este documento descreve a organização de diretórios e arquivos do **Catalyst 
 catalyst-skeleton/
 ??? .skeleton-modules/      # Módulos opcionais (async, observability, ui-extra)
 ??? .tooling/               # Todas as configurações de ferramentas centralizadas
-??? bin/                    # Executáveis (console, phpunit)
+??? bin/                    # Executáveis (console)
 ??? cli/                    # Comandos rápidos (uso diário)
 ??? config/                 # Configurações Symfony (bundles, services, packages)
 ??? devops/                 # Dockerfiles, docker-compose e configurações de infra
@@ -19,7 +19,6 @@ catalyst-skeleton/
 ??? public/                 # Entry point web (index.php)
 ??? scripts/                # Processos pesados de uso esporádico (setup, deploy)
 ??? src/                    # Código-fonte PHP/Symfony
-??? tests/                  # Testes PHPUnit
 ??? web/                    # Código-fonte React/TypeScript
 ??? ROADMAP.md              # Backlog numerado do lote atual
 ??? composer.json
@@ -75,7 +74,6 @@ Configurações de ferramentas centralizadas para reduzir poluição na raiz:
 ??? quality/
 ?   ??? phpcs.xml
 ?   ??? phpstan.neon
-?   ??? phpunit.xml.dist
 ??? .editorconfig
 ??? .setup-done
 ??? .setup-progress

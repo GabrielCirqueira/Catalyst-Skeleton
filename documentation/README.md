@@ -26,7 +26,6 @@
 | [stack/FRONTEND.md](stack/FRONTEND.md) | React, HeroUI, layout, rotas, TanStack Query |
 | [stack/BACKEND.md](stack/BACKEND.md) | Symfony, Resultado, services, DTOs |
 | [stack/AUTH.md](stack/AUTH.md) | JWT, refresh, fluxo de login |
-| [stack/TESTING.md](stack/TESTING.md) | PHPUnit |
 | [stack/MESSENGER.md](stack/MESSENGER.md) | Filas (módulo `async`) |
 
 ## Ops

@@ -148,11 +148,11 @@
 
 ---
 
-### ✅ Tópico 19 — Testes PHPUnit (unit + integration)
+### ✅ Tópico 19 — PHPUnit e pasta tests/ removidos
 
 - **Status**: Concluído
-- **Implementação**: Suites Unit e Integration para entidade, Resultado, Auth e Health.
-- **Arquivos**: `tests/Unit/`, `tests/Integration/`
+- **Implementação**: Pacotes PHPUnit, pasta `tests/` e alvos `make test*` removidos.
+- **Arquivos**: `composer.json`, `Makefile`
 
 ---
 

@@ -27,8 +27,6 @@ documentation/
 leading/
 
 # Ferramentas de qualidade de código (usadas só em dev)
-.phpunit.result.cache
-phpunit.xml
 .php-cs-fixer.cache
 .php-cs-fixer.php
 

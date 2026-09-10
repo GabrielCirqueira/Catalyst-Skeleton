@@ -27,5 +27,5 @@
 | 16 | Documentação técnica do skeleton | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 17 | Makefile, Biome, PHPStan e PHP-CS-Fixer | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 18 | Módulos opt-in (async, observability, ui-extra) | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
-| 19 | Testes PHPUnit (unit + integration) | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
+| 19 | PHPUnit e pasta tests/ removidos | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 20 | Sistema de progresso, roadmap e melhorias | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |

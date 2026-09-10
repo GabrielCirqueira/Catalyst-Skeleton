@@ -9,20 +9,6 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.3
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: skeleton_test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
-    env:
-      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/skeleton_test?serverVersion=8.3"
-      APP_ENV: test
-
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -38,16 +24,10 @@ jobs:
           restore-keys: composer-
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist
-      - name: Create Test Database
-        run: bin/console doctrine:database:create --env=test || true
-      - name: Run Migrations
-        run: bin/console doctrine:migrations:migrate --no-interaction --env=test
       - name: PHPCS Check
-        run: vendor/bin/phpcs
+        run: vendor/bin/phpcs --standard=.tooling/quality/phpcs.xml src
       - name: PHPStan
-        run: vendor/bin/phpstan analyse --no-progress
-      - name: PHPUnit Tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpstan analyse --no-progress --configuration=.tooling/quality/phpstan.neon
 
   frontend:
     runs-on: ubuntu-latest

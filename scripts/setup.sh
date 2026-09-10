@@ -562,12 +562,6 @@ else
     NEW_DB_URL="mysql://${PROJECT_NAME_SLUG}:${DB_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
     # Escapa o '&' para não ser interpretado pelo sed como o match completo
     sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_DB_URL//&/\\&}\"|" .env
-    
-    # Copia .tooling/env/.env.test → .env.test e atualiza DATABASE_URL para testes
-    cp .tooling/env/.env.test .env.test
-    NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_NAME_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
-    sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
-    ok "DATABASE_URL atualizado no .env.test com credenciais de root"
     ok "devops/docker-compose.yaml atualizado e DATABASE_URL configurado."
   fi
   mark_step "4"

@@ -44,7 +44,6 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | Monolog | 3.x | Logs estruturados (JSON em produção) | ✅ Core |
 | PHPStan | 2.x | Análise estática — nível 6 | ✅ Core |
 | PHP_CodeSniffer | 3.x | Estilo de código PSR-12 | ✅ Core |
-| PHPUnit | 11.x | Testes unitários e de integração | ✅ Core |
 | Symfony Messenger | 7.x | Fila de mensagens com transporte Doctrine | 🔧 Módulo `async` |
 | Symfony Scheduler | 7.x | Tarefas agendadas nativas | 🔧 Módulo `async` |
 | Supervisor | 4.x | Gerenciador de processos (workers Messenger) | 🔧 Módulo `async` |
@@ -82,8 +81,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 .
 ├── assets/                   # Assets Symfony (Encore/Stimulus)
 ├── bin/
-│   ├── console               # Console Symfony
-│   └── phpunit               # Script PHPUnit
+│   └── console               # Console Symfony
 │
 ├── cli/                      # Scripts de produtividade para desenvolvimento local
 │   ├── new-feature.sh        # Scaffolding automático de nova feature
@@ -154,11 +152,6 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 ├── templates/
 │   └── base.html.twig        # Base para e-mails e fallback server-side
 │
-├── tests/
-│   ├── bootstrap.php         # Setup do ambiente de teste
-│   ├── Unit/                 # Testes unitários (sem I/O)
-│   └── Integration/          # Testes de integração (com banco de dados)
-│
 ├── web/                      # Código TypeScript/React da SPA
 │   ├── App.tsx               # Raiz da aplicação: providers e roteamento
 │   ├── main.tsx              # Entry point: ReactDOM.createRoot
@@ -178,7 +171,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │
 ├── .tooling/                  # Todas as configurações centralizadas
 │   ├── frontend/             # Configurações do frontend (biome, vite, tailwind, etc)
-│   ├── quality/              # Configurações de qualidade (phpstan, phpcs, phpunit)
+│   ├── quality/              # Configurações de qualidade (phpstan, phpcs)
 │   ├── backend/              # Configurações backend (importmap)
 │   └── git/                  # Configurações git (commitlint)
 ├── composer.json             # Dependências PHP + autoloading PSR-4
@@ -1023,12 +1016,7 @@ Agende o worker via `MainScheduler` para rodar a cada 30 segundos ou conforme a 
 | PHPStan | `make phpstan` | Análise estática, nível 6 (configurado em `.tooling/quality/phpstan.neon`) |
 | PHP_CodeSniffer | `make phpcs` | Verifica estilo PSR-12 customizado (`.tooling/quality/phpcs.xml`) |
 | PHP-CS-Fixer | `make phpcbf` | Corrige automaticamente violações de estilo |
-| PHPUnit | `make test` | Executa suites Unit e Integration (`.tooling/quality/phpunit.xml.dist`) |
-| Todos | `make qa` | Roda PHPStan + PHPCS + PHPUnit em sequência |
-
-**Suites de teste (`.tooling/quality/phpunit.xml.dist`):**
-- `Unit` — testa classes isoladas (Services, ValueObjects, Specifications) sem I/O
-- `Integration` — testa com banco de dados real
+| Todos | `make qa` | Roda PHPStan + PHPCS em sequência |
 
 ### Frontend
 
@@ -1051,7 +1039,6 @@ feat(auth): adicionar autenticação via Google OAuth
 fix(usuario): corrigir validação de email duplicado
 docs: atualizar documentação técnica
 refactor(service): extrair lógica de envio de e-mail para handler
-test(usuario): adicionar teste de integração para cadastro
 chore: atualizar dependências do Composer
 perf(query): otimizar consulta de listagem de pedidos
 ```
@@ -1096,10 +1083,7 @@ Script interativo que gera a estrutura completa de uma nova feature. Para a feat
 | `make phpstan` | Roda PHPStan |
 | `make phpcs` | Roda PHP_CodeSniffer |
 | `make phpcbf` | Corrige estilo PHP automaticamente |
-| `make test` | Roda PHPUnit completo |
-| `make test-unit` | Roda apenas a suite Unit |
-| `make test-integration` | Roda apenas a suite Integration |
-| `make qa` | PHPStan + PHPCS + PHPUnit |
+| `make qa` | PHPStan + PHPCS |
 | `make frontend-lint` | Biome lint no frontend |
 | `make frontend-fix` | Biome fix + format no frontend |
 | `make ts-check` | Verificação de tipos TypeScript |

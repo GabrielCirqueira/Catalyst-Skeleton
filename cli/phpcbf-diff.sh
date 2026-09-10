@@ -23,7 +23,7 @@ else
 fi
 
 if [[ ${diff_args[0]} == "--all" ]]; then
-  echo "Flag --all detected. Running full fixer (src + tests)."
+  echo "Flag --all detected. Running full fixer (src)."
   "$ROOT_DIR/cli/phpcbf.sh"
   exit 0
 fi

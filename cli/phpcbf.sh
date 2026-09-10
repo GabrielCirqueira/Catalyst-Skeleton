@@ -17,7 +17,7 @@ declare -a TARGETS
 if [[ $# -gt 0 ]]; then
   TARGETS=("$@")
 else
-  TARGETS=("src" "tests")
+  TARGETS=("src")
 fi
 
 if ! ${COMPOSE_CMD[@]} ps symfony >/dev/null 2>&1; then

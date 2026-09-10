@@ -189,14 +189,6 @@ else
   sed -i "s|MYSQL_ROOT_PASSWORD:.*|MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}|" devops/docker-compose.yaml
   sed -i "s|MYSQL_PASSWORD:.*|MYSQL_PASSWORD: ${DB_PASSWORD}|"                devops/docker-compose.yaml
 
-  # Cria .env.test se não existir
-  if [[ ! -f ".env.test" ]] && [[ -f ".tooling/env/.env.test" ]]; then
-    cp .tooling/env/.env.test .env.test
-    NEW_TEST_DB_URL="mysql://root:${DB_ROOT_PASSWORD}@database:3306/${PROJECT_SLUG}?serverVersion=8.0.32&charset=utf8mb4"
-    sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"${NEW_TEST_DB_URL//&/\\&}\"|" .env.test
-    ok ".env.test criado"
-  fi
-
   ok ".env criado com segredos locais gerados"
 fi
 

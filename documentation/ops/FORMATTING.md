@@ -26,7 +26,7 @@ O backend segue o padrão **PSR-12** com adições para PHP 8.4 (modernizações
 
 ### Análise Estática (`.tooling/quality/phpstan.neon`)
 - **Nível**: 6 (Análise forte de tipos, detecção de loops e caminhos de código inalcançáveis).
-- **Alvo**: Todo o diretório `src/` e `tests/`.
+- **Alvo**: Todo o diretório `src/`.
 - **Comando**: `./cli/phpstan.sh`.
 
 ---

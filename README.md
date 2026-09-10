@@ -83,7 +83,6 @@ bash scripts/setup.sh
 | `make restart` | Reinicia todos os serviços |
 | `make install` | Instala dependências (Composer + NPM) |
 | `make migrate` | Executa migrations pendentes |
-| `make test` | Roda suite completa de testes (PHPUnit) |
 | `make lint-all` | Valida estilo (PHP-CS-Fixer + Biome) |
 | `make bash-backend` | Acessa shell do container Symfony |
 
@@ -109,7 +108,6 @@ Para uma imersão profunda em cada área do projeto, consulte nossos guias espec
 - [**Guia de Frontend**](documentation/stack/FRONTEND.md): React 19, HeroUI v3 e primitivos de layout.
 - [**Guia de Backend**](documentation/stack/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
 - [**Arquitetura e Padrões**](documentation/referencia/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
-- [**Testes Automatizados**](documentation/stack/TESTING.md): PHPUnit (Unit & Integration).
 - [**Mensageria (Async)**](documentation/stack/MESSENGER.md): Symfony Messenger e Workers.
 - [**Docker e DevOps**](documentation/ops/DOCKER.md): Infraestrutura e multi-stage builds.
 - [**Makefile e CLI**](documentation/ops/MAKEFILE.md): Comandos de produtividade e Scaffolding.

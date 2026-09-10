@@ -30,7 +30,7 @@
 | 16 | Documentação técnica do skeleton |
 | 17 | Makefile, Biome, PHPStan e PHP-CS-Fixer |
 | 18 | Módulos opt-in (async, observability, ui-extra) |
-| 19 | Testes PHPUnit (unit + integration) |
+| 19 | PHPUnit e pasta tests/ removidos |
 | 20 | Sistema de progresso, roadmap e melhorias |
 
 ---
@@ -55,7 +55,7 @@
 - [x] **16. Documentação técnica do skeleton**
 - [x] **17. Makefile, Biome, PHPStan e PHP-CS-Fixer**
 - [x] **18. Módulos opt-in (async, observability, ui-extra)**
-- [x] **19. Testes PHPUnit (unit + integration)**
+- [x] **19. PHPUnit e pasta tests/ removidos**
 - [x] **20. Sistema de progresso, roadmap e melhorias**
 
 ---
@@ -242,13 +242,13 @@
 
 ---
 
-### Tópico 19 — Testes PHPUnit (unit + integration)
+### Tópico 19 — PHPUnit e pasta tests/ removidos
 
-**O que existe hoje:** testes de `Usuario`, `Resultado`, Auth e Health.
+**O que existe hoje:** sem suite PHPUnit, sem pasta `tests/`.
 
-**Por que importa:** regressão da API de auth e do padrão Resultado.
+**Por que importa:** o skeleton não carrega fluxo de testes automatizados.
 
-**O que precisa acontecer:** `make test` no fluxo de PR.
+**O que precisa acontecer:** qualidade via `make phpstan` e `make lint-all`.
 
 ---
 

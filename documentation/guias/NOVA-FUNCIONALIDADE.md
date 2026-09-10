@@ -294,13 +294,11 @@ Checklist:
 
 ```bash
 make lint-all
-make tests
 ```
 
 Checklist de PR:
 
 - [ ] `make lint-all` passou sem erros
-- [ ] `make tests` passando sem erros
 - [ ] Nenhum HTML puro no frontend (somente shadcn)
 - [ ] Página segue padrão `AppContainer → Container`
 - [ ] Hooks consumindo `config/api.ts` — nunca Axios direto

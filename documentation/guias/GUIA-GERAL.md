@@ -11,9 +11,8 @@
   2. Analisar a estrutura existente (páginas, componentes, responsividade)
   3. Implementar o backend (Entidade → Migration → Repository → DTO → Service → Serializer → Controller)
   4. Implementar o frontend (Types → Service → Hook → Componentes → Responsividade → Página → Rota)
-  5. Escrever testes (funcional de contrato + integração se houver pipeline async) (ver seção 10)
-  6. Validar tudo (lint, tipos, checklist de PR)
-  7. Verificar observabilidade (logging estruturado, health check) (ver seção 11)
+  5. Validar tudo (lint, tipos, checklist de PR)
+  6. Verificar observabilidade (logging estruturado, health check) (ver seção 11)
   ```
 
   ---
@@ -281,7 +280,7 @@
   }
   ```
 
-  Use quando a mesma regra aparece em mais de um lugar, ou quando a combinação de condições é complexa o suficiente para exigir teste unitário próprio.
+  Use quando a mesma regra aparece em mais de um lugar, ou quando a combinação de condições é complexa.
 
   ---
 
@@ -1603,92 +1602,19 @@
   - [ ] `useSEO` configurado na página nova com `title`, `description` e `keywords`
   - [ ] Rotas privadas/autenticadas com `noindex: true` no `useSEO`
   - [ ] Novas rotas públicas adicionadas ao `public/sitemap.xml`
-  - [ ] Testes escritos para a nova funcionalidade (ver seção 10)
-  - [ ] `make tests` passando sem erros antes de abrir PR
   - [ ] `README.md` atualizado com a nova funcionalidade
 
   ---
 
-  ## 10) Testes
+  ## 10) Seeders
 
-  Toda funcionalidade **deve ter testes** antes de ser considerada pronta. O guia completo da arquitetura de testes está em [`documentation/stack/TESTING.md`](../stack/TESTING.md).
-
-  ### O que testar obrigatoriamente
-
-  | Tipo de funcionalidade | Tipo de teste obrigatório |
-  | :--- | :--- |
-  | Novo endpoint HTTP | Teste funcional de contrato em `tests/Functional/{Categoria}/` |
-  | Funcionalidade assíncrona (Messenger) | Teste de integração verificando `status=concluido` |
-  | Lógica de negócio pura (Service, Specification) | Teste unitário em `tests/Unit/` |
-  | Value Object | Teste unitário validando criação, igualdade e rejeição de valores inválidos |
-  | Domain Event | Teste verificando que o evento foi disparado com os dados corretos |
-
-  ### Checklist de testes por feature
-
-  - [ ] Endpoint sem autenticação retorna `401`
-  - [ ] Endpoint com dados inválidos retorna `422` ou `400`
-  - [ ] Endpoint com dados válidos retorna o status code correto
-  - [ ] Listagem retorna dados no formato correto
-  - [ ] Usuário não vê dados de outro usuário (isolamento)
-  - [ ] Se assíncrono: `status=concluido` ao final do pipeline
-
-  ### Contract Tests
-
-  Garante que frontend e backend concordam sobre o formato da resposta, sem precisar subir os dois ao mesmo tempo. Use um teste funcional que valida o schema JSON da resposta:
-
-  ```php
-  // tests/Functional/Recurso/CriarRecursoTest.php
-  public function testResponseSchemaEstaCorreto(): void
-  {
-      $client = static::createClient();
-      $client->request('POST', '/api/v1/recursos', ['json' => $payload]);
-
-      $this->assertResponseStatusCodeSame(201);
-      $this->assertMatchesJsonSchema([
-          'type' => 'object',
-          'required' => ['sucesso', 'dados'],
-          'properties' => [
-              'dados' => [
-                  'type' => 'object',
-                  'required' => ['uuid', 'titulo', 'criadoEm'],
-              ],
-          ],
-      ]);
-  }
-  ```
-
-  Fundamental quando frontend e backend evoluem em paralelo ou em times separados.
-
-  ### Mutation Testing (Infection PHP)
-
-  Coverage de 80% pode mascarar testes fracos. Infection PHP muta seu código (troca `>` por `>=`, remove um `return`, etc.) e verifica se seus testes detectam a mudança:
+  Para iniciar um projeto novo ou onboardar na máquina local, o comando **`app:seed`** popula dados de exemplo.
 
   ```bash
-  vendor/bin/infection --threads=4 --min-msi=70
-  ```
-
-  Um mutation score baixo indica que seus testes assertam pouco — passam mesmo com código errado.
-
-  ### Fixtures e Seeders de dados realistas
-
-  Para iniciar um projeto novo ou onboardar na máquina local, o subflow provê o comando **`app:seed`**.
-
-  ```bash
-  # Popula o banco com usuário admin, usuário comum e dados de exemplo
   docker compose exec backend bin/console app:seed
   ```
 
-  O código está disponível em `src/Command/AppSeedCommand.php`. A recomendação é expandir esse script (possivelmente usando bibliotecas como FakerPHP) para garantir que novos devs tenham sempre uma base de dados rica para desenvolvimento.
-
-  Evita testar com `id=1`, `nome=test`, `email=a@b.c` que não representa nenhum caso real.
-
-  ### Comandos de teste
-
-  ```bash
-  make tests           # roda tudo com descrição detalhada
-  make test-unit       # apenas unitários
-  make test-functional # apenas funcionais/integração
-  ```
+  O código está em `src/Command/AppSeedCommand.php`. Expanda esse script para garantir uma base rica em desenvolvimento.
 
   ---
 

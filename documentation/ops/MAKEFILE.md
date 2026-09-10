@@ -31,12 +31,6 @@ Este documento resume as principais receitas do `Makefile` para gerenciar a stac
 
 Guia: [progresso/README.md](../progresso/README.md). Script: `scripts/update_roadmap.py`.
 
-## Testes Automatizados (PHPUnit)
-- `make test`: executa a suite completa de testes.
-- `make test-unit`: executa apenas os testes unitários (`tests/Unit`).
-- `make test-integration`: executa os testes de integração com banco de dados (`tests/Integration`).
-- `make test-coverage`: gera o relatório de cobertura de código (precisa de Xdebug ativo).
-
 ## Banco de Dados (Doctrine)
 - `make migrate`: executa migrations pendentes no ambiente local.
 - `make rollback`: reverte a última migração executada (útil em desenvolvimento).

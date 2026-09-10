@@ -34,7 +34,6 @@ PROD_SYMFONY  = $(COMPOSE_PROD_CMD) exec -T symfony
   lint-php lint-tsx lint-all fix-php fix-tsx fix-all phpstan check-naming \
   logs-backend logs-frontend logs-db logs-scheduler logs-all \
   bash-backend bash-frontend bash-db supervisor-shell \
-  test test-unit test-integration test-coverage test-filter \
   sf \
   doctrine-diff doctrine-validate doctrine-status doctrine-list doctrine-execute \
   migrate rollback db-create db-drop db-reset db-shell db-restore \
@@ -128,25 +127,6 @@ phpstan: ## Análise estática com PHPStan
 
 check-naming: ## Verificar convenções de nomenclatura
 	bash $(CLI_DIR)/check-naming.sh
-
-# ══════════════════════════════════════════════════
-# TESTES
-# ══════════════════════════════════════════════════
-
-test: ## Executar todos os testes
-	$(EXEC_BACKEND) php vendor/bin/phpunit
-
-test-unit: ## Executar somente testes unitários
-	$(EXEC_BACKEND) php vendor/bin/phpunit --testsuite Unit
-
-test-integration: ## Executar somente testes de integração
-	$(EXEC_BACKEND) php vendor/bin/phpunit --testsuite Integration
-
-test-coverage: ## Executar testes com relatório de cobertura (HTML em var/coverage)
-	$(EXEC_BACKEND) php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-html var/coverage
-
-test-filter: ## Executar teste específico (FILTER="NomeDaClasse::nomeDoMetodo")
-	$(EXEC_BACKEND) php vendor/bin/phpunit --filter="$(FILTER)"
 
 # ══════════════════════════════════════════════════
 # SYMFONY CONSOLE

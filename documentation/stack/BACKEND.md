@@ -14,8 +14,7 @@ Este documento descreve a API/backend Symfony. O Catalyst Skeleton v5 segue uma 
 | **Nelmio CORS** | Configuração CORS para `/api/*` |
 | **Symfony Rate Limiter** | Proteção contra brute-force no login (5/min) |
 | **Monolog** | Logs estruturados (texto em dev, JSON em prod) |
-| **PHPStan 2** | Análise estática ? nível 6 |
-| **PHPUnit 11** | Testes unitários e de integração |
+| **PHPStan 2** | Análise estática — nível 6 |
 
 > **Módulos opcionais** ? ativados via `setup.sh` ou instalação manual:
 > - `?? async` ? `symfony/doctrine-messenger` + `symfony/scheduler` (filas e tarefas agendadas)
@@ -102,7 +101,4 @@ make rollback         # Reverte a última migration (só em dev)
 make phpstan          # Análise estática nível 6
 make phpcs            # Estilo PSR-12
 make fix-php          # Auto-correção de estilo
-make test             # Suite completa PHPUnit
-make test-unit        # Apenas testes sem I/O
-make test-integration # Testes com banco de dados
 ```
