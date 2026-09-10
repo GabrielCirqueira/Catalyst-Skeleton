@@ -21,6 +21,7 @@ catalyst-skeleton/
 ??? src/                    # Código-fonte PHP/Symfony
 ??? tests/                  # Testes PHPUnit
 ??? web/                    # Código-fonte React/TypeScript
+??? ROADMAP.md              # Backlog numerado do lote atual
 ??? composer.json
 ??? package.json
 ??? Makefile
@@ -133,6 +134,26 @@ web/
 | **Exemplos** | `phpstan.sh`, `phpcs.sh`, `db-reset.sh` | `setup.sh`, `deploy.sh`, `backup.sh` |
 
 Documentação dos comandos CLI: [CLI.md](CLI.md)
+
+---
+
+## Pasta `documentation/progresso/`
+
+Índices: `ROADMAP.md` na raiz + `documentation/progresso/` paginado (20 itens):
+
+```
+documentation/progresso/
+??? ROADMAP.TEMPLATE.md        # Modelo do lote (copiar para a raiz)
+??? PROGRESSO_ROADMAP.md       # Índice visual de todos os tópicos
+??? PROGRESSO_ROADMAP_1.md     # Tópicos 1–20
+??? melhorias/
+    ??? README.md              # Como registrar uma melhoria
+    ??? MELHORIAS.md           # Índice M1, M2, …
+    ??? MELHORIAS_1.md         # M1–M20
+```
+
+Modelo pronto para copiar: [progresso/ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md).
+Guia de formato: [PROGRESSO.md](PROGRESSO.md).
 
 ---
 

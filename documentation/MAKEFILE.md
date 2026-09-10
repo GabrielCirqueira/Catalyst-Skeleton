@@ -26,6 +26,11 @@ Este documento resume as principais receitas do `Makefile` para gerenciar a stac
 - **Geral**:
   - `make lint-all`: roda a bateria completa de análise estática (Lint PHP + Biome).
 
+## Progresso e Roadmap
+- `make progresso`: lê `ROADMAP.md`, cria a página paginada se faltar e reconstrói `documentation/progresso/PROGRESSO_ROADMAP.md`.
+
+Guia: [PROGRESSO.md](PROGRESSO.md). Script: `scripts/update_roadmap.py`.
+
 ## Testes Automatizados (PHPUnit)
 - `make test`: executa a suite completa de testes.
 - `make test-unit`: executa apenas os testes unitários (`tests/Unit`).

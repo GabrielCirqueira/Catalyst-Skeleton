@@ -22,6 +22,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 12. [Logs e Observabilidade](#12-logs-e-observabilidade)
 13. [Nomenclatura e Padrões](#13-nomenclatura-e-padrões)
 14. [Versionamento do Skeleton](#14-versionamento-do-skeleton)
+15. [Progresso e Roadmap](#15-progresso-e-roadmap)
 
 ---
 
@@ -1357,6 +1358,23 @@ git cherry-pick <hash-do-commit-no-skeleton>
 - Mudanças de interface (contrato de API, estrutura de pastas, padrões obrigatórios) só ocorrem em versões maiores (nova branch)
 - `main` pode receber adições retrocompatíveis a qualquer momento
 - Projetos derivados **nunca** devem fazer merge de `main` do skeleton diretamente — usam cherry-pick seletivo
+
+---
+
+## 15. Progresso e Roadmap
+
+Índices centrais + arquivos paginados (20 itens). Guia de formato: [PROGRESSO.md](PROGRESSO.md). Template do lote: [progresso/ROADMAP.TEMPLATE.md](progresso/ROADMAP.TEMPLATE.md).
+
+| Peça | Papel |
+| :--- | :--- |
+| `ROADMAP.md` | Backlog do lote atual (checklist + detalhamento). Formato: [PROGRESSO.md](PROGRESSO.md). |
+| `documentation/progresso/PROGRESSO_ROADMAP.md` | Tabela consolidada com status e link `[ver]` |
+| `documentation/progresso/PROGRESSO_ROADMAP_X.md` | Detalhe dos tópicos (`ceil(ID / 20)`) |
+| `documentation/progresso/melhorias/` | Melhorias pontuais (M1, M2, …) |
+
+`make progresso` lê o `ROADMAP.md`, cria a página paginada se ela ainda não existir e reconstrói o índice. Script único: `scripts/update_roadmap.py`.
+
+Se o tópico mudar contrato técnico: frontend → `FRONTEND.md`; backend → `BACKEND.md`.
 
 ---
 

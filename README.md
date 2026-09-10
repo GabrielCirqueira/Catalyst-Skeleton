@@ -103,6 +103,7 @@ O Catalyst Skeleton impõe uma separação rigorosa de interesses:
 
 Para uma imersão profunda em cada área do projeto, consulte nossos guias específicos:
 
+- [**Progresso e Roadmap**](documentation/PROGRESSO.md): índices paginados e `make progresso`.
 - [**Guia de Autenticação**](documentation/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
 - [**Guia de Frontend**](documentation/FRONTEND.md): React 19, Shadcn/ui e "No useEffect".
 - [**Guia de Backend**](documentation/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
