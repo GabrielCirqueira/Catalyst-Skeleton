@@ -43,7 +43,9 @@ web/
 ├── config/api.ts         Instância Axios centralizada com interceptores JWT
 ├── features/auth/        hooks, api, types de autenticação
 ├── layouts/
-│   ├── MainLayout.tsx    Layout base (Outlet)
+│   ├── MainLayout.tsx    Header + Outlet + Footer
+│   ├── Header.tsx        Navbar global (tema, auth)
+│   ├── Footer.tsx        Rodapé global
 │   ├── AuthLayout.tsx    Layout centrado para Login/Cadastro
 │   └── AppContainer.tsx  Container responsivo de conteúdo
 ├── pages/

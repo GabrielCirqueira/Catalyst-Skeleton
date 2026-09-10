@@ -168,7 +168,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── contexts/             # Contextos React globais (ThemeProvider)
 │   ├── features/             # Módulos funcionais autossuficientes
 │   │   └── auth/             # Módulo de autenticação (páginas, calls, hooks)
-│   ├── layouts/              # Layouts base (sidebar, main content, etc.)
+│   ├── layouts/              # MainLayout (Header + Footer), AuthLayout, AppContainer
 │   ├── pages/                # Páginas folha carregadas via React.lazy()
 │   ├── routes/RotaProtegida.tsx  # Guard: redireciona para /login se não autenticado
 │   ├── shared/ui/layout.tsx  # Primitivos: Flex, HStack, VStack, Box, Container

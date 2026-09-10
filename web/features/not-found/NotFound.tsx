@@ -5,10 +5,14 @@ import { Link } from 'react-router-dom'
 
 export function Component() {
   return (
-    <VStack className="min-h-screen items-center justify-center gap-6 px-4 text-center motion-preset-fade">
+    <VStack className="flex-1 items-center justify-center gap-6 px-4 text-center motion-preset-fade">
       <VStack className="gap-2">
-        <Text as="span" className="text-8xl font-black font-sans text-accent/20 leading-none">404</Text>
-        <Text as="h1" className="text-2xl font-bold font-sans">Página não encontrada</Text>
+        <Text as="span" className="text-8xl font-black font-sans text-accent/20 leading-none">
+          404
+        </Text>
+        <Text as="h1" className="text-2xl font-bold font-sans">
+          Página não encontrada
+        </Text>
         <Text className="text-muted max-w-sm">
           A rota que você tentou acessar não existe ou foi removida.
         </Text>

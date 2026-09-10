@@ -1,5 +1,5 @@
 import { useTheme } from '@/contexts'
-import { ModalAuth } from '@/features/auth/ModalAuth'
+import type { MainLayoutContext } from '@/layouts'
 import { Box, Container, Grid, HStack, Text, VStack } from '@/shared/ui/layout'
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
@@ -49,10 +49,10 @@ import {
   Sparkles,
   Sun,
   Terminal,
-  User,
   Zap,
 } from 'lucide-react'
-import { memo, useCallback, useState } from 'react'
+import { memo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 
 const techStack = [
   {
@@ -125,15 +125,8 @@ const teamMembers = [
 ]
 
 export function Component() {
-  const [modalAberto, setModalAberto] = useState(false)
-  const abrirModal = useCallback(() => setModalAberto(true), [])
-
-  return (
-    <>
-      <HomeContent onAbrirModal={abrirModal} />
-      {modalAberto && <ModalAuth isOpen={true} onClose={() => setModalAberto(false)} />}
-    </>
-  )
+  const { abrirModal } = useOutletContext<MainLayoutContext>()
+  return <HomeContent onAbrirModal={abrirModal} />
 }
 
 const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: () => void }) {
@@ -147,62 +140,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
   const [formSenha, setFormSenha] = useState('')
 
   return (
-    <Box className="min-h-screen bg-background text-foreground">
-      {/* ════════════════════════════════════════════
-          NAVBAR
-      ════════════════════════════════════════════ */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <HStack className="max-w-6xl mx-auto px-6 h-14 justify-between">
-          <HStack>
-            <Box className="size-7 rounded-lg bg-brand-500 flex items-center justify-center">
-              <Code2 className="size-4 text-white" strokeWidth={2.5} />
-            </Box>
-            <Text as="span" className="font-black font-sans text-sm tracking-tight">
-              Catalyst <Text as="span" className="text-brand-500">Skeleton</Text>
-            </Text>
-          </HStack>
-
-          <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
-            <a href="#showcase" className="hover:text-foreground transition-colors">
-              Componentes
-            </a>
-            <a href="#stack" className="hover:text-foreground transition-colors">
-              Stack
-            </a>
-            <a href="#steps" className="hover:text-foreground transition-colors">
-              Como funciona
-            </a>
-          </nav>
-
-          <HStack>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="size-8 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-secondary transition-colors"
-              aria-label="Alternar tema"
-            >
-              {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            </button>
-
-            {autenticado ? (
-              <Chip color="success" variant="soft" size="sm">
-                <User className="size-3 mr-1" />
-                {usuario?.username}
-              </Chip>
-            ) : (
-              <button
-                type="button"
-                onClick={onAbrirModal}
-                className={buttonVariants({ variant: 'primary', size: 'sm' })}
-              >
-                <LogIn className="size-3.5" />
-                Entrar
-              </button>
-            )}
-          </HStack>
-        </HStack>
-      </header>
-
+    <Box>
       {/* ════════════════════════════════════════════
           HERO
       ════════════════════════════════════════════ */}
@@ -221,8 +159,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           </Chip>
 
           <VStack className="gap-3 motion-preset-slide-up motion-delay-100">
-            <Text as="h1" className="text-5xl sm:text-7xl font-black font-sans tracking-tight leading-none">
-              Catalyst <Text as="span" className="text-brand-500">Skeleton</Text>
+            <Text
+              as="h1"
+              className="text-5xl sm:text-7xl font-black font-sans tracking-tight leading-none"
+            >
+              Catalyst{' '}
+              <Text as="span" className="text-brand-500">
+                Skeleton
+              </Text>
             </Text>
             <Text className="text-lg text-muted max-w-xl mx-auto">
               Fundação opinativa para aplicações{' '}
@@ -259,17 +203,15 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           )}
 
           <HStack className="flex-wrap justify-center gap-2 motion-preset-fade motion-delay-300">
-            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Tailwind 4', 'Docker'].map(
-              (t) => (
-                <Text
-                  as="span"
-                  key={t}
-                  className="px-3 py-1 rounded-full text-xs font-medium bg-surface-secondary border border-border text-muted"
-                >
-                  {t}
-                </Text>
-              ),
-            )}
+            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Tailwind 4', 'Docker'].map((t) => (
+              <Text
+                as="span"
+                key={t}
+                className="px-3 py-1 rounded-full text-xs font-medium bg-surface-secondary border border-border text-muted"
+              >
+                {t}
+              </Text>
+            ))}
           </HStack>
         </VStack>
       </section>
@@ -286,7 +228,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           >
             Componentes
           </Chip>
-          <Text as="h2" className="text-3xl font-bold font-sans">Tudo que você precisa, pronto</Text>
+          <Text as="h2" className="text-3xl font-bold font-sans">
+            Tudo que você precisa, pronto
+          </Text>
           <Text className="text-muted text-sm max-w-md">
             HeroUI v3 + Tailwind 4 integrados. Veja os componentes em ação.
           </Text>
@@ -338,7 +282,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
               <HStack className="gap-3">
                 <Box className="flex-1 h-px bg-border" />
-                <Text as="span" className="text-xs text-muted">ou</Text>
+                <Text as="span" className="text-xs text-muted">
+                  ou
+                </Text>
                 <Box className="flex-1 h-px bg-border" />
               </HStack>
 
@@ -360,9 +306,15 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               </Grid>
 
               <HStack className="flex-wrap gap-2 pt-1">
-                <Chip size="sm" variant="soft" color="success">✓ Refresh Token</Chip>
-                <Chip size="sm" variant="soft" color="accent">RS256</Chip>
-                <Chip size="sm" variant="soft" color="default">Stateless</Chip>
+                <Chip size="sm" variant="soft" color="success">
+                  ✓ Refresh Token
+                </Chip>
+                <Chip size="sm" variant="soft" color="accent">
+                  RS256
+                </Chip>
+                <Chip size="sm" variant="soft" color="default">
+                  Stateless
+                </Chip>
               </HStack>
             </CardContent>
           </Card>
@@ -503,15 +455,29 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
               <VStack className="gap-2">
                 {[
-                  { color: 'bg-success/10 border-success/25 text-success', icon: '✓', msg: 'Deploy realizado com sucesso' },
-                  { color: 'bg-warning/10 border-warning/25 text-warning', icon: '⚠', msg: 'Rate limit em 80%' },
-                  { color: 'bg-danger/10 border-danger/25 text-danger', icon: '!', msg: 'Token expirado' },
+                  {
+                    color: 'bg-success/10 border-success/25 text-success',
+                    icon: '✓',
+                    msg: 'Deploy realizado com sucesso',
+                  },
+                  {
+                    color: 'bg-warning/10 border-warning/25 text-warning',
+                    icon: '⚠',
+                    msg: 'Rate limit em 80%',
+                  },
+                  {
+                    color: 'bg-danger/10 border-danger/25 text-danger',
+                    icon: '!',
+                    msg: 'Token expirado',
+                  },
                 ].map((a) => (
                   <HStack
                     key={a.msg}
                     className={`px-3 py-2 rounded-lg border text-xs font-medium ${a.color}`}
                   >
-                    <Text as="span" className="shrink-0">{a.icon}</Text>
+                    <Text as="span" className="shrink-0">
+                      {a.icon}
+                    </Text>
                     {a.msg}
                   </HStack>
                 ))}
@@ -522,13 +488,42 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
         <Grid className="mt-4 grid-cols-2 sm:grid-cols-4">
           {[
-            { label: 'Linhas de código', value: '< 2k', icon: Code2, color: 'text-brand-500', bg: 'bg-brand-500/10' },
-            { label: 'Dependências core', value: '18', icon: Package, color: 'text-success', bg: 'bg-success/10' },
-            { label: 'Endpoints prontos', value: '5', icon: Globe, color: 'text-warning', bg: 'bg-warning/10' },
-            { label: 'Setup em minutos', value: '< 3', icon: Zap, color: 'text-danger', bg: 'bg-danger/10' },
+            {
+              label: 'Linhas de código',
+              value: '< 2k',
+              icon: Code2,
+              color: 'text-brand-500',
+              bg: 'bg-brand-500/10',
+            },
+            {
+              label: 'Dependências core',
+              value: '18',
+              icon: Package,
+              color: 'text-success',
+              bg: 'bg-success/10',
+            },
+            {
+              label: 'Endpoints prontos',
+              value: '5',
+              icon: Globe,
+              color: 'text-warning',
+              bg: 'bg-warning/10',
+            },
+            {
+              label: 'Setup em minutos',
+              value: '< 3',
+              icon: Zap,
+              color: 'text-danger',
+              bg: 'bg-danger/10',
+            },
           ].map((s) => (
-            <HStack key={s.label} className="gap-3 p-4 rounded-xl border border-border bg-surface shadow-sm">
-              <Box className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${s.bg}`}>
+            <HStack
+              key={s.label}
+              className="gap-3 p-4 rounded-xl border border-border bg-surface shadow-sm"
+            >
+              <Box
+                className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${s.bg}`}
+              >
                 <s.icon className={`size-5 ${s.color}`} />
               </Box>
               <VStack className="gap-0">
@@ -555,7 +550,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             >
               Stack
             </Chip>
-            <Text as="h2" className="text-3xl font-bold font-sans">Tecnologias incluídas</Text>
+            <Text as="h2" className="text-3xl font-bold font-sans">
+              Tecnologias incluídas
+            </Text>
           </VStack>
 
           <Accordion variant="surface" className="max-w-2xl mx-auto">
@@ -566,15 +563,21 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     <Box className="size-8 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
                       <t.icon className="size-4 text-brand-500" />
                     </Box>
-                    <Text as="span" className="font-semibold text-sm">{t.category}</Text>
-                    <Text as="span" className="ml-auto text-xs text-muted">{t.items.length} tecnologias</Text>
+                    <Text as="span" className="font-semibold text-sm">
+                      {t.category}
+                    </Text>
+                    <Text as="span" className="ml-auto text-xs text-muted">
+                      {t.items.length} tecnologias
+                    </Text>
                     <AccordionIndicator className="shrink-0" />
                   </AccordionTrigger>
                 </AccordionHeading>
                 <AccordionPanel>
                   <AccordionBody className="flex flex-wrap gap-2 pb-4 pl-11">
                     {t.items.map((item) => (
-                      <Chip key={item} variant="soft" color="default" size="sm">{item}</Chip>
+                      <Chip key={item} variant="soft" color="default" size="sm">
+                        {item}
+                      </Chip>
                     ))}
                   </AccordionBody>
                 </AccordionPanel>
@@ -596,7 +599,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           >
             Como funciona
           </Chip>
-          <Text as="h2" className="text-3xl font-bold font-sans">3 passos para começar</Text>
+          <Text as="h2" className="text-3xl font-bold font-sans">
+            3 passos para começar
+          </Text>
         </VStack>
 
         <Grid className="grid-cols-1 sm:grid-cols-3 gap-6">
@@ -611,10 +616,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 </Box>
               )}
               <Box className="size-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                <Text as="span" className="text-sm font-black font-sans text-brand-500">{s.n}</Text>
+                <Text as="span" className="text-sm font-black font-sans text-brand-500">
+                  {s.n}
+                </Text>
               </Box>
               <Box>
-                <Text as="h3" className="font-bold font-sans text-sm mb-2">{s.title}</Text>
+                <Text as="h3" className="font-bold font-sans text-sm mb-2">
+                  {s.title}
+                </Text>
                 <Text className="text-xs text-muted leading-relaxed">{s.desc}</Text>
               </Box>
             </VStack>
@@ -632,7 +641,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           </Box>
 
           <Box>
-            <Text as="h2" className="text-4xl font-black font-sans mb-3">Pronto para começar?</Text>
+            <Text as="h2" className="text-4xl font-black font-sans mb-3">
+              Pronto para começar?
+            </Text>
             <Text className="text-muted max-w-md text-sm">
               Clone, configure e tenha um projeto full-stack profissional rodando em minutos.
             </Text>
@@ -640,8 +651,12 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
           <HStack className="bg-surface-secondary border border-border rounded-xl px-5 py-3 font-mono text-sm w-full max-w-lg">
             <Terminal className="size-4 text-muted shrink-0" />
-            <Text as="span" className="text-muted select-none">$</Text>
-            <Text as="span" className="text-foreground">git clone catalyst-skeleton && ./setup.sh</Text>
+            <Text as="span" className="text-muted select-none">
+              $
+            </Text>
+            <Text as="span" className="text-foreground">
+              git clone catalyst-skeleton && ./setup.sh
+            </Text>
           </HStack>
 
           <HStack className="gap-3 flex-wrap justify-center">

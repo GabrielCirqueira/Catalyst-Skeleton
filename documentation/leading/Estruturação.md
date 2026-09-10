@@ -192,17 +192,26 @@ Exemplo de estrutura:
 
 Toda página **obrigatoriamente** segue essa hierarquia:
 
+* `MainLayout` como casca da aplicação (`Header` + conteúdo + `Footer`)
 * `AppContainer` como container principal da página
 * Dentro dele, `Container` para dividir seções
 
 Padrão obrigatório:
 
 ```tsx
+<MainLayout>
+  <Header />
+  <Outlet />   {/* página */}
+  <Footer />
+</MainLayout>
+
 <AppContainer>
   <Container>Seção 1</Container>
   <Container>Seção 2</Container>
 </AppContainer>
 ```
+
+`Header` e `Footer` ficam em `web/layouts/` e **não** devem ser recriados dentro das páginas.
 
 ### 6.2 Regra de seções
 
