@@ -6,15 +6,17 @@ import { useEffect, useRef } from 'react'
  *
  * @param effect A função de efeito a ser executada.
  */
-export function useMountEffect(effect: () => undefined | (() => void)) {
-  useEffect(effect, []) // eslint-disable-line react-hooks/exhaustive-deps
+// biome-ignore lint/suspicious/noConfusingVoidType: void é o tipo correto do EffectCallback do React
+export function useMountEffect(effect: () => void | (() => void)) {
+  useEffect(effect, [])
 }
 
 /**
  * Hook que executa um efeito sempre que as dependências mudarem,
  * MAS pula a primeira execução (montagem).
  */
-export function useUpdateEffect(effect: () => undefined | (() => void), deps: unknown[]) {
+// biome-ignore lint/suspicious/noConfusingVoidType: void é o tipo correto do EffectCallback do React
+export function useUpdateEffect(effect: () => void | (() => void), deps: unknown[]) {
   const isFirstRender = useRef(true)
 
   useEffect(() => {

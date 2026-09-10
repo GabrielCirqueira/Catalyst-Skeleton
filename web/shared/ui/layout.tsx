@@ -1,8 +1,6 @@
 import { cn } from '@/shared/lib/cn'
 import type { ComponentProps } from 'react'
 
-// ─── Flex primitivos ─────────────────────────────────────────────────────────
-
 export const Flex = ({ className, ...props }: ComponentProps<'div'>) => (
   <div className={cn('flex gap-2', className)} {...props} />
 )
@@ -22,8 +20,6 @@ export const Box = ({ className, ...props }: ComponentProps<'div'>) => (
 export const Grid = ({ className, ...props }: ComponentProps<'div'>) => (
   <div className={cn('grid gap-4', className)} {...props} />
 )
-
-// ─── Container responsivo ────────────────────────────────────────────────────
 
 const containerSizes = {
   sm: 'max-w-screen-sm',
