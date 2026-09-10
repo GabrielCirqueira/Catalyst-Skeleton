@@ -61,7 +61,6 @@ interface ModalAuthProps {
 export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
   const { setAutenticado } = useAuthStore()
 
-  // ─── Login ─────────────────────────────────────────────────────────────────
   const [loginForm, setLoginForm] = useState<LoginInput>({ username: '', senha: '' })
   const [loginErros, setLoginErros] = useState<Record<string, string>>({})
 
@@ -108,7 +107,6 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
     loginMutation.mutate(result.data)
   }
 
-  // ─── Cadastro ──────────────────────────────────────────────────────────────
   const [cadastroForm, setCadastroForm] = useState<CadastroInput>({
     nomeCompleto: '',
     username: '',
