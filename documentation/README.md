@@ -1,6 +1,6 @@
 # Documentação
 
-Índice da documentação do Catalyst Skeleton. Abra o guia da pasta certa — não misture regras de código com histórico de progresso.
+Índice da documentação do Catalyst Skeleton. IA: comece por [guias/PARA-IA.md](guias/PARA-IA.md).
 
 | Pasta | Para quê |
 | :--- | :--- |
@@ -14,9 +14,10 @@
 
 | Arquivo | Quando abrir |
 | :--- | :--- |
-| [guias/Estruturação.md](guias/Estruturação.md) | Onde colocar um arquivo, layout (`Box`/`Text`), checklist de PR |
+| [guias/PARA-IA.md](guias/PARA-IA.md) | **Comece aqui.** Passo a passo de como escrever código neste repo |
+| [guias/Estruturação.md](guias/Estruturação.md) | Detalhe: pastas, layout (`Box`/`Text`), checklist de PR |
 | [guias/DESIGN.md](guias/DESIGN.md) | Tokens visuais e componentes de UI |
-| [guias/NOVA-FUNCIONALIDADE.md](guias/NOVA-FUNCIONALIDADE.md) | Passo a passo para uma tela/feature nova |
+| [guias/NOVA-FUNCIONALIDADE.md](guias/NOVA-FUNCIONALIDADE.md) | Passo a passo longo para uma tela/feature nova |
 | [guias/GUIA-GERAL.md](guias/GUIA-GERAL.md) | Compêndio longo de padrões (consulta, não o primeiro arquivo) |
 
 ## Stack
