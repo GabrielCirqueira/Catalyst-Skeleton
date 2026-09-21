@@ -106,9 +106,11 @@ Checklist:
 - [ ] `final class`, dependências pelo construtor, método `executar()`
 - [ ] Zero lógica HTTP (sem Request/Response)
 - [ ] **PROIBIDO** `EntityManagerInterface` direto — sempre via Repository
+- [ ] Contrato do repositório novo em `src/Interface/{Nome}Interface.php`
 - [ ] `DomainException` para violações de invariante; `Resultado` para erros de negócio esperados — ver GUIA-GERAL.md 5.9
 - [ ] Domain Event disparado quando a ação causa efeitos colaterais — ver GUIA-GERAL.md 5.10
 - [ ] Se o Service precisa de lógica pura entre entidades sem I/O, extrair para Domain Service em `src/Domain/` — ver GUIA-GERAL.md 5.12
+- [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature — ver PARA-IA.md § 4.7. Não concentrar num arquivo.
 
 ### 3.6 Serializer
 

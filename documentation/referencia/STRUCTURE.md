@@ -90,8 +90,9 @@ src/
 ??? DataObject/         DTOs de entrada tipados e validados
 ??? Entity/             Entidades Doctrine (Usuario, RefreshToken)
 ??? Enum/               Enums PHP 8.1+
-??? Event/              Eventos de domínio
-??? EventListener/      KernelExceptionListener ? padroniza respostas de erro
+??? EventListener/      Listeners + Event/ (fatos de domínio)
+??? Feature/            *Feature.php + TaggedIterator (lógica grande em vários services)
+??? Interface/          Contratos PHP (*Interface.php)
 ??? Repository/         Acesso ao banco, queries DQL/QueryBuilder
 ??? Serializer/         Contratos JSON de saída
 ??? Service/            Lógica de negócio (um service = uma ação)

@@ -2,18 +2,19 @@
 
 Este é o **primeiro arquivo** que uma IA deve ler. Siga na ordem. Não invente pasta, padrão ou biblioteca.
 
-Detalhamento extra (só se faltar): [Estruturação.md](Estruturação.md) · [FRONTEND.md](../stack/FRONTEND.md) · [BACKEND.md](../stack/BACKEND.md).
+Se faltar detalhe, use a seção **Onde buscar mais contexto** no final deste arquivo — abra só o trecho da tarefa, nunca o arquivo misto inteiro.
 
 ---
 
 ## 0. Antes de escrever uma linha
 
-1. Leia `web/App.tsx` (rotas) e a feature mais parecida em `web/features/`.
-2. Leia um Controller em `src/Controller/` e um Repository em `src/Repository/`.
-3. Copie o padrão que já existe. Não misture Shadcn, `<div>` ou `axios` solto.
-4. Nomes em **português**: pastas, arquivos, variáveis, funções, DTOs, services, entidades.
-5. Sem comentários (`//`, `/* */`, `{/* */}`). Código se explica pelo nome. Exceção: DocBlock curto em Service PHP se o retorno for complexo.
-6. Não crie testes. Não instale PHPUnit.
+1. Classifique a tarefa (backend / frontend / devops) e abra **só** as faixas no final deste arquivo.
+2. Backend: um Controller em `src/Controller/` e um Repository em `src/Repository/`. Pule `web/`.
+3. Frontend: `web/App.tsx` e a feature mais parecida em `web/features/`. Pule `src/` (exceto se precisar do contrato JSON).
+4. Copie o padrão que já existe. Não misture Shadcn, `<div>` ou `axios` solto.
+5. Nomes em **português**: pastas, arquivos, variáveis, funções, DTOs, services, entidades.
+6. Sem comentários (`//`, `/* */`, `{/* */}`). Código se explica pelo nome. Exceção: DocBlock curto em Service PHP se o retorno for complexo.
+7. Não crie testes. Não instale PHPUnit.
 
 ---
 
@@ -28,11 +29,12 @@ Fluxo de uma feature completa:
 
 ```
 Controller (rota, sem lógica) → Service (regra de negócio) → Repository (toda query)
+Lógica grande ou repetida → vários services + interface + `TaggedIterator` numa Feature. Nunca um arquivo só.
 Entidade → Migration → DTO → Serializer
 Types → api.ts → Hook (TanStack Query) → Componentes → Página → rota em App.tsx
 ```
 
-No backend: **crie o Controller primeiro**. Ele só recebe o request e chama o Service. A lógica mora no Service. Consulta e persistência **nunca** no Service — só no Repository.
+No backend: **crie o Controller primeiro**. Ele só recebe o request e chama o Service (ou a Feature, se o fluxo for grande). A lógica mora no Service. Consulta e persistência **nunca** no Service nem na Feature — só no Repository.
 
 ---
 
@@ -60,11 +62,14 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 | :--- | :--- |
 | HTTP | `src/Controller/{Categoria}/` |
 | Caso de uso | `src/Service/{Funcionalidade}/VerboEntidadeService.php` |
+| Caso de uso grande / repetido | `src/Feature/{Nome}Feature.php` + vários `*Service` + `TaggedIterator` |
 | Banco | `src/Repository/` — único lugar com Doctrine |
+| Contrato PHP | `src/Interface/{Nome}Interface.php` |
 | Entrada da API | `src/DataObject/` — sufixo `DTO` |
 | Tabela | `src/Entity/` |
 | JSON de saída | `src/Serializer/` |
 | Enum fechado | `src/Enum/` |
+| Evento + reação | `src/EventListener/` — fato em `Event/`, reação ao lado |
 | Sucesso/falha de negócio | `src/Resultado.php` |
 
 ---
@@ -152,15 +157,16 @@ Três camadas, sem exceção:
 
 | Camada | Faz | Não faz |
 | :--- | :--- | :--- |
-| **Controller** | Rota, DTO, chamar Service, devolver JSON | Regra de negócio, query, EntityManager |
-| **Service** | Orquestrar o caso de uso, `Resultado` | Query, DQL, QueryBuilder, EntityManager |
+| **Controller** | Rota, DTO, chamar Service ou Feature, devolver JSON | Regra de negócio, query, EntityManager |
+| **Service** | Uma ação de negócio, `Resultado` | Query; não empilhar 4+ ações no mesmo arquivo |
+| **Feature** | Orquestra vários services via `TaggedIterator` | Query; lógica toda num arquivo só |
 | **Repository** | Toda consulta e persistência | Regra de negócio HTTP |
 
 Comece pelo **Controller** (contrato da rota). Em seguida o Service com a lógica. Toda busca (`find`, `createQueryBuilder`, SQL, `persist`, `flush`) vai para um método do Repository — o Service só chama esse método.
 
 ### 4.1 Controller
 
-Crie o Controller **primeiro**. Ele define a rota e o formato da resposta. Corpo: ler DTO → chamar Service → JSON. Nada além disso.
+Crie o Controller **primeiro**. Ele define a rota e o formato da resposta. Corpo: ler DTO → chamar Service (ou Feature) → JSON. Nada além disso.
 
 ```php
 #[Route('/api/v1/pedidos', methods: ['POST'])]
@@ -203,6 +209,8 @@ Revise o SQL antes de aplicar.
 
 O Service pede dados com um método de intenção (`buscarPorUuid`, `usernameJaExiste`, `salvar`). Se a consulta ainda não existe, crie no Repository — não escreva a query no Service.
 
+Contrato do repositório (e de qualquer porta: cliente HTTP, fila) vai em `src/Interface/{Nome}Interface.php`. O Service/Feature tipa a interface, não a classe concreta.
+
 ### 4.5 DTO
 
 `final readonly class` em `src/DataObject/`, nome `VerboEntidadeDTO`. Sem setters. Getter = nome da propriedade. Validar com `#[Assert\…]`. Entrada HTTP via `MapRequestPayload` / `MapQueryString` — não monte array na mão com `$request->get()`.
@@ -229,7 +237,68 @@ public function executar(CriarPedidoDTO $dto): Resultado
 }
 ```
 
-### 4.7 Serializer
+### 4.7 Feature e tagged iterator
+
+**Proibido** juntar a lógica grande num único Service/arquivo (`if`, `switch`, quatro `executar()`). Sempre que a lógica for grande, repetida ou tiver várias peças, **parta em vários services** com a mesma interface e deixe a Feature só iterar. Como vão ser vários services, **organize sempre assim** — não injete um por um “na mão”.
+
+Fluxo obrigatório:
+
+1. Interface em `src/Interface/` com tag.
+2. Um Service pequeno por regra/peça (`src/Service/`).
+3. Feature em `src/Feature/` com `#[TaggedIterator]`. Sem query, sem HTTP.
+
+```php
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag('app.regra_desconto')]
+interface RegraDescontoInterface
+{
+    public function suporta(Pedido $pedido): bool;
+    public function aplicar(Pedido $pedido): Resultado;
+}
+```
+
+```php
+use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+
+final class CalcularDescontoFeature
+{
+    public function __construct(
+        #[TaggedIterator('app.regra_desconto')]
+        private readonly iterable $regras,
+    ) {}
+
+    public function executar(Pedido $pedido): Resultado
+    {
+        foreach ($this->regras as $regra) {
+            if ($regra->suporta($pedido)) {
+                $resultado = $regra->aplicar($pedido);
+                if (!$resultado->ehSucesso()) {
+                    return $resultado;
+                }
+            }
+        }
+        return Resultado::sucesso($pedido);
+    }
+}
+```
+
+Nova peça = nova classe. A Feature não muda. Symfony registra sozinho.
+
+**Quando isso é o padrão (sempre que possível)**
+
+- Lógica grande ou que se repete (desconto, validação, imposto, fraude, permissão).
+- Várias peças do mesmo conceito: pagamento, exportação, notificação, frete, parser, webhook.
+- Pipeline de etapas (`#[AsTaggedItem(priority: 100)]` define a ordem).
+- Outro módulo precisa plugar comportamento sem conhecer a Feature.
+
+Um único Service atômico (criar pedido, buscar por uuid) **não** vira Feature.
+
+**Variações:** `TaggedLocator` + `#[AsTaggedItem(index: 'pix')]` quando a Feature já sabe a chave e só instancia o que usar.
+
+O Controller chama a Feature.
+
+### 4.8 Serializer
 
 Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
 
@@ -238,7 +307,7 @@ Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
 ## 5. Passo a passo de uma feature nova
 
 1. Entender a tela e o contrato JSON.
-2. Backend: **Controller primeiro** (rota, sem lógica) → Service (toda a lógica, sem query) → Repository (toda consulta) → Entidade / migration / DTO / Serializer.
+2. Backend: **Controller primeiro**. Service atômico. Lógica grande/repetida → vários services + interface + `TaggedIterator` na Feature. Nunca um arquivo com toda a lógica. Repository para toda consulta → Entidade / migration / DTO / Serializer.
 3. Frontend: `types.ts` → `api.ts` → hook → componentes HeroUI + layout → página `Component` → rota lazy em `App.tsx`.
 4. Se a rota for autenticada, registrar em `RotaProtegida`.
 5. `make lint-all`. Corrigir o que o Biome/PHP apontar.
@@ -251,10 +320,73 @@ Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
 - [ ] Sem Header/Footer na página
 - [ ] Sem `useEffect`
 - [ ] Sem Axios fora de `config/api.ts` e dos `api.ts` da feature
-- [ ] Controller criado primeiro; só chama Service
-- [ ] Lógica só no Service — zero query, zero EntityManager
+- [ ] Controller criado primeiro; só chama Service ou Feature
+- [ ] Lógica só no Service (ou Feature orquestrando services) — zero query, zero EntityManager
+- [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature, nunca um arquivo só
 - [ ] Toda consulta/persistência no Repository
+- [ ] Contrato novo em `src/Interface/{Nome}Interface.php`
 - [ ] DTO validado, sem setter
 - [ ] JSON via Serializer, não entidade
 - [ ] Nomes em português, descritivos
 - [ ] `make lint-all` passou
+
+---
+
+## Onde buscar mais contexto
+
+Leia este arquivo até o fim. Depois abra **só** os trechos da sua tarefa. Não carregue `GUIA-GERAL.md` nem `DOCUMENTACAO_TECNICA.md` inteiros.
+
+Código de referência: backend → `src/Controller/` e `src/Repository/`. Frontend → `web/App.tsx` e uma feature em `web/features/`. Não abra o outro lado se a tarefa for só um deles.
+
+### Backend (Controller, Service, Feature, Repository, DTO, Entity)
+
+| Arquivo | Linhas | Pular |
+| :--- | :--- | :--- |
+| [Estruturação.md](Estruturação.md) | 448–673 (§ 13) | §§ 3–12 (front) |
+| [BACKEND.md](../stack/BACKEND.md) | 1–105 (arquivo curto) | — |
+| [GUIA-GERAL.md](GUIA-GERAL.md) | 135–835 (§ 5) | § 6 front, § 7 UI |
+| [DOCUMENTACAO_TECNICA.md](../referencia/DOCUMENTACAO_TECNICA.md) | 259–462 (§ 5) | § 6 front |
+| [NOVA-FUNCIONALIDADE.md](NOVA-FUNCIONALIDADE.md) | 42–154 (§ 3) | § 4 front |
+
+Auth JWT API: [AUTH.md](../stack/AUTH.md) linhas **1–26**. Pular 28–52.
+Fila: [MESSENGER.md](../stack/MESSENGER.md) inteiro (curto).
+
+### Frontend (página, layout, `Box`/`Text`, hook, rota)
+
+| Arquivo | Linhas | Pular |
+| :--- | :--- | :--- |
+| [Estruturação.md](Estruturação.md) | 59–446 (§§ 3–12) | § 13 back |
+| [FRONTEND.md](../stack/FRONTEND.md) | 1–182 (arquivo curto) | — |
+| [DESIGN.md](DESIGN.md) | 1–720 se for visual/UI | — |
+| [GUIA-GERAL.md](GUIA-GERAL.md) | 837–1570 (§§ 6–7) | § 5 back |
+| [DOCUMENTACAO_TECNICA.md](../referencia/DOCUMENTACAO_TECNICA.md) | 464–718 (§ 6) | § 5 back |
+| [NOVA-FUNCIONALIDADE.md](NOVA-FUNCIONALIDADE.md) | 156–293 (§ 4) | § 3 back |
+
+Auth tela / store / interceptors: [AUTH.md](../stack/AUTH.md) linhas **28–52**. Pular 1–26.
+
+### DevOps, Docker, portas
+
+| Arquivo | Linhas | Pular |
+| :--- | :--- | :--- |
+| [DOCKER.md](../ops/DOCKER.md) | 1–55 (arquivo curto) | — |
+| [DOCUMENTACAO_TECNICA.md](../referencia/DOCUMENTACAO_TECNICA.md) | 190–257 (env/portas); 1100–1248 (§§ 11–12) | §§ 5–6 app |
+| [STRUCTURE.md](../referencia/STRUCTURE.md) | 7–82 (raiz, tooling) | — |
+
+### Deploy / produção
+
+| Arquivo | Linhas |
+| :--- | :--- |
+| [DEPLOY.md](../ops/DEPLOY.md) | 1–770 |
+| [MAKEFILE.md](../ops/MAKEFILE.md) | 39–48 |
+
+### Lint / Makefile / CLI
+
+| Arquivo | Linhas |
+| :--- | :--- |
+| [FORMATTING.md](../ops/FORMATTING.md) | 1–44 |
+| [MAKEFILE.md](../ops/MAKEFILE.md) | 1–38 |
+| [CLI.md](../ops/CLI.md) | 1–28 |
+
+### Árvore de pastas
+
+[STRUCTURE.md](../referencia/STRUCTURE.md): **84–106** (`src/`) · **108–126** (`web/`). O resto, pular.

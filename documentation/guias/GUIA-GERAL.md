@@ -634,7 +634,7 @@
 
   ### 5.10 Domain Events
 
-  Eventos de domínio desacoplam o que acontece quando uma entidade muda de estado. O Service que cria um usuário não precisa saber que existe um sistema de e-mail — ele dispara um evento e cada listener reage de forma independente:
+  Eventos de domínio desacoplam o que acontece quando uma entidade muda de estado. O fato vai em `src/EventListener/Event/`; quem reage fica em `src/EventListener/` (mesmo contexto). O Service que cria um usuário não precisa saber que existe um sistema de e-mail — ele dispara um evento e cada listener reage de forma independente:
 
   ```php
   // 1. Definir o evento
@@ -775,10 +775,15 @@
   | Precisa de banco, HTTP, fila ou e-mail? | Application Service em `src/Service/{Funcionalidade}/` |
   | Pura lógica entre entidades, sem I/O? | Domain Service em `src/Domain/{Funcionalidade}/` |
   | Pode ser testado sem nenhum mock de infraestrutura? | Domain Service |
+  | Lógica grande, repetida ou várias peças? | Vários services + interface + `TaggedIterator` em `src/Feature/` |
+
+  ### 5.13 Feature
+
+  **Não** coloque a lógica grande num único `*Service.php`. Sempre que possível, parta em vários services com a mesma interface e uma Feature com `#[TaggedIterator]`. A Feature só itera e devolve `Resultado`. Query continua no Repository. Nova peça = nova classe, Feature não muda. Padrão e exemplo: [PARA-IA.md](PARA-IA.md) § 4.7.
 
   ---
 
-  ### 5.13 Tarefas Agendadas (Scheduler)
+  ### 5.14 Tarefas Agendadas (Scheduler)
   
   O Symfony Scheduler (`symfony/scheduler`) já vem configurado de forma nativa para gerenciar execuções recorrentes.
   
@@ -810,8 +815,11 @@
     Entity/                     ← Entidades e Aggregate Roots
       {Categoria}/             ← organizar por Categoria funcional
     Enum/                       ← Enums de domínio (Sexo, StatusPedido, TipoConta…)
-    Event/                      ← Domain Events (XxxCriadoEvent, XxxCanceladoEvent)
-    EventListener/              ← Listeners (#[AsEventListener])
+    EventListener/
+      Event/                    ← Domain Events (XxxCriadoEvent, XxxCanceladoEvent)
+                                ← Listeners (#[AsEventListener]) ao lado
+    Feature/                    ← *Feature.php + TaggedIterator; lógica grande em vários services
+    Interface/                  ← contratos PHP (*Interface.php)
     Message/                    ← Mensagens para o Messenger
     MessageHandler/             ← Handlers (#[AsMessageHandler])
     Repository/                 ← Repositórios (um por entidade)

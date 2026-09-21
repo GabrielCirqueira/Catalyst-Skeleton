@@ -138,8 +138,9 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── DataObject/           # DTOs: entrada validada de dados
 │   ├── Entity/               # Entidades Doctrine (UUID v7 como PK)
 │   ├── Enum/                 # Enums PHP 8.1+ usados em entidades e DTOs
-│   ├── Event/                # Eventos de domínio dispatched via EventDispatcher
-│   ├── EventListener/        # Listeners (KernelExceptionListener, etc.)
+│   ├── EventListener/        # Listeners + Event/ (fatos de domínio)
+│   ├── Feature/              # TaggedIterator — lógica grande em vários services
+│   ├── Interface/            # Contratos PHP (*Interface.php)
 │   ├── Repository/           # Acesso ao banco de dados via Doctrine
 │   ├── Serializer/           # Normalizadores para o JSON de saída (contrato da API)
 │   ├── Service/              # Lógica de negócio e orquestração
@@ -264,10 +265,12 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 | **Entidades** | `src/Entity/` | Domínio rico. Invariantes e regras de negócio internas. PK em UUID v7. Sem getters/setters anêmicos. |
 | **DTOs** | `src/DataObject/` | Mapeiam o payload HTTP para um objeto tipado antes de chegar ao Service. |
 | **Repositórios** | `src/Repository/` | Único lugar onde o `EntityManager` é injetado. Queries em DQL/QueryBuilder. |
-| **Services** | `src/Service/` | Orquestração de operações de negócio. Retornam `Resultado`. Um service = uma ação (`executar()`). |
+| **Interfaces** | `src/Interface/` | Contratos. Porta (repo/HTTP) ou família tagged: `#[AutoconfigureTag]` + vários services + Feature. |
+| **Services** | `src/Service/` | **Uma** ação. `executar()`. Sem query. Peças de uma família tagged também são services. |
+| **Features** | `src/Feature/` | Padrão para lógica grande/repetida: `TaggedIterator` sobre vários services. Não faz query. Não concentra lógica num arquivo. |
 | **Serializers** | `src/Serializer/` | Definem o contrato JSON de saída. Protegem o frontend de mudanças internas no banco. |
-| **Controllers** | `src/Controller/` | Lógica zero. Recebem request, chamam Service, retornam `JsonResponse`. |
-| **Events / Listeners** | `src/Event/`, `src/EventListener/` | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
+| **Controllers** | `src/Controller/` | Lógica zero. Recebem request, chamam Service ou Feature, retornam `JsonResponse`. |
+| **Events / Listeners** | `src/EventListener/` (`Event/` = fato, classes irmãs = reação) | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
 | **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. **Módulo `async` — só existe se ativado no setup.** |
 | **Commands** | `src/Command/` | CLI da aplicação via `php bin/console`. |
 | **Schedule** | `src/Schedule/` | Tarefas recorrentes nativas do Symfony Scheduler. **Módulo `async` — só existe se ativado no setup.** |
