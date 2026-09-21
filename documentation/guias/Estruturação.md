@@ -451,7 +451,7 @@ Regras:
 
 #### Onde ficam os controllers
 
-Os controllers devem ser organizados em subpastas por tópico/categoria dentro de `src/Controller/` (ex: `Admin/`, `Auth/`, `Midia/`, `Nota/`, `Configuracao/`, `Github/`, `Geral/`).
+Os controllers de **API** ficam em subpastas por tópico (`Auth/`, `Admin/`, …) e **sempre** extends `DefaultController`. O HTML da SPA fica em `FrontendController`.
 
 #### Regra principal dos controllers
 
@@ -477,6 +477,19 @@ Confundi-los gera acoplamentos errados.
 | **Domain Service** | Lógica de domínio pura entre múltiplas entidades. Sem I/O. | `src/Domain/{Funcionalidade}/` |
 
 **Regra:** Se pode ser testado unitariamente sem nenhum mock de infraestrutura (banco, HTTP), é um **Domain Service**.
+
+#### 13.2.2 Feature (`src/Feature/`)
+
+**Proibido** concentrar lógica grande num único arquivo. Sempre que a lógica for grande, repetida ou tiver várias peças, parta em vários services com a mesma interface e uma Feature com `#[TaggedIterator]`. A Feature só itera; não faz query. Nova peça = nova classe. Detalhe: [PARA-IA.md](PARA-IA.md) § 4.7.
+
+Um Service único e atômico (criar, buscar) não vira Feature.
+
+#### 13.2.3 Interface (`src/Interface/`)
+
+Contratos PHP em `src/Interface/{Nome}Interface.php`.
+
+- Porta (repositório, HTTP, fila): Service/Feature tipam a interface.
+- Vários services do mesmo fluxo: `#[AutoconfigureTag('app.…')]` na interface; cada Service implementa; a Feature usa `TaggedIterator`. **É o jeito padrão de organizar**, não um caso especial.
 
 ---
 
@@ -626,11 +639,11 @@ Handlers do Messenger seguem a disciplina de **Lógica Zero**.
 
 ### 13.7 Result Object
 
-Para casos de negócio esperados (ex: e-mail duplicado), retorne um objeto `Resultado` estruturado (`sucesso`, `dados`, `erro`) em vez de lançar exceções. Reserve Exceptions para erros fatais ou invariantes violadas.
+Controller de API extends `DefaultController` e devolve `Response` com `$this->success()` / `$this->error()` (`success`/`data`/`error` em inglês). Service devolve o dado; erro previsto → `DomainException` (o `KernelExceptionListener` usa o mesmo envelope).
 
 ### 13.8 Domain Events
 
-Use eventos para desacoplar efeitos colaterais. Se a "Ação A" causa "Ação B", dispache um evento `{Entidade}{VerboPastTense}Event` e deixe um Listener reagir. Isso evita teias complexas de chamadas entre Services.
+Use eventos para desacoplar efeitos colaterais. Classe do fato em `src/EventListener/Event/` (`{Entidade}{VerboPastTense}Event`). Listener na mesma pasta `src/EventListener/`. Se a "Ação A" causa "Ação B", dispache o evento e deixe o Listener reagir — não encadeie Services.
 
 ---
 
