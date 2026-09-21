@@ -443,14 +443,14 @@ else
       fi
       
       if grep -q "skeleton" "$file" 2>/dev/null; then
-        if [[ "$file" != *"shadcn/"* ]] && [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
+        if [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
            replace_in_file "$file" "skeleton" "$PROJECT_NAME_SLUG" && MODIFIED=true
         fi
       fi
       
       if grep -q "Skeleton" "$file" 2>/dev/null; then
-        # Protege o termo 'Skeleton' em componentes de UI (placeholders) do Shadcn e arquivos TSX/CSS
-        if [[ "$file" != *"shadcn/"* ]] && [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
+        # Protege o termo 'Skeleton' em componentes de UI (placeholders) e arquivos TSX/CSS
+        if [[ "$file" != *".tsx" ]] && [[ "$file" != *".css" ]]; then
           replace_in_file "$file" "React Skeleton" "$PROJECT_NAME_DISPLAY"
           replace_in_file "$file" "Skeleton" "$PROJECT_NAME_PASCAL"
           MODIFIED=true
@@ -633,18 +633,14 @@ fi
 # ═══════════════════════════════════════════════════════════════
 step "6.5/9 — Ativando módulos opcionais"
 
-# Módulo: ui-extra (framer-motion + recharts)
+# Módulo: ui-extra (framer-motion)
 if [[ "${MODULE_UI_EXTRA:-0}" == "1" ]]; then
-  info "Instalando módulo ui-extra (Framer Motion + Recharts)..."
+  info "Instalando módulo ui-extra (Framer Motion)..."
   VITE_CONTAINER=$($COMPOSE ps -q vite-react 2>/dev/null || echo "")
   if [[ -n "$VITE_CONTAINER" ]]; then
-    docker exec "$VITE_CONTAINER" sh -c "npm install framer-motion recharts --save" 2>/dev/null ||       warn "Falha ao instalar ui-extra. Execute manualmente: npm install framer-motion recharts"
+    docker exec "$VITE_CONTAINER" sh -c "npm install framer-motion --save" 2>/dev/null ||       warn "Falha ao instalar ui-extra. Execute manualmente: npm install framer-motion"
   else
-    warn "Container vite-react não encontrado. Execute: npm install framer-motion recharts"
-  fi
-  if [[ ! -f "web/shadcn/components/ui/chart.tsx" ]]; then
-    cp .skeleton-modules/ui-extra/chart.tsx web/shadcn/components/ui/chart.tsx
-    ok "chart.tsx instalado."
+    warn "Container vite-react não encontrado. Execute: npm install framer-motion"
   fi
   ok "Módulo ui-extra ativado."
 else

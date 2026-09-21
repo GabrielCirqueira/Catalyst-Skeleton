@@ -20,18 +20,18 @@ Este documento explica a estrutura e o fluxo do frontend React que vive em `web/
 | **Zod 4** | Validação de respostas da API e de formulários críticos |
 | **Axios** | HTTP client centralizado com interceptores JWT |
 | **tailwindcss-motion** | Animações simples via classe Tailwind — zero JS |
+| **Recharts** | Gráficos SVG reativos (dashboards, totais por categoria/origem) |
 | **Biome 1.9** | Linter, formatter e organizador de imports |
 
 > **Regra de Zustand**: não criar store por feature "por precaução". Começar com estado local/Context e migrar pra Zustand só quando sentir dor real de estado espalhado.
 >
-> **Regra de animação**: `tailwindcss-motion` é o padrão. `motion`/`AnimatePresence` do Framer Motion (módulo `ui-extra`) só entra quando há necessidade concreta de animar montagem/desmontagem condicional.
+> **Regra de animação**: `tailwindcss-motion` é o padrão, inclusive dentro de gráficos Recharts (`isAnimationActive` nativo). `motion`/`AnimatePresence` do Framer Motion (módulo `ui-extra`) só entra quando há necessidade concreta de animar montagem/desmontagem condicional.
 
 ### Módulo `ui-extra` (opt-in — ative no setup.sh)
 
 | Tecnologia | Papel |
 | :--- | :--- |
 | **Framer Motion** | Animações declarativas com `AnimatePresence` |
-| **Recharts** | Gráficos SVG reativos (+ `web/shadcn/components/ui/chart.tsx`) |
 
 ## Estrutura de Diretórios
 

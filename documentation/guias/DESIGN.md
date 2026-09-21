@@ -246,7 +246,7 @@ Todo card no sistema segue este anatomy:
 ```tsx
 <Card className="group">
   <CardContent className="p-6">
-    {/* Ícone — Box é primitivo de layout, não tem equivalente Shadcn */}
+    {/* Ícone — Box é primitivo de layout, não tem equivalente HeroUI */}
     <Box className="size-11 rounded-lg bg-brand-500/10 flex items-center justify-center mb-4
                     group-hover:bg-brand-500/20 transition-colors duration-300">
       <IcoPrincipal className="size-5 text-brand-500" strokeWidth={2} />
@@ -327,47 +327,32 @@ Para o card principal do bento — o de maior col-span:
 
 ---
 
-## 9. Animações e Micro-interações (Framer Motion)
+## 9. Animações e Micro-interações (tailwindcss-motion)
 
-### 9.1 Variantes Canônicas
+### 9.1 Padrão Oficial
 
-Definir no arquivo `web/shared/utils/animacoes.ts` e importar em qualquer componente:
+Padrão: **tailwindcss-motion** (classes Tailwind, zero JS). `motion`/`AnimatePresence` do Framer Motion só entra via módulo opcional `ui-extra`, e apenas quando há montagem/desmontagem condicional real (modal, drawer) — ver `documentation/stack/FRONTEND.md`.
 
-```typescript
+```tsx
 // Entrada padrão (elementos de página, cards)
-export const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
-}
+<Box className="motion-preset-fade motion-preset-slide-up-sm">...</Box>
 
 // Entrada stagger para listas de cards
-export const containerStagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-}
+<Box className="motion-preset-fade motion-delay-[100ms]">...</Box>
 
-// Spring para modais e drawers
-export const springModal = {
-  initial: { opacity: 0, scale: 0.96 },
-  animate: { opacity: 1, scale: 1, transition: { type: 'spring', damping: 25, stiffness: 300 } },
-  exit: { opacity: 0, scale: 0.96, transition: { duration: 0.15 } },
-}
-
-// Slide lateral (navegação mobile, painéis)
-export const slideLateral = (direcao: 'esquerda' | 'direita') => ({
-  initial: { x: direcao === 'direita' ? '100%' : '-100%', opacity: 0 },
-  animate: { x: 0, opacity: 1, transition: { type: 'spring', damping: 28, stiffness: 280 } },
-  exit: { x: direcao === 'direita' ? '-100%' : '100%', opacity: 0, transition: { duration: 0.2 } },
-})
+// Hover simples — CSS puro, nunca JS
+<Button className="transition-colors duration-300">...</Button>
 ```
+
+Se o módulo `ui-extra` estiver ativo, `springModal`/`slideLateral` (Framer Motion) seguem disponíveis em `web/shared/utils/animacoes.ts` só para `AnimatePresence` de modais/drawers.
 
 ### 9.2 Regras de Animação
 
-- **Entrada de seção:** `whileInView` com `viewport={{ once: true, amount: 0.15 }}` — anima só quando visível, não repete.
-- **Listas de cards:** sempre usar `containerStagger` no container + `fadeInUp` nos filhos.
-- **Modais/Drawers:** sempre `AnimatePresence` + `springModal`.
-- **Transições de hover:** `transition-all duration-300` no CSS — não usar Framer Motion para hover simples.
-- **Nunca:** animar cor ou border-color com Framer Motion — usar `transition-colors` do Tailwind.
+- **Entrada de seção:** classe `motion-preset-fade` ou `motion-preset-slide-up-sm`, aplicada uma vez.
+- **Listas de cards:** `motion-delay-*` incremental por item, sem JS.
+- **Modais/Drawers:** `HeroUI` já anima entrada/saída nativamente; só usar `AnimatePresence` (módulo `ui-extra`) se precisar de uma transição customizada que o HeroUI não oferece.
+- **Transições de hover:** `transition-all duration-300` no CSS — nunca JS para hover simples.
+- **Nunca:** animar cor ou border-color com JS — usar `transition-colors` do Tailwind.
 
 ### 9.3 Hover Padrão de Cards
 
@@ -517,18 +502,18 @@ Cada página tem necessidades distintas — este guia não impõe uma estrutura 
 
 ### 13.2 Regra de Componentes (Obrigatório)
 
-> Nunca usar elementos HTML crus onde existe um componente Shadcn equivalente.
+> Nunca usar elementos HTML crus onde existe um componente HeroUI equivalente.
 
-| Elemento proibido | Componente Shadcn |
+| Elemento proibido | Componente HeroUI |
 | :--- | :--- |
 | `<button>` | `<Button>` |
 | `<input>` | `<Input>` |
 | `<select>` | `<Select>` |
 | `<table>`, `<tr>`, `<td>` | `<Table>`, `<TableRow>`, `<TableCell>` |
-| `<dialog>` | `<Dialog>` / `<Drawer>` |
-| Span com estilo de badge | `<Badge>` |
+| `<dialog>` | `<Modal>` / `<Drawer>` |
+| Span com estilo de badge | `<Chip>` |
 
-**Exceções aceitas** (sem componente Shadcn equivalente):
+**Exceções aceitas** (sem componente HeroUI equivalente):
 - `div` para containers de CSS Grid (`.grid grid-cols-*`)
 - `div` para elementos puramente decorativos (blobs, overlays de fundo)
 - `VStack` / `HStack` / `Box` para qualquer flexbox de layout
@@ -726,7 +711,7 @@ Antes de fazer PR ou considerar qualquer componente/tela finalizado:
 
 **Componentes**
 - [ ] Apenas 1 botão primário por view?
-- [ ] Todos os `button`, `input`, `select`, `table` substituídos por componentes Shadcn equivalentes?
+- [ ] Todos os `button`, `input`, `select`, `table` substituídos por componentes HeroUI equivalentes?
 - [ ] Hover effects em todos os elementos interativos?
 - [ ] Animação de entrada em seções com `whileInView`?
 - [ ] Subflows replicam a estrutura do conteúdo real?

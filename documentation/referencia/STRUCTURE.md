@@ -48,8 +48,7 @@ Contém os **módulos opcionais** do skeleton. Nenhum destes arquivos é carrega
 ?   ??? sentry.yaml                       # config/packages/sentry.yaml
 ??? ui-extra/
     ??? README.md
-    ??? package.deps.json                 # framer-motion, recharts
-    ??? chart.tsx                         # ? web/shadcn/components/ui/chart.tsx
+    ??? package.deps.json                 # framer-motion (AnimatePresence)
 ```
 
 ---
@@ -114,8 +113,7 @@ web/
 ??? layouts/            MainLayout, AuthLayout, AppContainer
 ??? pages/              Páginas lazy ? Home, Login, Cadastro, NotFound
 ??? routes/             RotaProtegida.tsx
-??? shadcn/             Componentes Shadcn UI (Radix)
-??? shared/             Hooks, utils e componentes compartilhados
+??? shared/             ui/layout.tsx (Box, VStack, Text…), hooks, utils
 ??? stores/             useAuthStore (Zustand + localStorage)
 ??? App.tsx             Router raiz + provedores globais
 ??? index.css           CSS global + design tokens

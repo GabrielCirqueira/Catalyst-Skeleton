@@ -19,8 +19,9 @@ Este documento define o padrão oficial de arquitetura, organização de pastas,
 * **React 19** com **TypeScript**
 * **Vite 6**
 * **Axios**
-* **Framer Motion**
-* **Shadcn UI**
+* **HeroUI v3** (componentes base acessíveis)
+* **Tailwind CSS 4** + **tailwindcss-motion** (estilo e animações padrão)
+* **Recharts** (gráficos)
 * **TanStack Query v5** (gerenciamento de estado de servidor)
 * **Zustand** (gerenciamento de estado global)
 * **Biome** (lint e formatação)
@@ -81,7 +82,7 @@ config/                 ← instância axios, constantes globais
 contexts/               ← Context API (tema, I18n — não estado de UI)
 layouts/                ← sidebar, header, wrappers de página
 routes/                 ← proteção de rotas (nunca dentro da página)
-shadcn/                 ← componentes UI base (VStack, Box, Button…)
+shared/ui/layout.tsx    ← primitivos de layout/texto (Box, VStack, Text…)
 stores/                 ← Zustand stores (useAuthStore, etc.)
 
 features/               ← módulos com feature própria
@@ -93,7 +94,8 @@ features/               ← módulos com feature própria
     pages/              ← páginas desta feature
 
 shared/                 ← tudo que é global e sem feature
-  components/           ← ErrorBoundary, Layouts, Ui (shadcn)
+  components/           ← ErrorBoundary, Layouts
+  ui/layout.tsx          ← primitivos de layout/texto (Box, VStack, Text…)
   hooks/                ← useDebounce, usePaginacao, useSEO
   api/                  ← configuração axios, tipos globais de API
   stores/               ← Zustand stores globais (useAuthStore)
@@ -377,9 +379,7 @@ Tamanhos disponíveis para `<Container>`: `sm`, `md`, `lg`, `xl` (padrão), `2xl
 
 O sistema deve ter animações consistentes e agradáveis.
 
-Biblioteca oficial:
-
-* **Framer Motion**
+Padrão oficial: **tailwindcss-motion** (classes Tailwind, zero JS). `motion`/`AnimatePresence` do **Framer Motion** só entra via módulo opcional `ui-extra`, e apenas quando há necessidade concreta de animar montagem/desmontagem condicional (modais, drawers) — ver `documentation/stack/FRONTEND.md`.
 
 Regras:
 
@@ -727,8 +727,10 @@ Antes de abrir PR:
 * TanStack Query: [https://tanstack.com/query/latest](https://tanstack.com/query/latest)
 * Zustand: [https://zustand-demo.pmnd.rs/](https://zustand-demo.pmnd.rs/)
 * Biome JS: [https://biomejs.dev/](https://biomejs.dev/)
-* Framer Motion: [https://www.framer.com/motion/](https://www.framer.com/motion/)
-* shadcn/ui: [https://ui.shadcn.com/](https://ui.shadcn.com/)
+* HeroUI: [https://www.heroui.com/](https://www.heroui.com/)
+* tailwindcss-motion: [https://tailwindcss-motion.rombo.co/](https://tailwindcss-motion.rombo.co/)
+* Framer Motion (módulo `ui-extra`): [https://www.framer.com/motion/](https://www.framer.com/motion/)
+* Recharts: [https://recharts.org/](https://recharts.org/)
 * TailwindCSS: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
 
 ### Referências de DevOps

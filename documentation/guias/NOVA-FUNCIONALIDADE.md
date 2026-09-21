@@ -236,9 +236,9 @@ Checklist:
 
 Checklist:
 
-- [ ] Nenhum HTML puro (`div`, `span`, `p`, `button`, etc.) — usar somente `web/shadcn/`
+- [ ] Nenhum HTML puro (`div`, `span`, `p`, `button`, etc.) — usar `shared/ui/layout` + HeroUI
 - [ ] Estilização via `className` + TailwindCSS
-- [ ] Animações com Framer Motion nas transições de entrada
+- [ ] Animações com `tailwindcss-motion` nas transições de entrada
 - [ ] Componente que faz fetch envolto por `ErrorBoundary` — ver GUIA-GERAL.md 6.11
 - [ ] Subflow implementado para conteúdo listado ou estruturado — ver GUIA-GERAL.md 6.12
 
@@ -301,7 +301,7 @@ make lint-all
 Checklist de PR:
 
 - [ ] `make lint-all` passou sem erros
-- [ ] Nenhum HTML puro no frontend (somente shadcn)
+- [ ] Nenhum HTML puro no frontend (`shared/ui/layout` + HeroUI)
 - [ ] Página segue padrão `AppContainer → Container`
 - [ ] Hooks consumindo `config/api.ts` — nunca Axios direto
 - [ ] Toast gerenciado pelo hook, não pelo componente

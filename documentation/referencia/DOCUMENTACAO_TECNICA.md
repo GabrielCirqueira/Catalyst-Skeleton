@@ -62,13 +62,13 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | React Router DOM | 7.9 | Roteamento client-side com lazy loading | ✅ Core |
 | React Hook Form | 7.66 | Formulários performáticos com validação Zod | ✅ Core |
 | Zod | 4.1 | Validação de schemas (forms, respostas de API) | ✅ Core |
-| HeroUI v3 | 3.2 | Componentes UI acessíveis e prontos (substitui Shadcn/Radix) | ✅ Core |
+| HeroUI v3 | 3.2 | Componentes UI acessíveis e prontos | ✅ Core |
 | Tailwind CSS | 4.x | Motor de estilo CSS-first — sem `tailwind.config.js` | ✅ Core |
 | tailwindcss-motion | 1.x | Animações simples via classe Tailwind — zero JS | ✅ Core |
 | Lucide React | — | Conjunto de ícones | ✅ Core |
+| Recharts | 2.x | Gráficos reativos baseados em SVG (`web/shared/ui/chart.tsx`) | ✅ Core |
 | Biome | 1.9 | Linter + formatter + organizador de imports | ✅ Core |
 | Motion (Framer) | — | Animações com `AnimatePresence` | 🔧 Módulo `ui-extra` |
-| Recharts | 2.x | Gráficos reativos baseados em SVG | 🔧 Módulo `ui-extra` |
 | Husky | 9.x | Git hooks (pre-commit) | ✅ Core |
 | lint-staged | 15.x | Executa linters apenas nos arquivos staged | ✅ Core |
 | Commitlint | 20.x | Enforça Conventional Commits na mensagem do commit | ✅ Core |

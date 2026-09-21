@@ -11,7 +11,7 @@ Se faltar detalhe, use a seção **Onde buscar mais contexto** no final deste ar
 1. Classifique a tarefa (backend / frontend / devops) e abra **só** as faixas no final deste arquivo.
 2. Backend: um Controller em `src/Controller/` e um Repository em `src/Repository/`. Pule `web/`.
 3. Frontend: `web/App.tsx` e a feature mais parecida em `web/features/`. Pule `src/` (exceto se precisar do contrato JSON).
-4. Copie o padrão que já existe. Não misture Shadcn, `<div>` ou `axios` solto.
+4. Copie o padrão que já existe. Não misture `<div>` cru ou `axios` solto.
 5. Nomes em **português**: pastas, arquivos, variáveis, funções, DTOs, services, entidades.
 6. Sem comentários (`//`, `/* */`, `{/* */}`). Código se explica pelo nome. Exceção: DocBlock curto em Service PHP se o retorno for complexo.
 7. Não crie testes. Não instale PHPUnit.
@@ -127,7 +127,7 @@ Proibido no JSX: `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>`.
 import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
 ```
 
-Exceção: `<main>`, `<header>`, `<footer>`, `<nav>`, `<section>` só se forem semântica real. Botões, inputs e cards: **HeroUI** (`@heroui/react`), não HTML cru e não Shadcn.
+Exceção: `<main>`, `<header>`, `<footer>`, `<nav>`, `<section>` só se forem semântica real. Botões, inputs e cards: **HeroUI** (`@heroui/react`), não HTML cru.
 
 Estilo: só `className` + Tailwind 4. Animação padrão: classes `tailwindcss-motion`. Framer Motion só se o módulo `ui-extra` estiver ativo e houver montar/desmontar de verdade.
 

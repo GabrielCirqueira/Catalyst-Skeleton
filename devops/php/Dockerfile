@@ -8,8 +8,18 @@ RUN apk add --no-cache \
 
 # --- Desenvolvimento ---
 FROM base AS dev
-RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
-    && (pecl install xdebug || pecl install xdebug || pecl install xdebug) \
+ARG XDEBUG_VERSION=3.5.3
+RUN apk add --no-cache $PHPIZE_DEPS linux-headers curl \
+    && curl -4fsSL "https://github.com/xdebug/xdebug/archive/refs/tags/${XDEBUG_VERSION}.tar.gz" -o /tmp/xdebug.tar.gz \
+    && mkdir -p /tmp/xdebug \
+    && tar -xzf /tmp/xdebug.tar.gz -C /tmp/xdebug --strip-components=1 \
+    && cd /tmp/xdebug \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/xdebug /tmp/xdebug.tar.gz \
     && docker-php-ext-enable xdebug
 
 COPY devops/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini

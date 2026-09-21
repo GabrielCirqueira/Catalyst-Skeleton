@@ -34,9 +34,9 @@
   * **TanStack Query** (gerenciamento de estado do servidor e cache)
   * **Zustand** (gerenciamento de estado global)
   * **Axios** (via instância centralizada `api.ts`)
-  * **Framer Motion** (animações premium)
-  * **Shadcn UI** (componentes base acessíveis)
-  * **Sonner** (notificações toast)
+  * **HeroUI v3** (componentes base acessíveis, inclui toast)
+  * **Tailwind CSS 4** + **tailwindcss-motion** (estilo e animações padrão)
+  * **Recharts** (gráficos)
 
   ### DevOps
 
@@ -823,7 +823,7 @@
     contexts/               ← Context API (tema, I18n — não estado de UI)
     layouts/                ← sidebar, header, wrappers de página
     routes/                 ← proteção de rotas (nunca dentro da página)
-    shadcn/                 ← componentes UI base (VStack, Box, Button…)
+    shared/ui/layout.tsx    ← primitivos de layout/texto (Box, VStack, Text…)
     stores/                 ← Zustand stores (useAuthStore, etc.)
 
     features/               ← módulos com feature própria
@@ -1122,9 +1122,9 @@
 
   **Checklist:**
 
-  - [ ] Nenhum HTML puro (`div`, `span`, `p`, `h1`, `button`, etc.) — usar somente `web/shadcn/`
+  - [ ] Nenhum HTML puro (`div`, `span`, `p`, `h1`, `button`, etc.) — usar `shared/ui/layout` + HeroUI
   - [ ] Estilização via `className` + TailwindCSS
-  - [ ] Animações com Framer Motion nas transições de entrada
+  - [ ] Animações com `tailwindcss-motion` nas transições de entrada
 
   ---
 
@@ -1486,7 +1486,7 @@
     contexts/                   ← Context API (tema, I18n — não estado de UI)
     layouts/                    ← sidebar, header, wrappers de página
     routes/                     ← proteção de rotas (nunca dentro da página)
-    shadcn/                     ← componentes UI base (VStack, Box, Button…)
+    shared/ui/layout.tsx        ← primitivos de layout/texto (Box, VStack, Text…)
     stores/                     ← Zustand stores (useAuthStore, etc.)
 
     features/                   ← módulos com feature própria (>2 arquivos relacionados)
@@ -1525,9 +1525,7 @@
 
   ### Usar somente componentes do sistema
 
-  Sempre utilizar os componentes disponíveis em `web/shadcn/`:
-
-  `VStack`, `HStack`, `Box`, `Text`, `Title`, `Button`, `Spinner`, `Icon`, etc.
+  Layout/texto sempre via `web/shared/ui/layout.tsx` (`Box`, `HStack`, `VStack`, `Flex`, `Grid`, `Container`, `Text`). Elementos interativos (botão, input, select, tabela, dialog, toast) sempre via **HeroUI** (`@heroui/react`), nunca HTML cru.
 
   ### Estilização obrigatória
 
@@ -1536,7 +1534,7 @@
 
   ### Animações
 
-  Biblioteca oficial: **Framer Motion**.
+  Padrão oficial: **tailwindcss-motion** (classes Tailwind, zero JS). Framer Motion (`AnimatePresence`) só via módulo opcional `ui-extra`, quando há montagem/desmontagem condicional real.
 
   * Aplicar animações em: entrada de seções, abertura de modais, carregamentos, troca de páginas.
   * Evitar telas "secas" sem transição. Não exagerar.
@@ -1562,7 +1560,7 @@
   Antes de abrir PR:
 
   - [ ] `make lint-all` passou sem erros
-  - [ ] Nenhum HTML puro no frontend (somente shadcn)
+  - [ ] Nenhum HTML puro no frontend (`Box`/`VStack`/`Text` de `shared/ui/layout` + HeroUI)
   - [ ] Página segue padrão `AppContainer → Container`
   - [ ] Hooks consumindo `api.ts`
   - [ ] Toast gerenciado pelo hook, não pelo componente
@@ -1695,8 +1693,10 @@
   * [Zustand](https://zustand-demo.pmnd.rs/)
   * [React Hook Form](https://react-hook-form.com/)
   * [Zod](https://zod.dev/)
-  * [Framer Motion](https://www.framer.com/motion/)
-  * [shadcn/ui](https://ui.shadcn.com/)
+  * [HeroUI](https://www.heroui.com/)
+  * [tailwindcss-motion](https://tailwindcss-motion.rombo.co/)
+  * [Framer Motion](https://www.framer.com/motion/) (módulo `ui-extra`)
+  * [Recharts](https://recharts.org/)
   * [TailwindCSS](https://tailwindcss.com/docs)
 
   ### DevOps

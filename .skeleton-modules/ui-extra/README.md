@@ -1,23 +1,16 @@
-# Módulo: UI Extra (Framer Motion, Recharts, Sonner)
+# Módulo: UI Extra (Framer Motion)
 
-Ative este módulo quando o projeto precisar de animações, gráficos ou toasts avançados.
+Ative este módulo quando houver necessidade concreta de animar montagem/desmontagem condicional (`AnimatePresence` em modais, drawers, listas que entram/saem do DOM).
+
+`tailwindcss-motion` já é o padrão core para animações simples (hover, entrada de seção, transições) — ver `documentation/stack/FRONTEND.md`. Gráficos (`recharts` + `web/shared/ui/chart.tsx`) e toasts (`@heroui/react`) já são core, não fazem parte deste módulo.
 
 ## O que este módulo adiciona
 
 | Pacote | Descrição | Já incluso no core? |
 |---|---|---|
-| `framer-motion` | Animações declarativas | ? Sim |
-| `recharts` | Gráficos SVG reativos | ? Sim |
-| `sonner` | Sistema de toasts | ? Sim |
-| `next-themes` | Dark/light mode (usado pelo Sonner) | ? Sim |
+| `framer-motion` | Animações declarativas com `AnimatePresence` | ❌ Não |
 
-> **Nota v5:** estes pacotes estão presentes no `package.json` padrão, pois são usados pela landing page de demonstração e pelos componentes shadcn/ui inclusos.
->
-> Se seu projeto **não** precisar de animações, gráficos ou toasts, remova manualmente após clonar:
-> ```bash
-> npm uninstall framer-motion recharts sonner next-themes
-> ```
-> E remova os componentes shadcn correspondentes: `web/shadcn/components/ui/chart.tsx`, `web/shadcn/components/ui/sonner.tsx`.
+Se o projeto não precisar de `AnimatePresence`, não ative este módulo — não há nada para remover depois.
 
 ## Pacotes que FORAM removidos do core na v5
 
