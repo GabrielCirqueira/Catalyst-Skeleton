@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Doctrine\DBAL\Connection;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HealthController extends AbstractController
+final class HealthController extends DefaultController
 {
     public function __construct(
         private readonly Connection $connection,
@@ -15,13 +16,13 @@ class HealthController extends AbstractController
     }
 
     #[Route('/api/v1/health', name: 'api_health', methods: ['GET'])]
-    public function health(): JsonResponse
+    public function health(): Response
     {
         $databaseStatus = $this->checkDatabase();
         $diskStatus = $this->checkDisk();
         $isHealthy = 'ok' === $databaseStatus['status'] && 'ok' === $diskStatus['status'];
 
-        return $this->json([
+        return $this->success([
             'status' => $isHealthy ? 'ok' : 'unhealthy',
             'timestamp' => (new \DateTime())->format(\DateTimeInterface::ATOM),
             'services' => [
@@ -29,16 +30,19 @@ class HealthController extends AbstractController
                 'disk' => $diskStatus,
             ],
             'version' => $_ENV['APP_VERSION'] ?? '1.0.0-dev',
-        ], $isHealthy ? 200 : 503);
+        ], $isHealthy ? Response::HTTP_OK : Response::HTTP_SERVICE_UNAVAILABLE);
     }
 
+    /**
+     * @return array{status: string, message?: string}
+     */
     private function checkDatabase(): array
     {
         try {
             $this->connection->executeQuery('SELECT 1');
 
             return ['status' => 'ok'];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return [
                 'status' => 'error',
                 'message' => 'Banco de dados inacessível.',
@@ -46,9 +50,12 @@ class HealthController extends AbstractController
         }
     }
 
+    /**
+     * @return array{status: string, free_mb: float, threshold_mb: int}
+     */
     private function checkDisk(): array
     {
-        $freeSpace = disk_free_space('/');
+        $freeSpace = disk_free_space('/') ?: 0;
         $threshold = 100 * 1024 * 1024;
 
         return [

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Auth;
 
+use App\Controller\DefaultController;
 use App\Entity\Usuario;
 use App\Repository\UsuarioRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/v1/auth', name: 'auth_')]
-final class AuthController extends AbstractController
+final class AuthController extends DefaultController
 {
     public function __construct(
         private readonly UsuarioRepository $usuarioRepository,
@@ -25,20 +24,15 @@ final class AuthController extends AbstractController
     ) {
     }
 
-    /**
-     * Registra um novo usuário.
-     *
-     * Body: { "nomeCompleto": string, "username": string, "senha": string }
-     */
     #[Route('/registro', name: 'registro', methods: ['POST'])]
-    public function registro(Request $request): JsonResponse
+    public function registro(Request $request): Response
     {
         /** @var array<string, mixed> $dados */
         $dados = json_decode($request->getContent(), true) ?? [];
 
         $erros = $this->validarRegistro($dados);
         if (count($erros) > 0) {
-            return $this->json(['sucesso' => false, 'erros' => $erros], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->error('validation_failed', Response::HTTP_UNPROCESSABLE_ENTITY, $erros);
         }
 
         $nomeCompleto = trim((string) ($dados['nomeCompleto'] ?? ''));
@@ -46,10 +40,7 @@ final class AuthController extends AbstractController
         $senha = (string) ($dados['senha'] ?? '');
 
         if ($this->usuarioRepository->usernameJaExiste($username)) {
-            return $this->json(
-                ['sucesso' => false, 'erros' => ['username' => 'Este nome de usuário já está em uso.']],
-                Response::HTTP_CONFLICT,
-            );
+            return $this->error('username_taken', Response::HTTP_CONFLICT);
         }
 
         $usuario = new Usuario($nomeCompleto, $username);
@@ -57,24 +48,16 @@ final class AuthController extends AbstractController
 
         $this->usuarioRepository->salvar($usuario);
 
-        return $this->json([
-            'sucesso' => true,
-            'mensagem' => 'Cadastro realizado com sucesso. Faça login para continuar.',
-        ], Response::HTTP_CREATED);
+        return $this->created();
     }
 
-    /**
-     * Retorna os dados do usuário autenticado.
-     *
-     * Requer Bearer token JWT no header Authorization.
-     */
     #[Route('/me', name: 'me', methods: ['GET'])]
-    public function me(): JsonResponse
+    public function me(): Response
     {
         /** @var Usuario $usuario */
         $usuario = $this->getUser();
 
-        return $this->json([
+        return $this->success([
             'id' => $usuario->getId(),
             'nomeCompleto' => $usuario->getNomeCompleto(),
             'username' => $usuario->getUsername(),
@@ -83,7 +66,9 @@ final class AuthController extends AbstractController
         ]);
     }
 
-    /** @param array<string, mixed> $dados
+    /**
+     * @param array<string, mixed> $dados
+     *
      * @return array<string, string>
      */
     private function validarRegistro(array $dados): array

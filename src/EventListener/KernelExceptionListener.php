@@ -72,13 +72,12 @@ final class KernelExceptionListener
         }
 
         $data = [
-            'sucesso' => false,
-            'erro' => $mensagem,
-            'codigo' => $statusCode,
+            'success' => false,
+            'error' => $mensagem,
         ];
 
         if ($detalhes) {
-            $data['detalhes'] = $detalhes;
+            $data['details'] = $detalhes;
         }
 
         $event->setResponse(new JsonResponse($data, $statusCode));
