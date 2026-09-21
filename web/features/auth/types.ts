@@ -23,8 +23,8 @@ export interface RespostaRefresh {
 }
 
 export interface RespostaCadastro {
-  sucesso: boolean
-  mensagem: string
+  success: boolean
+  data: null
 }
 
 export interface RespostaMe {

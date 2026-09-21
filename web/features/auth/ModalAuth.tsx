@@ -26,6 +26,7 @@ import axios from 'axios'
 import { Code2 } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
+import type { RespostaApi } from '@/shared/types/api'
 import type {
   CadastroInput,
   LoginInput,
@@ -68,9 +69,10 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
   const loginMutation = useMutation({
     mutationFn: async (input: LoginInput) => {
       const { data: loginData } = await api.post<RespostaLogin>('/api/v1/auth/login', input)
-      const { data: meData } = await api.get<RespostaMe>('/api/v1/auth/me', {
+      const { data: meResposta } = await api.get<RespostaApi<RespostaMe>>('/api/v1/auth/me', {
         headers: { Authorization: `Bearer ${loginData.token}` },
       })
+      const meData = meResposta.data
       setAutenticado(
         {
           id: meData.id,

@@ -4,6 +4,7 @@ import { toast } from '@heroui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import type { RespostaApi } from '@/shared/types/api'
 import type {
   CadastroInput,
   LoginInput,
@@ -23,9 +24,10 @@ export function useLogin() {
         senha: input.senha,
       })
 
-      const { data: meData } = await api.get<RespostaMe>('/api/v1/auth/me', {
+      const { data: meResposta } = await api.get<RespostaApi<RespostaMe>>('/api/v1/auth/me', {
         headers: { Authorization: `Bearer ${loginData.token}` },
       })
+      const meData = meResposta.data
 
       setAutenticado(
         {

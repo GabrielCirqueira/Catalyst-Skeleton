@@ -1,18 +1,17 @@
-/**
- * Envelope padrão de resposta da API.
- * Todos os endpoints retornam esta estrutura.
- */
 export interface RespostaApi<T> {
-  sucesso: boolean
-  mensagem: string
-  dados: T
+  success: boolean
+  data: T
 }
 
-/**
- * Envelope de resposta paginada.
- * Endpoints de listagem com paginação retornam esta estrutura.
- */
-export interface RespostaPaginada<T> extends RespostaApi<T[]> {
+export interface RespostaErro {
+  success: false
+  error: string
+  details?: Record<string, string>
+}
+
+export interface RespostaPaginada<T> {
+  success: boolean
+  data: T[]
   total: number
   pagina: number
   porPagina: number
