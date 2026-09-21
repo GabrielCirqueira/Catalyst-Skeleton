@@ -405,6 +405,8 @@ else
       -not -path "./public/build/*" \
       -not -path "./.tooling/.setup-done" \
       -not -name "setup.sh" \
+      -not -name "package-lock.json" \
+      -not -name "composer.lock" \
       -type f \
       \( \
         -name "*.php" -o -name "*.yaml" -o -name "*.yml" -o \
