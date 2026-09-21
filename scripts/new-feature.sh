@@ -80,17 +80,17 @@ declare(strict_types=1);
 
 namespace App\Controller\\$FEATURE_NAME;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Controller\DefaultController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/v1/$FEATURE_LOWER')]
-class ${FEATURE_NAME}Controller extends AbstractController
+class ${FEATURE_NAME}Controller extends DefaultController
 {
     #[Route('', name: 'api_${FEATURE_LOWER}_criar', methods: ['POST'])]
-    public function criar(): JsonResponse
+    public function criar(): Response
     {
-        return \$this->json(['sucesso' => true]);
+        return \$this->success();
     }
 }
 EOF
