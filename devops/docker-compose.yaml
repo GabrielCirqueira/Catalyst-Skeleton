@@ -1,3 +1,5 @@
+name: skeleton
+
 services:
   database:
     image: mysql:8.3
