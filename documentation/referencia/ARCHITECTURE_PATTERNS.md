@@ -4,28 +4,22 @@ O Catalyst Skeleton v5 é orientado por princípios de **Clean Code**, **SOLID**
 
 ---
 
-## 1. Padrão `Resultado` (Operation Result)
+## 1. Envelope HTTP (`DefaultController`)
 
-A lógica central do backend é expressa através de objetos de resultado unificados (`src/Resultado.php`).
-
-**Objetivo:** Evitar o uso de exceções (`try/catch`) para reger o fluxo normal de negócio (ex: "usuário já cadastrado").
+Controllers de API extends `src/Controller/DefaultController.php` e sempre devolvem `Response`. SPA fica em `FrontendController`.
 
 ```php
-// Service
-public function executar(CriarUsuarioDTO $dto): Resultado
+public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
 {
-    if ($this->repositorio->usernameJaExiste($dto->username)) {
-        return Resultado::falha('username_duplicado');
-    }
-    return Resultado::sucesso($usuario);
-}
+    $usuario = $this->criarUsuarioService->executar($dto);
 
-// Controller
-$resultado = $this->criarUsuarioService->executar($dto);
-if (!$resultado->ehSucesso()) {
-    return $this->json(['sucesso' => false, 'erro' => $resultado->obterErro()], 409);
+    return $this->created($this->serializer->serializar($usuario));
 }
 ```
+
+JSON: `{ "success": true, "data": ... }` ou `{ "success": false, "error": "username_taken" }`.
+
+Service devolve o dado. Erro previsto: `throw new \DomainException('username_taken', 409)`.
 
 ---
 
@@ -34,21 +28,19 @@ if (!$resultado->ehSucesso()) {
 Reduza aninhamento verificando condições de erro o mais cedo possível, ordenadas pelo **custo de processamento**:
 
 ```
-Check local (rápido) ? Check banco (médio) ? Check API externa (lento)
+Check local (rápido) → Check banco (médio) → Check API externa (lento)
 ```
 
 ```php
-public function executar(int $filialId, bool $isAfastado): Resultado
+public function executar(int $filialId, bool $isAfastado): Pedido
 {
-    // 1. Verificação local ? zero custo
     if ($isAfastado) {
-        return Resultado::falha('usuario_afastado');
+        throw new \DomainException('usuario_afastado', 403);
     }
 
-    // 2. Só consulta banco se passou pelo check local
     $permissao = $this->filialRepository->buscarPermissao($filialId);
     if (!$permissao->ativa) {
-        return Resultado::falha('filial_inativa');
+        throw new \DomainException('filial_inativa', 403);
     }
 
     // ...
@@ -61,9 +53,9 @@ public function executar(int $filialId, bool $isAfastado): Resultado
 
 Um Service representa **uma única intenção de negócio**. O método principal é sempre `executar()`.
 
-- Sem "God Services" com dezenas de métodos ? decomponha em múltiplos Services injetados
-- Retorno sempre via `Resultado`
-- Regra de dependências: Service ? Repository, Service ? outros Services (nunca Controller ? Repository direto)
+- Sem "God Services" com dezenas de métodos — decomponha em múltiplos Services injetados
+- Devolve o dado; erro previsto via `DomainException`
+- Regra de dependências: Service → Repository, Service → outros Services (nunca Controller → Repository direto)
 
 ---
 
@@ -72,22 +64,20 @@ Um Service representa **uma única intenção de negócio**. O método principal
 Todo endpoint que retorna dados de uma entidade **deve** passar por um `src/Serializer/`.
 
 ```php
-// ? Correto
 final class UsuarioSerializer
 {
     public function normalizar(Usuario $usuario): array
     {
         return [
-            'id'          => $usuario->getId(),
-            'nomeCompleto'=> $usuario->getNomeCompleto(),
-            'username'    => $usuario->getUsername(),
-            'criadoEm'    => $usuario->getCriadoEm()->format(DateTimeInterface::ATOM),
+            'id' => $usuario->getId(),
+            'nomeCompleto' => $usuario->getNomeCompleto(),
+            'username' => $usuario->getUsername(),
+            'criadoEm' => $usuario->getCriadoEm()->format(\DateTimeInterface::ATOM),
         ];
     }
 }
 
-// ? Nunca faça no Controller
-return $this->json($usuario); // expõe estrutura interna da entidade
+// Nunca no Controller: return $this->json($usuario);
 ```
 
 O Serializer protege o frontend de mudanças internas (renomear coluna, mover campo) que quebrariam silenciosamente a API.
@@ -106,6 +96,6 @@ O Serializer protege o frontend de mudanças internas (renomear coluna, mover ca
 | `useEffect` na montagem | `useMountEffect` (`web/shared/hooks/`) |
 
 **Single Source of Truth:**
-- Estado do servidor ? **TanStack Query**
-- Estado global do cliente ? **Zustand**
+- Estado do servidor → **TanStack Query**
+- Estado global do cliente → **Zustand**
 - Nunca duplique dados entre os dois

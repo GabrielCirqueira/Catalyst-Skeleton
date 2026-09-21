@@ -107,7 +107,7 @@ Checklist:
 - [ ] Zero lógica HTTP (sem Request/Response)
 - [ ] **PROIBIDO** `EntityManagerInterface` direto — sempre via Repository
 - [ ] Contrato do repositório novo em `src/Interface/{Nome}Interface.php`
-- [ ] `DomainException` para violações de invariante; `Resultado` para erros de negócio esperados — ver GUIA-GERAL.md 5.9
+- [ ] Erro previsto → `DomainException('codigo', $http)`; o Controller responde com `$this->success()` / `$this->error()` — ver GUIA-GERAL.md 5.9
 - [ ] Domain Event disparado quando a ação causa efeitos colaterais — ver GUIA-GERAL.md 5.10
 - [ ] Se o Service precisa de lógica pura entre entidades sem I/O, extrair para Domain Service em `src/Domain/` — ver GUIA-GERAL.md 5.12
 - [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature — ver PARA-IA.md § 4.7. Não concentrar num arquivo.
@@ -127,7 +127,7 @@ Checklist:
 - [ ] Prefixo de rota: `#[Route('/api/v1/nome-da-entidade')]`
 - [ ] `#[IsGranted('ROLE_USER')]` nas rotas protegidas
 - [ ] `#[MapRequestPayload]` para mapear DTOs
-- [ ] Retornar sempre `JsonResponse` com `{ sucesso, mensagem, dados }`
+- [ ] Extends `DefaultController`; retornar sempre `Response` via `$this->success()` / `$this->error()` (`{ success, data }` / `{ success, error }`)
 - [ ] **Lógica Zero**: recebe Request, chama Service, retorna Response
 - [ ] Resolver usuário autenticado via `ResolverUsuarioPorTokenService`
 

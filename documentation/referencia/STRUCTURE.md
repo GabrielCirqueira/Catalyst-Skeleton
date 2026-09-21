@@ -97,7 +97,6 @@ src/
 ??? Serializer/         Contratos JSON de saída
 ??? Service/            Lógica de negócio (um service = uma ação)
 ??? Kernel.php
-??? Resultado.php       Padrão Resultado (sucesso/falha)
 ```
 
 > Se o módulo **`async`** estiver ativo:

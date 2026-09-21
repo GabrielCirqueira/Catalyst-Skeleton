@@ -60,7 +60,8 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 
 | O quê | Onde |
 | :--- | :--- |
-| HTTP | `src/Controller/{Categoria}/` |
+| HTTP da API | `src/Controller/{Categoria}/` — **sempre** extends `DefaultController` |
+| SPA / Twig | `src/Controller/FrontendController.php` |
 | Caso de uso | `src/Service/{Funcionalidade}/VerboEntidadeService.php` |
 | Caso de uso grande / repetido | `src/Feature/{Nome}Feature.php` + vários `*Service` + `TaggedIterator` |
 | Banco | `src/Repository/` — único lugar com Doctrine |
@@ -70,7 +71,6 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 | JSON de saída | `src/Serializer/` |
 | Enum fechado | `src/Enum/` |
 | Evento + reação | `src/EventListener/` — fato em `Event/`, reação ao lado |
-| Sucesso/falha de negócio | `src/Resultado.php` |
 
 ---
 
@@ -157,8 +157,8 @@ Três camadas, sem exceção:
 
 | Camada | Faz | Não faz |
 | :--- | :--- | :--- |
-| **Controller** | Rota, DTO, chamar Service ou Feature, devolver JSON | Regra de negócio, query, EntityManager |
-| **Service** | Uma ação de negócio, `Resultado` | Query; não empilhar 4+ ações no mesmo arquivo |
+| **Controller** | Rota, DTO, chamar Service ou Feature, `$this->success()` / `$this->error()` | Regra de negócio, query, EntityManager |
+| **Service** | Uma ação de negócio, devolve o dado | Query; não empilhar 4+ ações no mesmo arquivo |
 | **Feature** | Orquestra vários services via `TaggedIterator` | Query; lógica toda num arquivo só |
 | **Repository** | Toda consulta e persistência | Regra de negócio HTTP |
 
@@ -166,17 +166,17 @@ Comece pelo **Controller** (contrato da rota). Em seguida o Service com a lógic
 
 ### 4.1 Controller
 
-Crie o Controller **primeiro**. Ele define a rota e o formato da resposta. Corpo: ler DTO → chamar Service (ou Feature) → JSON. Nada além disso.
+Crie o Controller **primeiro**. Extends `DefaultController`. Corpo: ler DTO → chamar Service (ou Feature) → `$this->success()` / `$this->created()` / `$this->error()`. Sempre `Response`. Nada além disso.
+
+Envelope JSON: `{ success, data }` ou `{ success, error, details? }`. Chaves em **inglês**.
 
 ```php
 #[Route('/api/v1/pedidos', methods: ['POST'])]
-public function criar(#[MapRequestPayload] CriarPedidoDTO $dto): JsonResponse
+public function criar(#[MapRequestPayload] CriarPedidoDTO $dto): Response
 {
-    $resultado = $this->criarPedidoService->executar($dto);
-    if (!$resultado->ehSucesso()) {
-        return $this->json(['sucesso' => false, 'erro' => $resultado->obterErro()], 409);
-    }
-    return $this->json(['sucesso' => true, 'dados' => $this->serializer->serializar($resultado->obterDados())], 201);
+    $pedido = $this->criarPedidoService->executar($dto);
+
+    return $this->created($this->serializer->serializar($pedido));
 }
 ```
 
@@ -217,23 +217,23 @@ Contrato do repositório (e de qualquer porta: cliente HTTP, fila) vai em `src/I
 
 ### 4.6 Service
 
-Toda lógica de negócio fica **aqui**, não no Controller. Um service = **uma ação**. Nome: `CriarPedidoService`. `final class`, deps no construtor, um método `executar(): Resultado`.
+Toda lógica de negócio fica **aqui**, não no Controller. Um service = **uma ação**. Nome: `CriarPedidoService`. `final class`, deps no construtor, um método `executar()` que devolve o dado.
 
 - Sem Request/Response.
 - **Sem query.** Precisa de dado do banco? Chame o Repository. Não monte QueryBuilder, DQL nem `find` no Service.
-- Erro previsto (duplicado, estado inválido) → `Resultado::falha('codigo')`.
-- Erro absurdo (invariante quebrada) → exceção.
+- Erro previsto (duplicado, estado inválido) → `throw new \DomainException('codigo_duplicado', 409)`. O `KernelExceptionListener` responde `{ success: false, error }`.
 - Guard clauses baratas primeiro (dado local → memória → Repository → API externa).
 
 ```php
-public function executar(CriarPedidoDTO $dto): Resultado
+public function executar(CriarPedidoDTO $dto): Pedido
 {
     if ($this->repositorio->jaExiste($dto->codigo())) {
-        return Resultado::falha('codigo_duplicado');
+        throw new \DomainException('codigo_duplicado', 409);
     }
     $pedido = Pedido::fromDTO($dto);
     $this->repositorio->salvar($pedido);
-    return Resultado::sucesso($pedido);
+
+    return $pedido;
 }
 ```
 
@@ -254,7 +254,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface RegraDescontoInterface
 {
     public function suporta(Pedido $pedido): bool;
-    public function aplicar(Pedido $pedido): Resultado;
+    public function aplicar(Pedido $pedido): void;
 }
 ```
 
@@ -268,17 +268,15 @@ final class CalcularDescontoFeature
         private readonly iterable $regras,
     ) {}
 
-    public function executar(Pedido $pedido): Resultado
+    public function executar(Pedido $pedido): Pedido
     {
         foreach ($this->regras as $regra) {
             if ($regra->suporta($pedido)) {
-                $resultado = $regra->aplicar($pedido);
-                if (!$resultado->ehSucesso()) {
-                    return $resultado;
-                }
+                $regra->aplicar($pedido);
             }
         }
-        return Resultado::sucesso($pedido);
+
+        return $pedido;
     }
 }
 ```
@@ -320,7 +318,7 @@ Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
 - [ ] Sem Header/Footer na página
 - [ ] Sem `useEffect`
 - [ ] Sem Axios fora de `config/api.ts` e dos `api.ts` da feature
-- [ ] Controller criado primeiro; só chama Service ou Feature
+- [ ] Controller extends `DefaultController`; só chama Service ou Feature; retorna `$this->success()` / `$this->error()` (`Response`)
 - [ ] Lógica só no Service (ou Feature orquestrando services) — zero query, zero EntityManager
 - [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature, nunca um arquivo só
 - [ ] Toda consulta/persistência no Repository

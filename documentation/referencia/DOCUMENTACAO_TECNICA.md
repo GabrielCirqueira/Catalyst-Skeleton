@@ -11,7 +11,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 3. [Variáveis de Ambiente](#3-variáveis-de-ambiente)
 4. [Gestão de Portas](#4-gestão-de-portas)
 5. [Arquitetura Backend](#5-arquitetura-backend)
-   - [Padrão Resultado](#5-2-padrão-resultado)
+   - [`DefaultController`](#5-2-defaultcontroller)
    - [Regras de Ouro do Backend](#5-9-regras-de-ouro-do-backend)
 6. [Arquitetura Frontend](#6-arquitetura-frontend)
 7. [Banco de Dados e Migrations](#7-banco-de-dados-e-migrations)
@@ -132,9 +132,8 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │
 ├── src/                      # Código PHP da aplicação
 │   ├── Kernel.php
-│   ├── Resultado.php         # Padrão de resultado de operações de negócio
 │   ├── Command/              # Comandos CLI (Console Component)
-│   ├── Controller/           # Controllers da API REST
+│   ├── Controller/           # DefaultController (API) + FrontendController (SPA)
 │   ├── DataObject/           # DTOs: entrada validada de dados
 │   ├── Entity/               # Entidades Doctrine (UUID v7 como PK)
 │   ├── Enum/                 # Enums PHP 8.1+ usados em entidades e DTOs
@@ -269,50 +268,34 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 | **Services** | `src/Service/` | **Uma** ação. `executar()`. Sem query. Peças de uma família tagged também são services. |
 | **Features** | `src/Feature/` | Padrão para lógica grande/repetida: `TaggedIterator` sobre vários services. Não faz query. Não concentra lógica num arquivo. |
 | **Serializers** | `src/Serializer/` | Definem o contrato JSON de saída. Protegem o frontend de mudanças internas no banco. |
-| **Controllers** | `src/Controller/` | Lógica zero. Recebem request, chamam Service ou Feature, retornam `JsonResponse`. |
+| **Controllers** | `src/Controller/` | API extends `DefaultController` (`Response`). SPA em `FrontendController`. |
 | **Events / Listeners** | `src/EventListener/` (`Event/` = fato, classes irmãs = reação) | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
 | **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. **Módulo `async` — só existe se ativado no setup.** |
 | **Commands** | `src/Command/` | CLI da aplicação via `php bin/console`. |
 | **Schedule** | `src/Schedule/` | Tarefas recorrentes nativas do Symfony Scheduler. **Módulo `async` — só existe se ativado no setup.** |
 
-### 5.2 Padrão `Resultado`
+### 5.2 `DefaultController`
 
-`src/Resultado.php` encapsula o retorno de qualquer operação de negócio, eliminando o uso de exceções para casos previstos:
+Todo controller de API extends `src/Controller/DefaultController.php` e devolve `Response`. Chaves JSON em inglês.
+
+| Método | HTTP | JSON |
+| :--- | :--- | :--- |
+| `$this->success($data)` | 200 | `{ success: true, data }` |
+| `$this->created($data)` | 201 | `{ success: true, data }` |
+| `$this->noContent()` | 204 | vazio |
+| `$this->error('codigo', $status, $details?)` | 4xx | `{ success: false, error, details? }` |
+| `$this->paginated($itens, $total, $pagina, $porPagina)` | 200 | `{ success, data, total, pagina, porPagina }` |
 
 ```php
-// Em um Service:
-public function executar(CriarUsuarioDTO $dto): Resultado
+public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
 {
-    if ($this->repositorio->emailExiste($dto->email)) {
-        return Resultado::falha('email_duplicado');
-    }
+    $usuario = $this->criarUsuarioService->executar($dto);
 
-    $usuario = new Usuario($dto->nome, $dto->email);
-    $this->repositorio->salvar($usuario);
-
-    return Resultado::sucesso($usuario);
+    return $this->created($this->serializer->normalizar($usuario));
 }
-
-// Em um Controller:
-$resultado = $this->criarUsuarioService->executar($dto);
-
-if (!$resultado->ehSucesso()) {
-    return $this->json(['sucesso' => false, 'erro' => $resultado->obterErro()], 409);
-}
-
-$dados = $this->serializer->normalizar($resultado->obterDados());
-return $this->json(['sucesso' => true, 'dados' => $dados]);
 ```
 
-**Métodos disponíveis:**
-
-| Método | Descrição |
-| :--- | :--- |
-| `Resultado::sucesso($dados)` | Cria um resultado de sucesso carregando `$dados` |
-| `Resultado::falha('codigo_erro')` | Cria um resultado de falha com código de erro (string) |
-| `$resultado->ehSucesso()` | Retorna `true` se a operação foi bem-sucedida |
-| `$resultado->obterDados()` | Retorna o payload em caso de sucesso |
-| `$resultado->obterErro()` | Retorna o código de erro em caso de falha |
+Service devolve o dado. Erro previsto: `throw new \DomainException('email_duplicado', 409)`. O `KernelExceptionListener` responde no mesmo envelope.
 
 ### 5.3 `KernelExceptionListener`
 
@@ -329,9 +312,9 @@ Resposta padrão para erros de validação:
 
 ```json
 {
-  "sucesso": false,
-  "erro": "validacao_falhou",
-  "campos": {
+  "success": false,
+  "error": "validation_failed",
+  "details": {
     "email": "Este e-mail já está em uso.",
     "senha": "A senha deve ter no mínimo 8 caracteres."
   }
@@ -400,7 +383,7 @@ CORS_ALLOW_ORIGIN=https://meusite.com.br
 | Situação | O que fazer |
 | :--- | :--- |
 | Endpoint retorna dados de uma entidade | Criar `src/Serializer/XxxSerializer.php` com método `normalizar()` |
-| Endpoint retorna apenas confirmação (`{ sucesso: true }`) | Não precisa de Serializer — monte o array inline no Controller |
+| Endpoint retorna apenas confirmação (`{ success: true, data: null }`) | Não precisa de Serializer — `$this->success()` |
 | Endpoint retorna lista paginada | O Serializer normaliza cada item; o Controller monta o envelope de paginação |
 | Dois endpoints retornam a mesma entidade com campos diferentes | Criar dois Serializers (`UsuarioDetalheSerializer`, `UsuarioListaSerializer`) |
 
@@ -440,14 +423,12 @@ Sempre ordene as suas **Guard Clauses** (cláusulas de guarda) pelo custo de pro
 
 **O que fazer:**
 ```php
-public function executar(int $filialId, bool $isAfastado): Resultado 
+public function executar(int $filialId, bool $isAfastado): Pedido
 {
-    // ✅ CORRETO: Checagem local primeiro (baixo custo)
     if ($isAfastado) {
-        return Resultado::falha('usuario_afastado');
+        throw new \DomainException('usuario_afastado', 403);
     }
 
-    // Só chama o serviço secundário ou banco se passar pelas checagens básicas
     $permissaoFilial = $this->filialService->verificarAcesso($filialId);
     // ...
 }
@@ -455,9 +436,9 @@ public function executar(int $filialId, bool $isAfastado): Resultado
 
 **Por que?** Evita processamento desnecessário, economiza recursos do banco de dados e torna o fluxo de execução mais limpo e previsível.
 
-### 2. Services Atômicos e Resultado
+### 2. Services Atômicos
 - Um Service deve representar uma única ação de negócio (`executar()`).
-- O retorno deve ser sempre via objeto `Resultado`, nunca lançando exceções para fluxo normal de negócio (ex: 'usuário não encontrado').
+- Devolve o dado. Erro previsto: `DomainException`. O Controller responde com `$this->success()` / `$this->error()`.
 
 ---
 
@@ -760,16 +741,13 @@ Padrão obrigatório para qualquer endpoint que liste recursos. O contrato de re
 
 ```json
 {
-  "sucesso": true,
-  "dados": [
+  "success": true,
+  "data": [
     { "id": "...", "nome": "Produto A" }
   ],
-  "paginacao": {
-    "pagina": 1,
-    "porPagina": 20,
-    "total": 143,
-    "totalPaginas": 8
-  }
+  "total": 143,
+  "pagina": 1,
+  "porPagina": 20
 }
 ```
 
@@ -800,23 +778,19 @@ public function paginar(int $pagina, int $porPagina): array
 
 ```php
 #[Route('/api/v1/produtos', methods: ['GET'])]
-public function listar(Request $request): JsonResponse
+public function listar(Request $request): Response
 {
     $pagina    = max(1, (int) $request->query->get('pagina', 1));
     $porPagina = min(100, max(1, (int) $request->query->get('porPagina', 20)));
 
     ['items' => $items, 'total' => $total] = $this->produtoRepository->paginar($pagina, $porPagina);
 
-    return $this->json([
-        'sucesso' => true,
-        'dados'   => $this->produtoSerializer->normalizarLista($items),
-        'paginacao' => [
-            'pagina'       => $pagina,
-            'porPagina'    => $porPagina,
-            'total'        => $total,
-            'totalPaginas' => (int) ceil($total / $porPagina),
-        ],
-    ]);
+    return $this->paginated(
+        $this->produtoSerializer->normalizarLista($items),
+        $total,
+        $pagina,
+        $porPagina,
+    );
 }
 ```
 
@@ -827,9 +801,11 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@config/api';
 
 interface RespostaPaginada<T> {
-  sucesso: boolean;
-  dados: T[];
-  paginacao: { pagina: number; porPagina: number; total: number; totalPaginas: number };
+  success: boolean;
+  data: T[];
+  total: number;
+  pagina: number;
+  porPagina: number;
 }
 
 export function useProdutos(pagina: number) {
@@ -970,18 +946,17 @@ class OutboxEvent
 **Uso no Service (mesma transação que o dado principal):**
 
 ```php
-public function executar(CriarPedidoDTO $dto): Resultado
+public function executar(CriarPedidoDTO $dto): Pedido
 {
     $pedido = new Pedido(...);
     $this->em->persist($pedido);
 
-    // Persiste o evento na mesma transação
     $evento = new OutboxEvent('pedido.criado', ['id' => (string) $pedido->getId()]);
     $this->em->persist($evento);
 
-    $this->em->flush(); // atômico: pedido + evento
+    $this->em->flush();
 
-    return Resultado::sucesso($pedido);
+    return $pedido;
 }
 ```
 
@@ -1293,7 +1268,7 @@ feat(produto): adicionar endpoint de listagem com filtros
 fix(auth): corrigir refresh token expirado sem redirecionar
 refactor(usuario): extrair validação de email para ValueObject
 test(pedido): adicionar testes de integração para criação
-docs: documentar padrão Resultado no DOCUMENTACAO_TECNICA.md
+docs: documentar DefaultController no DOCUMENTACAO_TECNICA.md
 chore: atualizar Symfony para 7.3.2
 perf(query): otimizar consulta de listagem com índice cobrindo
 ```

@@ -490,8 +490,8 @@
   - [ ] Prefixo de rota: `#[Route('/api/v1/nome-da-entidade')]`
   - [ ] `#[IsGranted('ROLE_USER')]` nas rotas protegidas
   - [ ] `#[MapRequestPayload]` para mapear DTOs
-  - [ ] Retornar sempre `JsonResponse` com `{ sucesso, mensagem, dados }`
-  - [ ] Lançar `\DomainException($mensagem, $codigoHTTP)` e deixar o **`KernelExceptionListener`** logar e formatar a resposta.
+  - [ ] Extends `DefaultController`; retornar sempre `Response` via `$this->success()` / `$this->error()` (`{ success, data }` / `{ success, error }`)
+  - [ ] Lançar `\DomainException($codigo, $codigoHTTP)` no Service e deixar o **`KernelExceptionListener`** logar e formatar a resposta.
   - [ ] `\Exception` → `HTTP_INTERNAL_SERVER_ERROR`
   - [ ] **Lógica Zero**: apenas recebe Request, chama Service, retorna Response
   - [ ] Resolver usuário autenticado via `ResolverUsuarioPorTokenService`
@@ -553,15 +553,15 @@
   **No Controller:**
   ```php
   #[Route('', methods: ['GET'])]
-  public function listar(Request $request): JsonResponse
+  public function listar(Request $request): Response
   {
       $dados = $this->listarService->executar(
           $request->query->getInt('pagina', 1),
           20,
           $request->query->all('filtros')
       );
-      
-      return $this->json(['sucesso' => true, ...$dados]);
+
+      return $this->paginated($dados['dados'], $dados['total'], $dados['pagina'], $dados['porPagina']);
   }
   ```
 
@@ -580,55 +580,27 @@
 
   ---
 
-  ### 5.9 Result Object
+  ### 5.9 Envelope HTTP (`DefaultController`)
 
-  Em vez de lançar `DomainException` para casos de negócio **esperados** (ex: recurso duplicado, estado inválido), retorne um objeto `Resultado` estruturado:
+  Todo controller de API extends `DefaultController` e devolve `Response`. Chaves JSON em inglês.
+
+  | Método | HTTP | JSON |
+  | :--- | :--- | :--- |
+  | `$this->success($data)` | 200 | `{ success: true, data }` |
+  | `$this->created($data)` | 201 | `{ success: true, data }` |
+  | `$this->noContent()` | 204 | vazio |
+  | `$this->error('codigo', $status, $details?)` | 4xx | `{ success: false, error, details? }` |
 
   ```php
-  final class Resultado
+  public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
   {
-      private function __construct(
-          private readonly bool $sucesso,
-          private readonly mixed $dados,
-          private readonly ?string $erro = null,
-      ) {}
+      $usuario = $this->criarUsuarioService->executar($dto);
 
-      public static function sucesso(mixed $dados = null): self
-      {
-          return new self(true, $dados);
-      }
-
-      public static function falha(string $erro): self
-      {
-          return new self(false, null, $erro);
-      }
-
-      public function sucesso(): bool { return $this->sucesso; }
-      public function dados(): mixed { return $this->dados; }
-      public function erro(): ?string { return $this->erro; }
+      return $this->created($this->serializer->serializar($usuario));
   }
   ```
 
-  ```php
-  // No Service:
-  public function executar(CriarUsuarioDTO $dto): Resultado
-  {
-      if ($this->repository->emailJaExiste($dto->email())) {
-          return Resultado::falha('email_duplicado');
-      }
-      $usuario = Usuario::fromDTO($dto);
-      $this->repository->salvar($usuario, flush: true);
-      return Resultado::sucesso($usuario);
-  }
-
-  // No Controller:
-  $resultado = $this->criarUsuarioService->executar($dto);
-  if (!$resultado->sucesso()) {
-      return $this->json(['sucesso' => false, 'erro' => $resultado->erro()], 409);
-  }
-  ```
-
-  **Quando usar:** casos onde o "erro" é semântico de negócio e esperado. Reserve `DomainException` para violações de invariante inesperadas ou situações que nunca deveriam acontecer.
+  Service devolve o dado. Erro previsto: `throw new \DomainException('email_duplicado', 409)`. O `KernelExceptionListener` responde no mesmo envelope.
 
   ---
 
@@ -738,15 +710,16 @@
           private readonly EventDispatcherInterface $events,
       ) {}
 
-      public function executar(CriarAnimalDTO $dto): Resultado
+      public function executar(CriarAnimalDTO $dto): Animal
       {
           if (!$this->cpfClient->valido($dto->cpfProprietario())) {
-              return Resultado::falha('cpf_invalido');
+              throw new \DomainException('cpf_invalido', 422);
           }
           $animal = Animal::fromDTO($dto);
           $this->repository->salvar($animal, flush: true);
           $this->events->dispatch(new AnimalCriadoEvent($animal->uuid()->toRfc4122()));
-          return Resultado::sucesso($animal);
+
+          return $animal;
       }
   }
   ```
@@ -779,7 +752,7 @@
 
   ### 5.13 Feature
 
-  **Não** coloque a lógica grande num único `*Service.php`. Sempre que possível, parta em vários services com a mesma interface e uma Feature com `#[TaggedIterator]`. A Feature só itera e devolve `Resultado`. Query continua no Repository. Nova peça = nova classe, Feature não muda. Padrão e exemplo: [PARA-IA.md](PARA-IA.md) § 4.7.
+  **Não** coloque a lógica grande num único `*Service.php`. Sempre que possível, parta em vários services com a mesma interface e uma Feature com `#[TaggedIterator]`. A Feature só itera e devolve o dado. Query continua no Repository. Nova peça = nova classe, Feature não muda. Padrão e exemplo: [PARA-IA.md](PARA-IA.md) § 4.7.
 
   ---
 
@@ -927,12 +900,13 @@
   ```typescript
   // web/shared/types/api.ts
   export interface RespostaApi<T> {
-    sucesso: boolean
-    mensagem: string
-    dados: T
+    success: boolean
+    data: T
   }
 
-  export interface RespostaPaginada<T> extends RespostaApi<T[]> {
+  export interface RespostaPaginada<T> {
+    success: boolean
+    data: T[]
     total: number
     pagina: number
     porPagina: number

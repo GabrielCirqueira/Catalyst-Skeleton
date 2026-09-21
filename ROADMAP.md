@@ -94,7 +94,7 @@
 
 ### Tópico 4 — AuthController — login, registro, me e refresh
 
-**O que existe hoje:** endpoints de autenticação com DTOs e padrão Resultado.
+**O que existe hoje:** endpoints de autenticação com DTOs e envelope `{ success, data }` via `DefaultController`.
 
 **Por que importa:** contrato HTTP único para o frontend.
 

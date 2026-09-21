@@ -36,33 +36,33 @@ src/
 ??? Serializer/     Contratos JSON de saída (protegem frontend de mudanças internas)
 ??? Service/        Lógica de negócio ? um service = uma ação (executar())
 ??? Kernel.php
-??? Resultado.php   Padrão Resultado (sucesso/falha sem exceções)
 ```
 
 > Se o módulo `async` estiver ativo, o setup adiciona:
 > `src/Message/`, `src/MessageHandler/`, `src/Schedule/`
 
-## Padrão Resultado
+## `DefaultController`
 
-Toda operação de negócio retorna `Resultado` em vez de lançar exceções para casos previstos:
+Todo controller de API extends `App\Controller\DefaultController`. SPA fica em `FrontendController`.
+
+| Método | HTTP | JSON |
+| :--- | :--- | :--- |
+| `$this->success($data)` | 200 | `{ success: true, data }` |
+| `$this->created($data)` | 201 | `{ success: true, data }` |
+| `$this->noContent()` | 204 | vazio |
+| `$this->error('codigo', $status, $details?)` | 4xx | `{ success: false, error, details? }` |
+| `$this->paginated($itens, $total, $pagina, $porPagina)` | 200 | `{ success, data, total, pagina, porPagina }` |
 
 ```php
-public function executar(CriarUsuarioDTO $dto): Resultado
+public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
 {
-    if ($this->repositorio->usernameJaExiste($dto->username)) {
-        return Resultado::falha('username_duplicado');
-    }
-    $usuario = new Usuario($dto->nomeCompleto, $dto->username);
-    $this->repositorio->salvar($usuario);
-    return Resultado::sucesso($usuario);
-}
+    $usuario = $this->criarUsuarioService->executar($dto);
 
-// No Controller:
-$resultado = $this->criarUsuarioService->executar($dto);
-if (!$resultado->ehSucesso()) {
-    return $this->json(['sucesso' => false, 'erro' => $resultado->obterErro()], 409);
+    return $this->created($this->serializer->serializar($usuario));
 }
 ```
+
+Service devolve o dado. Erro previsto: `throw new \DomainException('username_taken', 409)` — o `KernelExceptionListener` responde no mesmo envelope.
 
 ## Rotas e API
 
@@ -83,7 +83,7 @@ if (!$resultado->ehSucesso()) {
 
 ## Regras de Ouro
 
-1. **Padrão Resultado**: Nunca lance exceções para erros previstos. Use `Resultado::sucesso()` ou `Resultado::falha('codigo')`.
+1. **Envelope HTTP**: Controller de API sempre extends `DefaultController` e retorna `Response` via `$this->success()` / `$this->error()`. Chaves JSON em inglês (`success`, `data`, `error`).
 2. **Early Return**: Ordene Guard Clauses pelo custo ? verificação local ? banco ? API externa.
 3. **Serializer obrigatório**: Todo endpoint que retorna dados de entidade usa `src/Serializer/`. Nunca retorne a entidade diretamente.
 4. **Readonly**: Use `readonly` em classes DTO e propriedades imutáveis.

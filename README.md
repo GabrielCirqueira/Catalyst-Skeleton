@@ -92,7 +92,7 @@ O Catalyst Skeleton impõe uma separação rigorosa de interesses:
 
 - **Backend**: Baseado em **Services Atômicos** e **DTOs**. A lógica de negócio nunca vaza para o Controller.
 - **Frontend**: Organizado por **Features**. Cada funcionalidade (Auth, User, etc) é um módulo autossucedido.
-- **Padrão Resultado**: Todas as operações de negócio retornam um objeto `Resultado` em vez de lançar exceções.
+- **Envelope da API**: Controllers de API extends `DefaultController` e respondem `{ success, data }` / `{ success, error }`.
 
 ---
 
@@ -104,7 +104,7 @@ Para uma imersão profunda em cada área do projeto, consulte nossos guias espec
 - [**Progresso e Roadmap**](documentation/progresso/README.md): índices paginados e `make progresso`.
 - [**Guia de Autenticação**](documentation/stack/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
 - [**Guia de Frontend**](documentation/stack/FRONTEND.md): React 19, HeroUI v3 e primitivos de layout.
-- [**Guia de Backend**](documentation/stack/BACKEND.md): Symfony 7.3, Padrão Resultado e Early Return.
+- [**Guia de Backend**](documentation/stack/BACKEND.md): Symfony 7.3, `DefaultController` e Early Return.
 - [**Arquitetura e Padrões**](documentation/referencia/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
 - [**Mensageria (Async)**](documentation/stack/MESSENGER.md): Symfony Messenger e Workers.
 - [**Docker e DevOps**](documentation/ops/DOCKER.md): Infraestrutura e multi-stage builds.
