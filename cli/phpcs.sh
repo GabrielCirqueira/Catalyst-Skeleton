@@ -37,7 +37,7 @@ run_in_docker() {
   DEV_UID=$(id -u)
   DEV_GID=$(id -g)
 
-  exec env DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" "${COMPOSE[@]}" --env-file ports.env -f docker-compose.yaml run --rm --user "$DEV_UID:$DEV_GID" --env HOME=/tmp/git-home symfony php vendor/bin/phpcs --standard=/var/www/html/.tooling/quality/phpcs.xml "$@"
+  exec env DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" "${COMPOSE[@]}" --env-file devops/ports.env -f devops/docker-compose.yaml run --rm --user "$DEV_UID:$DEV_GID" --env HOME=/tmp/git-home symfony php vendor/bin/phpcs --standard=/var/www/html/.tooling/quality/phpcs.xml "$@"
 }
 
 if (( PHPVID == 0 || PHPVID < MIN_VERSION )); then

@@ -4,7 +4,7 @@ set -e
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-COMPOSE_DEV_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file ports.env -f devops/docker-compose.yaml"}
+COMPOSE_DEV_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file devops/ports.env -f devops/docker-compose.yaml"}
 
 if [[ $# -eq 0 ]]; then
   echo "Usage: make db-restore ARGS=\"path/to/backup.sql\""

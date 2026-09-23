@@ -7,7 +7,7 @@ cd "$ROOT_DIR"
 echo "🔄 Resetting database... (dropping, creating and migrating)"
 
 # Use COMPOSE_DEV_CMD equivalent if we are in make, else use simple compose
-COMPOSE_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file ports.env -f devops/docker-compose.yaml"}
+COMPOSE_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file devops/ports.env -f devops/docker-compose.yaml"}
 
 # Stop and remove volumes to ensure a fresh start if requested, but better to use doctrine commands
 echo "Dropping database..."

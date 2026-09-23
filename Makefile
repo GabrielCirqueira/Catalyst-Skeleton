@@ -106,7 +106,7 @@ npm: ## Executar comando npm arbitrário (ARGS="run build")
 # ══════════════════════════════════════════════════
 
 lint-php: ## Verificar estilo PHP (php-cs-fixer dry-run)
-	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix --dry-run --diff
+	$(EXEC_BACKEND) php vendor/bin/php-cs-fixer fix --dry-run --diff --config=.tooling/quality/.php-cs-fixer.dist.php
 
 lint-tsx: ## Lint TypeScript/React com Biome
 	$(EXEC_FRONTEND) npx biome check web

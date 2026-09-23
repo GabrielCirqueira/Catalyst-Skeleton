@@ -39,7 +39,7 @@ run_in_docker() {
   local compose_env
   compose_env=(env DEV_UID="$DEV_UID" DEV_GID="$DEV_GID")
   local compose_run
-  compose_run=("${COMPOSE[@]}" --env-file ports.env -f docker-compose.yaml run --rm)
+  compose_run=("${COMPOSE[@]}" --env-file devops/ports.env -f devops/docker-compose.yaml run --rm)
 
   local phpstan_args
   phpstan_args=(analyse --memory-limit=1G --configuration=.tooling/quality/phpstan.neon)

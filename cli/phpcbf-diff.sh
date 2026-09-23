@@ -11,8 +11,8 @@ fi
 
 # Use Docker Compose symfony service to ensure correct PHP version (>=8.4)
 COMPOSE_BIN=${COMPOSE:-"docker compose"}
-COMPOSE_FILE=${COMPOSE_FILE:-"docker-compose.yaml"}
-COMPOSE_ENV_FILE=${COMPOSE_ENV_FILE:-"ports.env"}
+COMPOSE_FILE=${COMPOSE_FILE:-"devops/docker-compose.yaml"}
+COMPOSE_ENV_FILE=${COMPOSE_ENV_FILE:-"devops/ports.env"}
 COMPOSE_CMD=( $COMPOSE_BIN --env-file "$COMPOSE_ENV_FILE" -f "$COMPOSE_FILE" )
 
 declare -a diff_args
@@ -80,7 +80,7 @@ status=$?
 
 if [[ $status -ne 0 ]]; then
   echo "phpcbf returned status $status. Trying fallback if php-cs-fixer is available..." >&2
-  ${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc '[ -x vendor/bin/php-cs-fixer ] && php vendor/bin/php-cs-fixer fix --path-mode=override "$@" || echo "php-cs-fixer not installed; skipping fallback"' sh "${targets[@]}"
+  ${COMPOSE_CMD[@]} exec -T -w /var/www/html symfony sh -lc '[ -x vendor/bin/php-cs-fixer ] && php vendor/bin/php-cs-fixer fix --config=.tooling/quality/.php-cs-fixer.dist.php --path-mode=override "$@" || echo "php-cs-fixer not installed; skipping fallback"' sh "${targets[@]}"
   status=$?
 fi
 set -e

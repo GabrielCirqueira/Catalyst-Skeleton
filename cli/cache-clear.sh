@@ -4,7 +4,7 @@ set -e
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-COMPOSE_DEV_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file ports.env -f devops/docker-compose.yaml"}
+COMPOSE_DEV_CMD=${COMPOSE_DEV_CMD:-"docker compose --env-file devops/ports.env -f devops/docker-compose.yaml"}
 
 echo "💨 Clearing Symfony cache..."
 $COMPOSE_DEV_CMD exec -T symfony php bin/console cache:clear
