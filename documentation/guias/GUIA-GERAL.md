@@ -774,6 +774,27 @@
 
   ---
 
+  ### 5.15 Clientes HTTP Externos e Infraestrutura (src/Infra/ e src/Exception/)
+
+  **PROIBIDO**: Fazer requisições HTTP cruas (`HttpClientInterface` ou `$client->request()`) diretamente em Services ou Commands.
+
+  Toda comunicação com APIs e sistemas externos deve ser encapsulada e desacoplada em `src/Infra/{Sistema}/`:
+
+  1. **Base Client Abstrato (`src/Infra/Client.php`)**:
+     - Classe abstrata base gerenciando `GuzzleHttp\ClientInterface`, `baseUrl` e `SerializerInterface`.
+     - Método `protected function request()` executa a chamada HTTP, intercepta `RequestException` via `executarRequisicao()`, valida retornos com `Assert::isArray()` e deserializa respostas JSON diretamente via `SerializerInterface` caso `$type` seja informado.
+     - Método `protected function requestRaw()` para retornos brutos em formato string.
+  2. **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**:
+     - Estende `App\Infra\Client` configurando a `$baseUrl` no construtor.
+  3. **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**:
+     - Estende `{Sistema}Client` e implementa os métodos de ação de negócio da API (ex: `consultarStatus()`, `enviarCobranca()`).
+  4. **Injeção via `config/services.yaml`**:
+     - Registra o cliente do Guzzle com a `base_uri` e o injeta na classe `{Sistema}API`.
+  5. **Exceções Personalizadas (`src/Exception/`)**:
+     - Criar exceções personalizadas estendendo `ClienteHTTPException` para lançamento e captura refinada de erros de requisições externas.
+
+  ---
+
   ### Estrutura de pastas esperada (Backend)
 
   ```text
@@ -792,6 +813,8 @@
       Event/                    ← Domain Events (XxxCriadoEvent, XxxCanceladoEvent)
                                 ← Listeners (#[AsEventListener]) ao lado
     Feature/                    ← *Feature.php + TaggedIterator; lógica grande em vários services
+    Exception/                  ← ClienteHTTPException e exceções de APIs externas
+    Infra/                      ← Client.php + {Sistema}/{Sistema}Client.php + {Sistema}API.php
     Interface/                  ← contratos PHP (*Interface.php)
     Message/                    ← Mensagens para o Messenger
     MessageHandler/             ← Handlers (#[AsMessageHandler])
@@ -1560,6 +1583,7 @@
   Antes de abrir PR:
 
   - [ ] `make lint-all` passou sem erros
+  - [ ] HTTP externo só via `src/Infra/{Sistema}API` — nunca `HttpClientInterface` em Service/Command
   - [ ] Nenhum HTML puro no frontend (`Box`/`VStack`/`Text` de `shared/ui/layout` + HeroUI)
   - [ ] Página segue padrão `AppContainer → Container`
   - [ ] Hooks consumindo `api.ts`

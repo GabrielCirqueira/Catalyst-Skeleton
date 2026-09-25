@@ -14,6 +14,7 @@ Este documento descreve a API/backend Symfony. O Catalyst Skeleton v5 segue uma 
 | **Nelmio CORS** | Configuração CORS para `/api/*` |
 | **Symfony Rate Limiter** | Proteção contra brute-force no login (5/min) |
 | **Monolog** | Logs estruturados (texto em dev, JSON em prod) |
+| **Guzzle 7** | Cliente HTTP para APIs externas via `src/Infra/Client.php` |
 | **PHPStan 2** | Análise estática — nível 6 |
 
 > **Módulos opcionais** ? ativados via `setup.sh` ou instalação manual:
@@ -30,7 +31,9 @@ src/
 ??? Entity/         Entidades Doctrine (Usuario, RefreshToken)
 ??? Enum/           Enums PHP 8.1+
 ??? EventListener/  Listeners + Event/ (fatos de domínio)
+??? Exception/      ClienteHTTPException e exceções de APIs externas
 ??? Feature/        *Feature.php + TaggedIterator (lógica grande em vários services)
+??? Infra/          Clientes HTTP de infraestrutura externa (*Client.php via Guzzle)
 ??? Interface/      Contratos PHP (*Interface.php)
 ??? Repository/     Acesso ao banco de dados (queries DQL/QueryBuilder)
 ??? Serializer/     Contratos JSON de saída (protegem frontend de mudanças internas)

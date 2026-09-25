@@ -111,6 +111,7 @@ Checklist:
 - [ ] Domain Event disparado quando a ação causa efeitos colaterais — ver GUIA-GERAL.md 5.10
 - [ ] Se o Service precisa de lógica pura entre entidades sem I/O, extrair para Domain Service em `src/Domain/` — ver GUIA-GERAL.md 5.12
 - [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature — ver PARA-IA.md § 4.7. Não concentrar num arquivo.
+- [ ] HTTP externo só via `src/Infra/{Sistema}/{Sistema}API.php` — nunca `HttpClientInterface` / `$client->request()` no Service — ver GUIA-GERAL.md 5.15
 
 ### 3.6 Serializer
 
@@ -307,6 +308,7 @@ Checklist de PR:
 - [ ] Toast gerenciado pelo hook, não pelo componente
 - [ ] Error Boundary envolvendo componentes que fazem fetch
 - [ ] Subflow implementado para listas e conteúdo estruturado
+- [ ] HTTP externo só via `src/Infra/{Sistema}API` — nunca `HttpClientInterface` em Service/Command
 - [ ] Controllers e MessageHandlers sem regra de negócio (Lógica Zero)
 - [ ] DTO com validações e sem setters
 - [ ] Getters sem prefixo `get`

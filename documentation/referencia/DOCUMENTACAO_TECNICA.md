@@ -42,6 +42,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | Symfony Rate Limiter | 7.x | Proteção contra brute-force em login e endpoints | ✅ Core |
 | NelmioCorsBundle | 3.x | Configuração CORS para todos os endpoints `/api/*` | ✅ Core |
 | Monolog | 3.x | Logs estruturados (JSON em produção) | ✅ Core |
+| Guzzle | 7.x | Cliente HTTP para APIs externas (`src/Infra/Client.php`) | ✅ Core |
 | PHPStan | 2.x | Análise estática — nível 6 | ✅ Core |
 | PHP_CodeSniffer | 3.x | Estilo de código PSR-12 | ✅ Core |
 | Symfony Messenger | 7.x | Fila de mensagens com transporte Doctrine | 🔧 Módulo `async` |
@@ -138,7 +139,9 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── Entity/               # Entidades Doctrine (UUID v7 como PK)
 │   ├── Enum/                 # Enums PHP 8.1+ usados em entidades e DTOs
 │   ├── EventListener/        # Listeners + Event/ (fatos de domínio)
+│   ├── Exception/            # ClienteHTTPException e exceções de APIs externas
 │   ├── Feature/              # TaggedIterator — lógica grande em vários services
+│   ├── Infra/                # Client.php + clientes HTTP externos (Guzzle)
 │   ├── Interface/            # Contratos PHP (*Interface.php)
 │   ├── Repository/           # Acesso ao banco de dados via Doctrine
 │   ├── Serializer/           # Normalizadores para o JSON de saída (contrato da API)
@@ -269,6 +272,8 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 | **Features** | `src/Feature/` | Padrão para lógica grande/repetida: `TaggedIterator` sobre vários services. Não faz query. Não concentra lógica num arquivo. |
 | **Serializers** | `src/Serializer/` | Definem o contrato JSON de saída. Protegem o frontend de mudanças internas no banco. |
 | **Controllers** | `src/Controller/` | API extends `DefaultController` (`Response`). SPA em `FrontendController`. |
+| **Infra** | `src/Infra/` | Clientes HTTP externos. `Client.php` base + `{Sistema}Client` + `{Sistema}API`. Nunca HTTP cru em Service/Command. |
+| **Exceptions** | `src/Exception/` | `ClienteHTTPException` e especializações por sistema externo. |
 | **Events / Listeners** | `src/EventListener/` (`Event/` = fato, classes irmãs = reação) | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
 | **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. **Módulo `async` — só existe se ativado no setup.** |
 | **Commands** | `src/Command/` | CLI da aplicação via `php bin/console`. |

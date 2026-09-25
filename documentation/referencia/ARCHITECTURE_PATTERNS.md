@@ -84,7 +84,19 @@ O Serializer protege o frontend de mudanças internas (renomear coluna, mover ca
 
 ---
 
-## 5. Frontend: Imutabilidade e Declaratividade
+## 5. Clientes HTTP Externos (`src/Infra/`)
+
+**PROIBIDO** chamar HTTP cru em Service ou Command. Toda API externa fica em `src/Infra/{Sistema}/`:
+
+1. `src/Infra/Client.php` — base com Guzzle, `request()` / `requestRaw()`, `ClienteHTTPException`.
+2. `src/Infra/{Sistema}/{Sistema}Client.php` — abstrata, define `$baseUrl`.
+3. `src/Infra/{Sistema}/{Sistema}API.php` — métodos de negócio; Service só chama a API.
+4. `config/services.yaml` — `guzzle.{sistema}` com `base_uri`, injetado na `{Sistema}API`.
+5. `src/Exception/{Sistema}APIException` extends `ClienteHTTPException`.
+
+---
+
+## 6. Frontend: Imutabilidade e Declaratividade
 
 **Sem `useEffect` em pages e features.** Efeitos colaterais descontrolados são a fonte de loops infinitos, race conditions e bugs de dessincronização.
 

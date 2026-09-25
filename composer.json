@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.7.1",
         "doctrine/orm": "^3.7.0",
         "gesdinet/jwt-refresh-token-bundle": "^1.5.1",
+        "guzzlehttp/guzzle": "^7.15.5",
         "lexik/jwt-authentication-bundle": "^3.2",
         "nelmio/cors-bundle": ">=2.6.1",
         "pentatrion/vite-bundle": "^8.2.4",
@@ -40,7 +41,8 @@
         "symfony/validator": "7.3.*",
         "symfony/yaml": "7.3.*",
         "twig/extra-bundle": "^2.12|^3.24",
-        "twig/twig": "^2.12|^3.28.0"
+        "twig/twig": "^2.12|^3.28.0",
+        "webmozart/assert": "^2.4.1"
     },
     "suggest": {
         "sentry/sentry-symfony": "Módulo observability: rastreamento de erros em produção (ative com --observability no setup).",

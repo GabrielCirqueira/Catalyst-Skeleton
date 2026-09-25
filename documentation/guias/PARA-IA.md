@@ -71,6 +71,8 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 | JSON de saída | `src/Serializer/` |
 | Enum fechado | `src/Enum/` |
 | Evento + reação | `src/EventListener/` — fato em `Event/`, reação ao lado |
+| Clientes HTTP externos | `src/Infra/{Sistema}/{Sistema}Client.php` e `src/Infra/{Sistema}/{Sistema}API.php` |
+| Exceções personalizadas | `src/Exception/` |
 
 ---
 
@@ -299,6 +301,25 @@ O Controller chama a Feature.
 ### 4.8 Serializer
 
 Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
+
+### 4.9 Clientes HTTP e Infraestrutura (`src/Infra/` e `src/Exception/`)
+
+**PROIBIDO**: Fazer requisições HTTP cruas (`HttpClientInterface` ou `$client->request()`) diretamente em Services ou Commands.
+
+Toda integração com APIs/sistemas externos deve ser desacoplada em `src/Infra/{Sistema}/`:
+
+1. **Base Client Abstrato (`src/Infra/Client.php`)**:
+   - Injeta `\GuzzleHttp\ClientInterface` e `baseUrl`.
+   - Método `protected function request()` executa a requisição, trata `RequestException` via `executarRequisicao()`, deserializa via Symfony Serializer (se `$type` for informado) ou decodifica JSON e valida via `Assert::isArray()`.
+   - Método `protected function requestRaw()` para respostas puras em string.
+2. **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**:
+   - Classe abstrata estendendo `App\Infra\Client` configurando a `$baseUrl` no construtor.
+3. **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**:
+   - Classe concreta estendendo `{Sistema}Client` implementando os métodos de ação (`consultarStatus()`, `enviarCobranca()`, etc.).
+4. **Configuração DI (`config/services.yaml`)**:
+   - Registra o `GuzzleHttp\Client` do serviço com `base_uri` e o injeta na classe `{Sistema}API`.
+5. **Exceções Personalizadas (`src/Exception/`)**:
+   - Crie exceções sob `src/Exception/` estendendo `ClienteHTTPException` para tratamento refinado de erros externos.
 
 ---
 

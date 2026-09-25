@@ -90,7 +90,9 @@ src/
 ??? Entity/             Entidades Doctrine (Usuario, RefreshToken)
 ??? Enum/               Enums PHP 8.1+
 ??? EventListener/      Listeners + Event/ (fatos de domínio)
+??? Exception/          ClienteHTTPException e exceções de APIs externas
 ??? Feature/            *Feature.php + TaggedIterator (lógica grande em vários services)
+??? Infra/              Client.php + {Sistema}Client / {Sistema}API (Guzzle)
 ??? Interface/          Contratos PHP (*Interface.php)
 ??? Repository/         Acesso ao banco, queries DQL/QueryBuilder
 ??? Serializer/         Contratos JSON de saída

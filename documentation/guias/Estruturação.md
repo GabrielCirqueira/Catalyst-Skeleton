@@ -670,6 +670,16 @@ Sempre ordene as condições de guarda (**Guard Clauses**) pelo custo de process
 
 **Regra:** Nunca chame um serviço custoso antes de validar pre-condições simples que poderiam resultar em um `early return`.
 
+#### 13.12 Clientes HTTP Externos e Infraestrutura (src/Infra/ e src/Exception/)
+
+Toda comunicação HTTP com APIs/sistemas externos deve ser desacoplada na camada de infraestrutura (`src/Infra/{Sistema}/`), nunca diretamente em Services ou Commands.
+
+* **Base Client (`src/Infra/Client.php`)**: Classe abstrata base que recebe `GuzzleHttp\ClientInterface`, `baseUrl` e `SerializerInterface`. Trata `RequestException` via `executarRequisicao()`, valida retornos com `Assert::isArray()` e suporta deserialização direta via Symfony Serializer.
+* **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**: Classe abstrata que estende `App\Infra\Client` e define a `$baseUrl`.
+* **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**: Classe concreta estendendo `{Sistema}Client` que expõe os métodos de ação de negócio da API (ex: `consultarStatus()`, `enviarCobranca()`).
+* **Injeção DI (`config/services.yaml`)**: Registra instâncias do `GuzzleHttp\Client` com `base_uri` configurada e as injeta em `{Sistema}API`.
+* **Exceções Personalizadas (`src/Exception/`)**: Exceções estendendo `ClienteHTTPException` para tratamento de erros em requisições de clientes externos.
+
 ---
 
 ## 14) Lints e Qualidade

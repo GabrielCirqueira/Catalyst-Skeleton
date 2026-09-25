@@ -22,3 +22,19 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    GuzzleHttp\ClientInterface: '@guzzle.default'
+
+    guzzle.default:
+        class: GuzzleHttp\Client
+
+    # Cliente HTTP por sistema externo — copie o bloco abaixo:
+    # guzzle.{sistema}:
+    #     class: GuzzleHttp\Client
+    #     arguments:
+    #         - { base_uri: 'https://api.exemplo.com' }
+    #
+    # App\Infra\{Sistema}\{Sistema}API:
+    #     arguments:
+    #         $client: '@guzzle.{sistema}'
+    #         $baseUrl: 'https://api.exemplo.com'
