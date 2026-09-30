@@ -64,8 +64,6 @@ Configurações de ferramentas centralizadas para reduzir poluição na raiz:
 ?   ??? .dockerignore
 ??? frontend/
 ?   ??? biome.json
-?   ??? postcss.config.cjs
-?   ??? tailwind.config.cjs
 ?   ??? tsconfig.json
 ?   ??? vite.config.js
 ??? git/
@@ -115,10 +113,10 @@ web/
 ??? layouts/            MainLayout, AuthLayout, AppContainer
 ??? pages/              Páginas lazy ? Home, Login, Cadastro, NotFound
 ??? routes/             RotaProtegida.tsx
-??? shared/             ui/layout.tsx (Box, VStack, Text…), hooks, utils
+??? shared/             ui/toaster.tsx, ui/chart.tsx, hooks, utils
 ??? stores/             useAuthStore (Zustand + localStorage)
 ??? App.tsx             Router raiz + provedores globais
-??? index.css           CSS global + design tokens
+??? config/theme/theme.ts Sistema Chakra (paleta brand)
 ??? main.tsx            Entry point
 ```
 

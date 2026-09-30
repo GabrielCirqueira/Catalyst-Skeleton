@@ -2,7 +2,7 @@
 
 Ative este módulo quando houver necessidade concreta de animar montagem/desmontagem condicional (`AnimatePresence` em modais, drawers, listas que entram/saem do DOM).
 
-`tailwindcss-motion` já é o padrão core para animações simples (hover, entrada de seção, transições) — ver `documentation/stack/FRONTEND.md`. Gráficos (`recharts` + `web/shared/ui/chart.tsx`) e toasts (`@heroui/react`) já são core, não fazem parte deste módulo.
+Animações via props do Chakra. Gráficos (`recharts` + `web/shared/ui/chart.tsx`) e toasts (`@/shared/ui/toaster`) já são core, não fazem parte deste módulo.
 
 ## O que este módulo adiciona
 

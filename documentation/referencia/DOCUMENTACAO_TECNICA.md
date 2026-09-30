@@ -63,9 +63,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | React Router DOM | 7.9 | Roteamento client-side com lazy loading | ✅ Core |
 | React Hook Form | 7.66 | Formulários performáticos com validação Zod | ✅ Core |
 | Zod | 4.1 | Validação de schemas (forms, respostas de API) | ✅ Core |
-| HeroUI v3 | 3.2 | Componentes UI acessíveis e prontos | ✅ Core |
-| Tailwind CSS | 4.x | Motor de estilo CSS-first — sem `tailwind.config.js` | ✅ Core |
-| tailwindcss-motion | 1.x | Animações simples via classe Tailwind — zero JS | ✅ Core |
+| Chakra UI v3 | 3.x | Layout, tema e componentes (`@chakra-ui/react`) | ✅ Core |
 | Lucide React | — | Conjunto de ícones | ✅ Core |
 | Recharts | 2.x | Gráficos reativos baseados em SVG (`web/shared/ui/chart.tsx`) | ✅ Core |
 | Biome | 1.9 | Linter + formatter + organizador de imports | ✅ Core |
@@ -158,7 +156,6 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 ├── web/                      # Código TypeScript/React da SPA
 │   ├── App.tsx               # Raiz da aplicação: providers e roteamento
 │   ├── main.tsx              # Entry point: ReactDOM.createRoot
-│   ├── index.css             # CSS global do frontend
 │   ├── vite-env.d.ts         # Types de variáveis de ambiente Vite
 │   ├── assets/               # Imagens e ícones estáticos
 │   ├── config/api.ts         # Instância Axios centralizada com interceptores JWT
@@ -168,12 +165,12 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 │   ├── layouts/              # MainLayout (Header + Footer), AuthLayout, AppContainer
 │   ├── pages/                # Páginas folha carregadas via React.lazy()
 │   ├── routes/RotaProtegida.tsx  # Guard: redireciona para /login se não autenticado
-│   ├── shared/ui/layout.tsx  # Primitivos: Flex, HStack, VStack, Box, Container
-│   ├── shared/               # Componentes, hooks e utils reutilizáveis
+│   ├── config/theme/theme.ts # Sistema Chakra (paleta brand)
+│   ├── shared/               # toaster, chart, hooks, utils
 │   └── stores/useAuthStore.ts    # Estado de autenticação (Zustand + persist)
 │
 ├── .tooling/                  # Todas as configurações centralizadas
-│   ├── frontend/             # Configurações do frontend (biome, vite, tailwind, etc)
+│   ├── frontend/             # Configurações do frontend (biome, vite)
 │   ├── quality/              # Configurações de qualidade (phpstan, phpcs)
 │   ├── backend/              # Configurações backend (importmap)
 │   └── git/                  # Configurações git (commitlint)
@@ -546,47 +543,22 @@ const queryClient = new QueryClient({
 });
 ```
 
-### 6.7 Tema (HeroUI)
+### 6.7 Tema (Chakra UI)
 
-O tema é gerenciado pelo `HeroUIProvider` (em `web/main.tsx`). O modo escuro é ativado adicionando a classe `dark` ao elemento `<html>` — o `web/contexts/ThemeContext.tsx` fornece o hook `useTheme()` para alternar entre `light` e `dark`. Tailwind v4 respeita a mesma convenção de classe.
+O `ChakraProvider` (em `web/main.tsx`) recebe o `theme` de `web/config/theme/theme.ts`. O modo escuro usa a classe `dark` no `<html>` via `web/contexts/ThemeContext.tsx`. Toasts: `Toaster` + `toast.success` / `toast.danger` em `@/shared/ui/toaster`.
 
-### 6.9 Primitivos de Layout e Texto — Regra Obrigatória
+### 6.8 Primitivos — Regra Obrigatória
 
-O arquivo `web/shared/ui/layout.tsx` exporta todos os primitivos de UI do sistema. **Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente.**
-
-**Layout:**
-
-| Componente | Quando usar |
-| :--- | :--- |
-| `<Box>` | Container genérico (substituto de `<div>`) |
-| `<HStack>` | Filhos lado a lado (flex-row + items-center + gap) |
-| `<VStack>` | Filhos empilhados (flex-col + gap) |
-| `<Flex>` | Flex com controle manual de direção |
-| `<Grid>` | Layout em colunas (grid + gap) |
-| `<Container size="xl">` | Seção com max-width e padding horizontal automático |
-
-**Texto:**
-
-| Componente | Quando usar |
-| :--- | :--- |
-| `<Text>` | Parágrafo (substituto de `<p>`) |
-| `<Text as="h1">` … `<Text as="h6">` | Títulos (substituto de `<h1>`–`<h6>`) |
-| `<Text as="span">` | Texto inline (substituto de `<span>`) |
-| `<Text as="strong">` | Negrito semântico |
-| `<Text as="small">` | Texto auxiliar |
-
-Tags de estrutura de página (`<section>`, `<header>`, `<nav>`, `<main>`) são permitidas quando têm valor semântico real.
+Importar de `@chakra-ui/react`. **Nunca** `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>` nem `className`.
 
 ```tsx
-import { Box, HStack, VStack, Grid, Container, Text } from '@/shared/ui/layout'
+import { Box, Container, Heading, HStack, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 
-<HStack className="justify-between px-6 h-14">
-  <Box className="size-8 rounded-lg bg-brand-500 flex items-center justify-center">
-    <Icon />
-  </Box>
-  <VStack className="gap-1">
-    <Text className="font-bold">Título</Text>
-    <Text className="text-sm text-muted">Subtítulo</Text>
+<HStack justify="space-between" px="6" h="14">
+  <Box boxSize="8" rounded="lg" bg="brand.solid" />
+  <VStack gap="1">
+    <Heading size="sm">Título</Heading>
+    <Text fontSize="sm" color="fg.muted">Subtítulo</Text>
   </VStack>
 </HStack>
 ```

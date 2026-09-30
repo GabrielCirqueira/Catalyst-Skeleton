@@ -103,7 +103,7 @@ Para uma imersão profunda em cada área do projeto, consulte nossos guias espec
 - [**Índice**](documentation/README.md): mapa de pastas (`guias/`, `stack/`, `ops/`, `referencia/`, `progresso/`).
 - [**Progresso e Roadmap**](documentation/progresso/README.md): índices paginados e `make progresso`.
 - [**Guia de Autenticação**](documentation/stack/AUTH.md): Fluxo JWT, RS256 e Auto-refresh.
-- [**Guia de Frontend**](documentation/stack/FRONTEND.md): React 19, HeroUI v3 e primitivos de layout.
+- [**Guia de Frontend**](documentation/stack/FRONTEND.md): React 19, Chakra UI v3 e primitivos de layout.
 - [**Guia de Backend**](documentation/stack/BACKEND.md): Symfony 7.3, `DefaultController` e Early Return.
 - [**Arquitetura e Padrões**](documentation/referencia/ARCHITECTURE_PATTERNS.md): DDD, Specifications e Value Objects.
 - [**Mensageria (Async)**](documentation/stack/MESSENGER.md): Symfony Messenger e Workers.

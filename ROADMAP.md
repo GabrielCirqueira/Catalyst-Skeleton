@@ -17,7 +17,7 @@
 | 3 | Entidade Usuario, Repository e migration |
 | 4 | AuthController — login, registro, me e refresh |
 | 5 | Frontend React 19 + TypeScript 5.9 + Vite 7 |
-| 6 | HeroUI v3 + Tailwind CSS 4 + cor brand |
+| 6 | Chakra UI v3 + cor brand |
 | 7 | ThemeProvider (claro / escuro) |
 | 8 | Primitivos de layout e texto |
 | 9 | Header e Footer globais no MainLayout |
@@ -42,7 +42,7 @@
 - [x] **3. Entidade Usuario, Repository e migration**
 - [x] **4. AuthController — login, registro, me e refresh**
 - [x] **5. Frontend React 19 + TypeScript 5.9 + Vite 7**
-- [x] **6. HeroUI v3 + Tailwind CSS 4 + cor brand**
+- [x] **6. Chakra UI v3 + cor brand**
 - [x] **7. ThemeProvider (claro / escuro)**
 - [x] **8. Primitivos de layout e texto**
 - [x] **9. Header e Footer globais no MainLayout**
@@ -112,13 +112,13 @@
 
 ---
 
-### Tópico 6 — HeroUI v3 + Tailwind CSS 4 + cor brand
+### Tópico 6 — Chakra UI v3 + cor brand
 
-**O que existe hoje:** `@heroui/react` + `@heroui/styles`, paleta brand violeta no `index.css`.
+**O que existe hoje:** `@chakra-ui/react`, paleta brand em `web/config/theme/theme.ts`.
 
 **Por que importa:** UI acessível sem editar `node_modules`.
 
-**O que precisa acontecer:** customizar só via `className`, CSS variables e slots.
+**O que precisa acontecer:** customizar só via props Chakra, tokens em `theme.ts` e slots.
 
 ---
 
@@ -134,11 +134,11 @@
 
 ### Tópico 8 — Primitivos de layout e texto
 
-**O que existe hoje:** `Box`, `HStack`, `VStack`, `Flex`, `Grid`, `Container` e `Text` em `web/shared/ui/layout.tsx`.
+**O que existe hoje:** primitivos `Box`, `HStack`, `VStack`, `Heading` do Chakra UI.
 
 **Por que importa:** proíbe `<div>`, `<p>`, `<h1>`–`<h6>` e `<span>` brutos.
 
-**O que precisa acontecer:** sempre importar de `@/shared/ui/layout`.
+**O que precisa acontecer:** sempre importar de `@chakra-ui/react`. Estilo só com props.
 
 ---
 
@@ -154,7 +154,7 @@
 
 ### Tópico 10 — Landing Home com showcase de componentes
 
-**O que existe hoje:** `web/features/home/Home.tsx` com hero, cards HeroUI, stack e CTA.
+**O que existe hoje:** `web/features/home/Home.tsx` com hero, cards Chakra, stack e CTA.
 
 **Por que importa:** demonstra o design system no primeiro acesso.
 

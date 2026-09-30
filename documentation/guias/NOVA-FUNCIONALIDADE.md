@@ -240,9 +240,9 @@ Checklist:
 
 Checklist:
 
-- [ ] Nenhum HTML puro (`div`, `span`, `p`, `button`, etc.) — usar `shared/ui/layout` + HeroUI
-- [ ] Estilização via `className` + TailwindCSS
-- [ ] Animações com `tailwindcss-motion` nas transições de entrada
+- [ ] Nenhum HTML puro — só `@chakra-ui/react`
+- [ ] Estilização via props Chakra (`p`, `gap`, `colorPalette`)
+- [ ] Animações via props Chakra (`_hover`, `transition`); Framer Motion só com módulo `ui-extra`
 - [ ] Componente que faz fetch envolto por `ErrorBoundary` — ver GUIA-GERAL.md 6.11
 - [ ] Subflow implementado para conteúdo listado ou estruturado — ver GUIA-GERAL.md 6.12
 
@@ -305,7 +305,7 @@ make lint-all
 Checklist de PR:
 
 - [ ] `make lint-all` passou sem erros
-- [ ] Nenhum HTML puro no frontend (`shared/ui/layout` + HeroUI)
+- [ ] Nenhum HTML puro — só `@chakra-ui/react`
 - [ ] Página segue padrão `AppContainer → Container`
 - [ ] Hooks consumindo `config/api.ts` — nunca Axios direto
 - [ ] Toast gerenciado pelo hook, não pelo componente

@@ -24,7 +24,7 @@
 
 | Arquivo | Quando abrir |
 | :--- | :--- |
-| [stack/FRONTEND.md](stack/FRONTEND.md) | React, HeroUI, layout, rotas, TanStack Query |
+| [stack/FRONTEND.md](stack/FRONTEND.md) | React, Chakra UI, layout, rotas, TanStack Query |
 | [stack/BACKEND.md](stack/BACKEND.md) | Symfony, DefaultController, services, DTOs |
 | [stack/AUTH.md](stack/AUTH.md) | JWT, refresh, fluxo de login |
 | [stack/MESSENGER.md](stack/MESSENGER.md) | Filas (módulo `async`) |

@@ -14,7 +14,7 @@
 | 3 | Entidade Usuario, Repository e migration | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 4 | AuthController — login, registro, me e refresh | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 5 | Frontend React 19 + TypeScript 5.9 + Vite 7 | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
-| 6 | HeroUI v3 + Tailwind CSS 4 + cor brand | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
+| 6 | Chakra UI v3 + cor brand | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 7 | ThemeProvider (claro / escuro) | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 8 | Primitivos de layout e texto | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |
 | 9 | Header e Footer globais no MainLayout | ✅ Concluído | [ver](PROGRESSO_ROADMAP_1.md) |

@@ -5,6 +5,6 @@
   },
   "post_install": [
     "Após instalar, use `motion`/`AnimatePresence` apenas para montagem/desmontagem condicional real (modais, drawers).",
-    "Para animações simples (hover, entrada de seção), continue usando classes tailwindcss-motion."
+    "Para animações simples (hover), use props do Chakra (`_hover`, `transition`)."
   ]
 }

@@ -10,7 +10,7 @@ A estética é baseada em **sofisticação tecnológica**, **ritmo visual** e **
 
 ### 1.1 Princípios Fundamentais
 
-1. **Tokens acima de tudo** — zero cores raw, zero tamanhos hard-coded. Sempre `brand-500`, nunca `#1cc39d` ou `bg-emerald-500`.
+1. **Tokens acima de tudo** — zero cores raw, zero tamanhos hard-coded. Sempre `brand.solid`, nunca `#8b5cf6`.
 2. **Modo escuro nativo** — cada componente é projetado para os dois temas simultaneamente. Dark não é um afterthought.
 3. **Hierarquia imediata** — o usuário entende a importância dos elementos em menos de 1 segundo, via escala, peso e contraste.
 4. **Respiro deliberado** — whitespace é parte do design, não ausência de conteúdo.
@@ -23,51 +23,54 @@ A estética é baseada em **sofisticação tecnológica**, **ritmo visual** e **
 
 ### 2.1 Regra de Ouro
 
-> **Nunca use cores do Tailwind diretamente** (`bg-slate-500`, `text-gray-700`, `border-zinc-200`). Use exclusivamente os tokens semânticos configurados em `.tooling/frontend/tailwind.config.cjs`.
+> **Nunca use `className`.** Cores só via tokens Chakra (`brand.solid`, `fg.muted`, `bg.panel`, `colorPalette="brand"`) em `web/config/theme/theme.ts`.
 
 Isso garante que a troca de tema (light/dark) funcione automaticamente e que a identidade visual seja consistente em todas as telas.
 
 ### 2.2 Tokens de Cor
 
-| Token | Propósito | Light | Dark |
-| :--- | :--- | :--- | :--- |
-| **brand-500** | Cor principal — CTAs, destaques, ícones ativos | `#1cc39d` | `#1cc39d` |
-| **brand-600** | Hover sobre brand (contraste AA garantido) | `#11967c` | `#11967c` |
-| **brand-500/10** | Fundo sutil de destaque | Alpha 0.1 | Alpha 0.1 |
-| **brand-500/15** | Fundo de destaque no dark | — | Alpha 0.15 |
-| **background-50** | Superfície alternada / fundo de seção | `#f9fafb` | — |
-| **background-100** | Hover de itens, fundo de inputs | `#f3f4f6` | — |
-| **background-800** | Surface secundária no dark | — | `#1f2937` |
-| **background-900** | Surface de cards no dark | — | `#111827` |
-| **background-950** | Fundo de página no dark | — | `#030712` |
-| **typography-950** | Títulos e texto de ênfase | `#171717` | `#f9fafb` |
-| **typography-600** | Corpo de texto neutro | `#525252` | `#d4d4d4` |
-| **typography-400** | Texto secundário/muted | `#a3a3a3` | `#737373` |
-| **outline-100** | Bordas no light | `#f3f4f6` | — |
-| **outline-900** | Bordas no dark | — | `#1f2937` |
-| **success-500** | Estados de sucesso | `#22c55e` | `#22c55e` |
-| **error-500** | Estados de erro | `#ef4444` | `#ef4444` |
-| **warning-500** | Estados de alerta | `#f59e0b` | `#f59e0b` |
+Tokens semânticos (light/dark automático):
+
+| Token | Propósito |
+| :--- | :--- |
+| **brand.solid** | Cor principal — CTAs, destaques |
+| **brand.fg** | Texto e ícones brand |
+| **brand.subtle** | Fundo sutil de destaque |
+| **brand.muted** | Fundo/borda intermediária |
+| **brand.focusRing** | Anel de foco |
+| **bg** | Fundo de página |
+| **bg.subtle** | Superfície alternada |
+| **bg.muted** | Hover de itens, fundo de inputs |
+| **bg.panel** | Surface de cards |
+| **fg** | Títulos e texto de ênfase |
+| **fg.muted** | Corpo de texto |
+| **fg.subtle** | Texto secundário |
+| **border** / **border.muted** | Bordas |
+| **green.subtle** / **green.fg** | Sucesso |
+| **red.subtle** / **red.fg** | Erro |
+| **orange.subtle** / **orange.fg** | Alerta |
+
+Paleta `brand` (hex em `theme.ts`): `50` `#f5f3ff` … `500` `#8b5cf6` … `600` `#7c3aed` … `950` `#2e1065`.
 
 ### 2.3 Uso da Cor Brand
 
 A cor `brand` é o fio condutor de toda a interface. Aplique-a em:
 
 - Botões primários, ícones de ação, indicadores de progresso
-- Item ativo em menus e tabs (`bg-brand-500/10 text-brand-600 dark:text-brand-400`)
-- Bordas de foco (`focus:ring-brand-500`)
+- Item ativo em menus e tabs (`bg="brand.subtle"` `color="brand.fg"`)
+- Foco (`focusRing="brand.focusRing"`)
 - Badges de destaque, glows de seção, blobs decorativos
 - Underlines de links ativos, linhas de divisão em tabelas com destaque
 
 **Quando usar variantes de brand:**
 
-| Situação | Token |
+| Situação | Prop |
 | :--- | :--- |
-| Fundo de botão primário | `bg-brand-500 hover:bg-brand-600` |
-| Fundo sutil (badge, chip, ativo) | `bg-brand-500/10` |
-| Texto de destaque | `text-brand-600 dark:text-brand-400` |
-| Borda de foco | `ring-brand-500/50` |
-| Glow/sombra decorativa | `shadow-brand-500/20` |
+| Fundo de botão primário | `colorPalette="brand"` `variant="solid"` |
+| Fundo sutil (badge, chip, ativo) | `bg="brand.subtle"` |
+| Texto de destaque | `color="brand.fg"` |
+| Borda de foco | `focusRing="brand.focusRing"` |
+| Glow/sombra decorativa | `boxShadow="md"` + `colorPalette="brand"` |
 
 ---
 
@@ -75,53 +78,53 @@ A cor `brand` é o fio condutor de toda a interface. Aplique-a em:
 
 ### 3.1 Famílias de Fonte
 
-- **Headings — Poppins:** `font-poppins` para H1 a H3. Estilo padrão: `font-black` (900) com `tracking-tight`.
-- **Body — Lato:** `font-lato` para parágrafos, labels e textos de interface. Estilo padrão: `font-medium` (500).
+- **Headings — Poppins:** `fontFamily="heading"` para H1 a H3. Estilo padrão: `fontWeight="black"` com `letterSpacing="tight"`.
+- **Body — Lato:** `fontFamily="body"` para parágrafos, labels e textos de interface. Estilo padrão: `fontWeight="medium"`.
 
 **Nunca misturar fontes** — Poppins exclusivo para headings, Lato para todo o resto.
 
 ### 3.2 Escala de Headings
 
-| Nível | Uso | Classes |
+| Nível | Uso | Props |
 | :--- | :--- | :--- |
-| **Display (H1 hero)** | Títulos de hero, destaque máximo | `text-4xl sm:text-6xl font-black leading-[1.1] tracking-tight` |
-| **H1 de página** | Título principal de cada tela | `text-3xl sm:text-4xl font-black leading-tight` |
-| **H2 de seção** | Divisões de conteúdo | `text-2xl font-bold` |
-| **H3 de card** | Títulos de cards e panels | `text-xl font-bold` |
-| **H4 de subitem** | Subtítulos, grupos | `text-lg font-semibold` |
-| **Label de seção** | Labels de categoria, eyebrow | `text-xs font-bold uppercase tracking-widest text-typography-400` |
+| **Display (H1 hero)** | Títulos de hero, destaque máximo | `fontSize={{ base: '4xl', sm: '6xl' }}` `fontWeight="black"` `lineHeight="1.1"` `letterSpacing="tight"` |
+| **H1 de página** | Título principal de cada tela | `fontSize={{ base: '3xl', sm: '4xl' }}` `fontWeight="black"` |
+| **H2 de seção** | Divisões de conteúdo | `fontSize="2xl"` `fontWeight="bold"` |
+| **H3 de card** | Títulos de cards e panels | `fontSize="xl"` `fontWeight="bold"` |
+| **H4 de subitem** | Subtítulos, grupos | `fontSize="lg"` `fontWeight="semibold"` |
+| **Label de seção** | Labels de categoria, eyebrow | `fontSize="xs"` `fontWeight="bold"` `textTransform="uppercase"` `letterSpacing="widest"` `color="fg.subtle"` |
 
 ### 3.3 Escala de Texto (Body)
 
 | Tamanho | Uso |
 | :--- | :--- |
-| `text-lg leading-relaxed` | Descrições de hero, parágrafos de introdução |
-| `text-base` | Corpo de texto padrão |
-| `text-sm` | Metadados, rodapés, labels de inputs |
-| `text-xs font-bold uppercase` | Badges, etiquetas de status, eyebrow labels |
+| `fontSize="lg"` `lineHeight="relaxed"` | Descrições de hero, parágrafos de introdução |
+| `fontSize="md"` | Corpo de texto padrão |
+| `fontSize="sm"` | Metadados, rodapés, labels de inputs |
+| `fontSize="xs"` `fontWeight="bold"` `textTransform="uppercase"` | Badges, etiquetas de status, eyebrow labels |
 
 ### 3.4 Regras de Peso
 
-- `font-black` (900): headings principais e displays
-- `font-bold` (700): sub-headings e destaques em body
-- `font-semibold` (600): labels, itens de menu ativos
-- `font-medium` (500): corpo padrão
-- Nunca usar `font-light` ou `font-thin` — perdem legibilidade no dark mode
+- `fontWeight="black"` (900): headings principais e displays
+- `fontWeight="bold"` (700): sub-headings e destaques em body
+- `fontWeight="semibold"` (600): labels, itens de menu ativos
+- `fontWeight="medium"` (500): corpo padrão
+- Nunca usar `fontWeight="light"` ou `"thin"` — perdem legibilidade no dark mode
 
 ---
 
 ## 4. Sistema de Arredondamento (Hierarquia L1–L4)
 
-A hierarquia de `border-radius` comunica importância e camada. Elementos mais próximos do usuário têm arredondamento maior.
+A hierarquia de `borderRadius` comunica importância e camada. Elementos mais próximos do usuário têm arredondamento maior.
 
-| Nível | Token Tailwind | Uso |
+| Nível | Prop | Uso |
 | :--- | :--- | :--- |
-| **L1** | `rounded-md` | Inputs, selects, tags, badges pequenos |
-| **L2** | `rounded-lg` / `rounded-xl` | Cards, dropdowns, tooltips |
-| **L3** | `rounded-xl` | Painéis destacados, banners, modais internos |
-| **L4** | `rounded-2xl` | Modais, drawers, hero containers |
+| **L1** | `rounded="md"` | Inputs, selects, tags, badges pequenos |
+| **L2** | `rounded="lg"` / `rounded="xl"` | Cards, dropdowns, tooltips |
+| **L3** | `rounded="xl"` | Painéis destacados, banners, modais internos |
+| **L4** | `rounded="2xl"` | Modais, drawers, hero containers |
 
-**Regra:** nunca use `rounded-full` em retângulos — apenas em pills e avatares circulares. Nunca use `rounded` (sem sufixo) — sem distinção visual.
+**Regra:** nunca use `rounded="full"` em retângulos — apenas em pills e avatares circulares.
 
 ---
 
@@ -129,30 +132,30 @@ A hierarquia de `border-radius` comunica importância e camada. Elementos mais p
 
 ### 5.1 Escala de Padding
 
-| Contexto | Classes |
+| Contexto | Props |
 | :--- | :--- |
-| Seção de página | `py-16 sm:py-24 lg:py-32` |
-| Interior de card padrão | `p-6 sm:p-8` |
-| Interior de card compacto | `p-4 sm:p-5` |
-| Container horizontal de página | `px-4 sm:px-6 lg:px-8` |
-| Gap vertical entre seções | `gap-6` padrão, `gap-10` grande |
-| Gap horizontal entre elementos | `gap-4` padrão |
+| Seção de página | `py={{ base: '16', sm: '24', lg: '32' }}` |
+| Interior de card padrão | `p={{ base: '6', sm: '8' }}` |
+| Interior de card compacto | `p={{ base: '4', sm: '5' }}` |
+| Container horizontal de página | `px={{ base: '4', sm: '6', lg: '8' }}` |
+| Gap vertical entre seções | `gap="6"` padrão, `gap="10"` grande |
+| Gap horizontal entre elementos | `gap="4"` padrão |
 
 ### 5.2 Primitivos de Layout
 
-Use sempre os componentes `VStack`, `HStack` e `Box` do sistema — nunca `div` com flexbox manual nas páginas. Isso garante consistência de espaçamento e facilita manutenção.
+Use sempre os componentes `VStack`, `HStack` e `Box` — nunca `div` com flexbox manual nas páginas.
 
 ```tsx
 // ✅ Correto
-<VStack gap={6}>
-  <HStack gap={4} align="center">
+<VStack gap="6">
+  <HStack gap="4" align="center">
     ...
   </HStack>
 </VStack>
 
 // ❌ Proibido
-<div className="flex flex-col gap-6">
-  <div className="flex items-center gap-4">
+<div>
+  <div>
 ```
 
 ---
@@ -171,24 +174,18 @@ O padrão de layout principal para dashboards, landing pages e listagens é o **
 ### 6.2 Grade Base (12 colunas)
 
 ```tsx
-<div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
-  {/* Card destaque — ocupa 8/12 (2/3 da largura) */}
-  <div className="md:col-span-8 ...">...</div>
-
-  {/* Card lateral — ocupa 4/12 (1/3 da largura) */}
-  <div className="md:col-span-4 ...">...</div>
-
-  {/* Card médio — ocupa 5/12 */}
-  <div className="md:col-span-5 ...">...</div>
-
-  {/* Card médio — ocupa 7/12 */}
-  <div className="md:col-span-7 ...">...</div>
-
-  {/* Três cards iguais — 4/12 cada */}
-  <div className="md:col-span-4 ...">...</div>
-  <div className="md:col-span-4 ...">...</div>
-  <div className="md:col-span-4 ...">...</div>
-</div>
+<Grid
+  templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }}
+  gap={{ base: '4', sm: '6' }}
+>
+  <GridItem colSpan={{ md: 8 }}>...</GridItem>
+  <GridItem colSpan={{ md: 4 }}>...</GridItem>
+  <GridItem colSpan={{ md: 5 }}>...</GridItem>
+  <GridItem colSpan={{ md: 7 }}>...</GridItem>
+  <GridItem colSpan={{ md: 4 }}>...</GridItem>
+  <GridItem colSpan={{ md: 4 }}>...</GridItem>
+  <GridItem colSpan={{ md: 4 }}>...</GridItem>
+</Grid>
 ```
 
 ### 6.3 Padrões de Composição Bento
@@ -224,52 +221,55 @@ O padrão de layout principal para dashboards, landing pages e listagens é o **
 
 ### 6.4 Card Bento — Anatomy
 
-Todo card no sistema segue este anatomy:
-
 ```tsx
-<Card className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/30 hover:border-brand-500/30">
-  <CardHeader className="pb-2">
-    {/* Eyebrow / categoria */}
-    <span className="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">
+<Card.Root
+  transition="all 0.3s"
+  _hover={{ transform: 'translateY(-4px)', boxShadow: 'xl', borderColor: 'brand.muted' }}
+>
+  <Card.Header pb="2">
+    <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest" color="brand.fg">
       Categoria
-    </span>
-    <CardTitle>Título do Card</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <CardDescription>Descrição do conteúdo do card.</CardDescription>
-  </CardContent>
-</Card>
+    </Text>
+    <Card.Title>Título do Card</Card.Title>
+  </Card.Header>
+  <Card.Body>
+    <Card.Description>Descrição do conteúdo do card.</Card.Description>
+  </Card.Body>
+</Card.Root>
 ```
 
 ### 6.5 Card com Ícone (Feature Card)
 
 ```tsx
-<Card className="group">
-  <CardContent className="p-6">
-    {/* Ícone — Box é primitivo de layout, não tem equivalente HeroUI */}
-    <Box className="size-11 rounded-lg bg-brand-500/10 flex items-center justify-center mb-4
-                    group-hover:bg-brand-500/20 transition-colors duration-300">
-      <IcoPrincipal className="size-5 text-brand-500" strokeWidth={2} />
-    </Box>
-    <CardTitle className="text-lg">Título</CardTitle>
-    <CardDescription className="mt-1">Descrição.</CardDescription>
-  </CardContent>
-</Card>
+<Card.Root>
+  <Card.Body p="6">
+    <Center boxSize="11" rounded="lg" bg="brand.subtle" mb="4">
+      <IcoPrincipal size={20} color="var(--chakra-colors-brand-solid)" strokeWidth={2} />
+    </Center>
+    <Card.Title fontSize="lg">Título</Card.Title>
+    <Card.Description mt="1">Descrição.</Card.Description>
+  </Card.Body>
+</Card.Root>
 ```
 
 ### 6.6 Card de Destaque (com Glow)
 
-Para o card principal do bento — o de maior col-span:
-
 ```tsx
-<Card className="relative overflow-hidden">
-  {/* Blob decorativo — div mantido por ser elemento puramente posicional */}
-  <div className="absolute -top-20 -right-20 size-64 bg-brand-500/[0.07]
-                  rounded-full blur-[80px] pointer-events-none" />
-  <CardContent className="relative z-10 p-8">
+<Card.Root position="relative" overflow="hidden">
+  <Box
+    position="absolute"
+    top="-20"
+    right="-20"
+    boxSize="64"
+    bg="brand.subtle"
+    rounded="full"
+    filter="blur(80px)"
+    pointerEvents="none"
+  />
+  <Card.Body position="relative" zIndex="1" p="8">
     {/* conteúdo */}
-  </CardContent>
-</Card>
+  </Card.Body>
+</Card.Root>
 ```
 
 ---
@@ -278,29 +278,29 @@ Para o card principal do bento — o de maior col-span:
 
 ### 7.1 Variantes
 
-| Variante | Uso | Classes |
+| Variante | Uso | Props |
 | :--- | :--- | :--- |
-| **Primary** | Ação principal da tela | `bg-brand-500 hover:bg-brand-600 text-white font-semibold` |
-| **Secondary** | Ação secundária | `bg-background-100 dark:bg-background-800 text-typography-950 dark:text-white hover:bg-background-200 dark:hover:bg-background-700` |
-| **Outline** | Ação terciária | `border border-outline-100 dark:border-outline-900 hover:border-brand-500/50 hover:bg-brand-500/5` |
-| **Ghost** | Ações de baixa prioridade | `text-typography-600 hover:bg-background-100 dark:hover:bg-background-800` |
-| **Destructive** | Ações destrutivas | `bg-error-500 hover:bg-error-600 text-white` |
+| **Primary** | Ação principal da tela | `colorPalette="brand"` `variant="solid"` `fontWeight="semibold"` |
+| **Secondary** | Ação secundária | `variant="subtle"` |
+| **Outline** | Ação terciária | `variant="outline"` |
+| **Ghost** | Ações de baixa prioridade | `variant="ghost"` |
+| **Destructive** | Ações destrutivas | `colorPalette="red"` `variant="solid"` |
 
 ### 7.2 Tamanhos
 
-| Tamanho | Classes |
+| Tamanho | Props |
 | :--- | :--- |
-| `sm` | `h-8 px-3 text-xs rounded-md` |
-| `md` (padrão) | `h-10 px-4 text-sm rounded-lg` |
-| `lg` | `h-12 px-6 text-base rounded-lg` |
-| `xl` | `h-14 px-8 text-base rounded-xl` |
+| `sm` | `size="sm"` |
+| `md` (padrão) | `size="md"` |
+| `lg` | `size="lg"` |
+| `xl` | `size="xl"` |
 
 ### 7.3 Regras de Uso
 
-- Todo botão primário usa **exclusivamente** `brand` — nunca outra cor
+- Todo botão primário usa **exclusivamente** `colorPalette="brand"` — nunca outra cor
 - Nunca dois botões primários na mesma view — um por tela/modal
-- Ícone dentro de botão: `size-4` à esquerda do texto, `gap-2` entre ícone e label
-- Estado de loading: substituir label por `<Spinner className="size-4 animate-spin" />` + texto "Aguarde..."
+- Ícone dentro de botão: `size={16}` à esquerda do texto, `gap="2"` entre ícone e label
+- Estado de loading: `loading` no `Button` + texto "Aguarde..."
 
 ---
 
@@ -308,56 +308,51 @@ Para o card principal do bento — o de maior col-span:
 
 ### 8.1 Status Semânticos
 
-| Status | Light | Dark |
-| :--- | :--- | :--- |
-| **Success** | `bg-success-100/80 text-success-700` | `bg-success-900/20 text-success-400` |
-| **Error** | `bg-error-100/80 text-error-700` | `bg-error-900/20 text-error-400` |
-| **Warning** | `bg-warning-100/80 text-warning-700` | `bg-warning-900/20 text-warning-400` |
-| **Brand / Info** | `bg-brand-500/10 text-brand-700` | `bg-brand-500/15 text-brand-400` |
-| **Neutro** | `bg-background-100 text-typography-600` | `bg-background-800 text-typography-400` |
+| Status | Props |
+| :--- | :--- |
+| **Success** | `colorPalette="green"` `variant="subtle"` |
+| **Error** | `colorPalette="red"` `variant="subtle"` |
+| **Warning** | `colorPalette="orange"` `variant="subtle"` |
+| **Brand / Info** | `colorPalette="brand"` `variant="subtle"` |
+| **Neutro** | `variant="subtle"` (sem palette) |
 
 ### 8.2 Anatomia do Badge
 
 ```tsx
-<Badge className="bg-brand-500/10 text-brand-700 dark:text-brand-400 uppercase tracking-wide border-brand-500/20">
-  <span className="size-1.5 rounded-full bg-brand-500 mr-1" />
+<Badge colorPalette="brand" variant="subtle" textTransform="uppercase" letterSpacing="wide">
+  <Box as="span" boxSize="1.5" rounded="full" bg="brand.solid" mr="1" />
   Ativo
 </Badge>
 ```
 
 ---
 
-## 9. Animações e Micro-interações (tailwindcss-motion)
+## 9. Animações e Micro-interações
 
 ### 9.1 Padrão Oficial
 
-Padrão: **tailwindcss-motion** (classes Tailwind, zero JS). `motion`/`AnimatePresence` do Framer Motion só entra via módulo opcional `ui-extra`, e apenas quando há montagem/desmontagem condicional real (modal, drawer) — ver `documentation/stack/FRONTEND.md`.
+Padrão: props do Chakra (`_hover`, `transition`). `motion`/`AnimatePresence` do Framer Motion só entra via módulo opcional `ui-extra`.
 
 ```tsx
-// Entrada padrão (elementos de página, cards)
-<Box className="motion-preset-fade motion-preset-slide-up-sm">...</Box>
+<Box transition="opacity 0.3s, transform 0.3s">...</Box>
 
-// Entrada stagger para listas de cards
-<Box className="motion-preset-fade motion-delay-[100ms]">...</Box>
-
-// Hover simples — CSS puro, nunca JS
-<Button className="transition-colors duration-300">...</Button>
+<Button transition="colors 0.3s" _hover={{ bg: 'brand.emphasized' }}>...</Button>
 ```
 
 Se o módulo `ui-extra` estiver ativo, `springModal`/`slideLateral` (Framer Motion) seguem disponíveis em `web/shared/utils/animacoes.ts` só para `AnimatePresence` de modais/drawers.
 
 ### 9.2 Regras de Animação
 
-- **Entrada de seção:** classe `motion-preset-fade` ou `motion-preset-slide-up-sm`, aplicada uma vez.
-- **Listas de cards:** `motion-delay-*` incremental por item, sem JS.
-- **Modais/Drawers:** `HeroUI` já anima entrada/saída nativamente; só usar `AnimatePresence` (módulo `ui-extra`) se precisar de uma transição customizada que o HeroUI não oferece.
-- **Transições de hover:** `transition-all duration-300` no CSS — nunca JS para hover simples.
-- **Nunca:** animar cor ou border-color com JS — usar `transition-colors` do Tailwind.
+- **Entrada de seção:** `transition` + opacidade/transform, aplicada uma vez.
+- **Modais/Drawers:** Chakra já anima entrada/saída (`Dialog` / `Drawer`); só usar `AnimatePresence` (módulo `ui-extra`) se precisar de uma transição customizada.
+- **Transições de hover:** `_hover` + `transition` — nunca JS para hover simples.
+- **Nunca:** animar cor ou border-color com JS.
 
 ### 9.3 Hover Padrão de Cards
 
 ```tsx
-className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/30 hover:border-brand-500/30"
+_hover={{ transform: 'translateY(-4px)', boxShadow: 'xl', borderColor: 'brand.muted' }}
+transition="all 0.3s"
 ```
 
 ---
@@ -366,39 +361,41 @@ className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hove
 
 ### 10.1 Princípios
 
-- **Fundo de página:** `bg-white dark:bg-background-950`
-- **Surface de card:** `bg-white dark:bg-background-900`
-- **Surface secundária:** `bg-background-50 dark:bg-background-800`
-- **Bordas:** nunca brancas ou pretas puras. Sempre `outline-100` (light) / `outline-900` (dark)
-- **Texto:** `text-typography-950 dark:text-white` para títulos; `text-typography-600 dark:text-typography-400` para corpo
+- **Fundo de página:** `bg="bg"`
+- **Surface de card:** `bg="bg.panel"`
+- **Surface secundária:** `bg="bg.subtle"`
+- **Bordas:** `borderColor="border"` / `border.muted`
+- **Texto:** `color="fg"` para títulos; `color="fg.muted"` para corpo
 
 ### 10.2 Glassmorphism (Elementos Flutuantes)
 
-Para headers, sidebars flutuantes, modais e painéis sobrepostos:
-
 ```tsx
-className="bg-white/80 dark:bg-background-900/80 backdrop-blur-xl
-           border border-outline-100 dark:border-outline-900"
+<Box bg="bg.panel/80" backdropFilter="blur(24px)" borderWidth="1px" borderColor="border" />
 ```
 
 ### 10.3 Blobs Decorativos
 
-Glows de fundo devem ser subliminares. Nunca visíveis como formas definidas:
-
 ```tsx
-{/* Glow de hero */}
-<div className="absolute -top-40 right-0 size-96 bg-brand-500/[0.06] rounded-full blur-[120px] pointer-events-none" />
+<Box
+  position="absolute"
+  top="-40"
+  right="0"
+  boxSize="96"
+  bg="brand.subtle"
+  rounded="full"
+  filter="blur(120px)"
+  pointerEvents="none"
+/>
 
-{/* Accent de seção */}
-<div className="absolute inset-0 bg-brand-500/[0.03] blur-[80px] pointer-events-none" />
+<Box position="absolute" inset="0" bg="brand.subtle" filter="blur(80px)" pointerEvents="none" />
 ```
 
 ### 10.4 Regras de Sobriedade no Dark
 
-- Nunca use `bg-black` puro — use `background-950`
-- Nunca use `text-white` puro em body — use `text-typography-950 dark:text-white` (via token)
-- Sombras no dark: `shadow-black/30` a no máximo `shadow-black/50` — nunca mais opaco
-- Gradientes: limite a 2 stops com opacidade baixa (`/10` a `/20`)
+- Nunca use `bg="black"` puro — use `bg="bg"`
+- Nunca use `color="white"` puro em body — use `color="fg"`
+- Sombras no dark: `boxShadow="md"` a no máximo `lg`
+- Gradientes: limite a 2 stops com opacidade baixa
 
 ---
 
@@ -406,14 +403,14 @@ Glows de fundo devem ser subliminares. Nunca visíveis como formas definidas:
 
 ### 11.1 Filosofia Mobile-First
 
-Toda CSS deve ser escrita mobile-first, expandindo para `sm:`, `md:`, `lg:`. Nunca adicionar classes mobile como "exceção" de um layout desktop.
+Toda prop responsiva parte do mobile e expande com objeto `{ base, sm, md, lg }`.
 
 ```tsx
 // ✅ Correto — parte do mobile, expande pro desktop
-<div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
+<Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: '4', sm: '6' }}>
 
 // ❌ Errado — desktop como base, mobile como override
-<div className="grid grid-cols-12 gap-6 max-md:grid-cols-1">
+<Grid templateColumns="repeat(12, 1fr)" hideFrom="md">
 ```
 
 ### 11.2 Breakpoints
@@ -421,43 +418,48 @@ Toda CSS deve ser escrita mobile-first, expandindo para `sm:`, `md:`, `lg:`. Nun
 | Breakpoint | Largura | Uso |
 | :--- | :--- | :--- |
 | (base) | 0px+ | Mobile — 1 coluna, full-width |
-| `sm:` | 640px+ | Landscape mobile / tablet pequeno |
-| `md:` | 768px+ | Tablet — 2 colunas mínimo |
-| `lg:` | 1024px+ | Desktop — layout completo |
-| `xl:` | 1280px+ | Desktop largo — expansão opcional |
+| `sm` | 640px+ | Landscape mobile / tablet pequeno |
+| `md` | 768px+ | Tablet — 2 colunas mínimo |
+| `lg` | 1024px+ | Desktop — layout completo |
+| `xl` | 1280px+ | Desktop largo — expansão opcional |
 
 ### 11.3 Bento no Mobile
 
 No mobile, o Bento Grid **sempre** colapsa para 1 coluna:
 
 ```tsx
-// A grade 12-colunas vira lista linear no mobile
-<div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
-  <div className="md:col-span-8">...</div>   {/* full-width no mobile */}
-  <div className="md:col-span-4">...</div>   {/* full-width no mobile */}
-</div>
+<Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: '4', sm: '6' }}>
+  <GridItem colSpan={{ md: 8 }}>...</GridItem>
+  <GridItem colSpan={{ md: 4 }}>...</GridItem>
+</Grid>
 ```
 
 A ordem visual no mobile segue a ordem do DOM — posicione o conteúdo mais importante primeiro no HTML.
 
 ### 11.4 Padding Mínimo Mobile
 
-- **Nunca** menos de `px-4` no container principal de qualquer tela
-- Texto legível: mínimo `text-sm` — nunca `text-xs` para body em mobile
-- Botões: mínimo `h-10` no mobile — alvos de toque de no mínimo 44px
+- **Nunca** menos de `px="4"` no container principal de qualquer tela
+- Texto legível: mínimo `fontSize="sm"` — nunca `fontSize="xs"` para body em mobile
+- Botões: mínimo `size="md"` no mobile — alvos de toque de no mínimo 44px
 
 ### 11.5 Navegação Mobile (FAB)
 
 Quando uma página tem navegação lateral complexa (tabs, seções), substituir por **FAB flutuante** no mobile:
 
 ```tsx
-{/* FAB — fixo no canto, abre drawer de navegação */}
-<Button
-  size="icon"
-  className="fixed bottom-5 right-5 z-40 size-14 rounded-xl bg-brand-500 shadow-lg shadow-brand-500/30 lg:hidden"
+<IconButton
+  hideFrom="lg"
+  position="fixed"
+  bottom="5"
+  right="5"
+  zIndex="40"
+  boxSize="14"
+  rounded="xl"
+  colorPalette="brand"
+  aria-label="Menu"
 >
-  <Menu className="size-5" />
-</Button>
+  <Menu size={20} />
+</IconButton>
 ```
 
 ---
@@ -472,13 +474,13 @@ Exclusivamente `lucide-react`. Nunca misturar com outras bibliotecas de ícones.
 
 | Tamanho | Uso |
 | :--- | :--- |
-| `size-3.5` | Labels inline, badges de texto |
-| `size-4` | Botões, itens de lista, inputs |
-| `size-5` | Ícones de cards padrão |
-| `size-6` | Ícones de navegação |
-| `size-7` / `size-8` | Empty states, features secundárias |
-| `size-9` / `size-10` | Features em cards de destaque |
-| `size-12`+ | Hero icons, ícones principais de seção |
+| `size={14}` | Labels inline, badges de texto |
+| `size={16}` | Botões, itens de lista, inputs |
+| `size={20}` | Ícones de cards padrão |
+| `size={24}` | Ícones de navegação |
+| `size={28}` / `size={32}` | Empty states, features secundárias |
+| `size={36}` / `size={40}` | Features em cards de destaque |
+| `size={48}`+ | Hero icons, ícones principais de seção |
 
 ### 12.3 Stroke Width
 
@@ -502,21 +504,20 @@ Cada página tem necessidades distintas — este guia não impõe uma estrutura 
 
 ### 13.2 Regra de Componentes (Obrigatório)
 
-> Nunca usar elementos HTML crus onde existe um componente HeroUI equivalente.
+> Nunca usar elementos HTML crus onde existe um componente Chakra UI equivalente.
 
-| Elemento proibido | Componente HeroUI |
+| Elemento proibido | Componente Chakra UI |
 | :--- | :--- |
 | `<button>` | `<Button>` |
 | `<input>` | `<Input>` |
-| `<select>` | `<Select>` |
-| `<table>`, `<tr>`, `<td>` | `<Table>`, `<TableRow>`, `<TableCell>` |
-| `<dialog>` | `<Modal>` / `<Drawer>` |
-| Span com estilo de badge | `<Chip>` |
+| `<select>` | `<NativeSelect>` / `<Select>` |
+| `<table>`, `<tr>`, `<td>` | `<Table.Root>`, `<Table.Row>`, `<Table.Cell>` |
+| `<dialog>` | `<Dialog>` / `<Drawer>` |
+| Span com estilo de badge | `<Badge>` |
 
-**Exceções aceitas** (sem componente HeroUI equivalente):
-- `div` para containers de CSS Grid (`.grid grid-cols-*`)
-- `div` para elementos puramente decorativos (blobs, overlays de fundo)
-- `VStack` / `HStack` / `Box` para qualquer flexbox de layout
+**Exceções aceitas** (sem componente Chakra equivalente):
+- `Box` para elementos puramente decorativos (blobs, overlays de fundo)
+- `VStack` / `HStack` / `Box` / `Grid` / `GridItem` para qualquer layout
 
 ### 13.3 Layout Sidebar + Conteúdo
 
@@ -525,8 +526,8 @@ Para telas com navegação lateral, o visual esperado é:
 ```
 Desktop (lg+):
 ┌──────────────────────────────────────────────┐
-│ sidebar (w-56/w-60, sticky)  │  conteúdo     │
-│                              │  (flex-1)      │
+│ sidebar (w="56"/w="60", sticky)  │  conteúdo │
+│                                  │  (flex="1")│
 └──────────────────────────────────────────────┘
 
 Mobile: sidebar hidden → FAB → Drawer fullscreen
@@ -543,30 +544,38 @@ Mobile: sidebar hidden → FAB → Drawer fullscreen
 Implemente com:
 ```tsx
 const isDesktop = useMediaQuery('(min-width: 768px)')
-return isDesktop ? <Dialog>...</Dialog> : <Drawer>...</Drawer>
+return isDesktop ? <Dialog.Root>...</Dialog.Root> : <Drawer.Root>...</Drawer.Root>
 ```
 
 ### 14.2 Dialog Desktop
 
 ```
-max-w-xl a max-w-5xl (conforme conteúdo)
-rounded-xl a rounded-2xl
-shadow-[0_32px_128px_-32px_rgba(0,0,0,0.5)]
+maxW="xl" a maxW="5xl" (conforme conteúdo)
+rounded="xl" a rounded="2xl"
+boxShadow="2xl"
 ```
 
 Botão de fechar:
 ```tsx
-<Button variant="ghost" size="icon" className="absolute top-6 right-6 size-9 rounded-lg hover:rotate-90 transition-all duration-300">
-  <X className="size-4" />
-</Button>
+<IconButton
+  variant="ghost"
+  position="absolute"
+  top="6"
+  right="6"
+  boxSize="9"
+  rounded="lg"
+  aria-label="Fechar"
+>
+  <X size={16} />
+</IconButton>
 ```
 
 ### 14.3 Drawer Mobile (Bottom Sheet)
 
 ```
-h-[90vh] a h-[95vh]
-rounded-t-xl
-Handle bar: w-12 h-1 bg-background-200 dark:bg-background-700 rounded-full mx-auto mt-3
+h="90vh" a h="95vh"
+roundedTop="xl"
+Handle: w="12" h="1" bg="bg.muted" rounded="full" mx="auto" mt="3"
 ```
 
 ---
@@ -576,30 +585,24 @@ Handle bar: w-12 h-1 bg-background-200 dark:bg-background-700 rounded-full mx-au
 ### 15.1 Anatomia de Campo
 
 ```tsx
-<FormField>
-  <FormLabel>
-    Label do Campo
-    <span className="text-error-500 ml-0.5">*</span>
-  </FormLabel>
-
-  <Input
-    placeholder="..."
-    className="focus:ring-brand-500/40 focus:border-brand-500"
-  />
-
-  <FormMessage className="text-xs text-error-500 flex items-center gap-1">
-    <AlertCircle className="size-3 mr-1" />
-    Mensagem de erro aqui.
-  </FormMessage>
-</FormField>
+<Field.Root required invalid={!!erro}>
+  <Field.Label>Label do Campo</Field.Label>
+  <Input placeholder="..." />
+  <Field.ErrorText>
+    <HStack gap="1" fontSize="xs" color="red.fg">
+      <AlertCircle size={12} />
+      Mensagem de erro aqui.
+    </HStack>
+  </Field.ErrorText>
+</Field.Root>
 ```
 
 ### 15.2 Regras
 
-- Altura padrão de inputs: `h-10`; grande: `h-12`
-- Sempre `border-brand-500` no estado `focus` — nunca `focus:ring-blue-500`
-- Campos com erro: `border-error-500 focus:ring-error-500/40`
-- Campos desabilitados: `opacity-50 cursor-not-allowed`
+- Altura padrão de inputs: `size="md"`; grande: `size="lg"`
+- Sempre paleta `brand` no estado `focus`
+- Campos com erro: `invalid` no `Field.Root`
+- Campos desabilitados: `disabled`
 
 ---
 
@@ -610,30 +613,30 @@ Handle bar: w-12 h-1 bg-background-200 dark:bg-background-700 rounded-full mx-au
 **Nunca usar spinner isolado** como único indicador de carregamento. Sempre usar `<Subflow />` que replica a estrutura do conteúdo que está carregando.
 
 ```tsx
-// Subflow de card bento
-<Card className="p-6 space-y-4">
-  <Subflow className="h-4 w-24 rounded-md" />       {/* eyebrow */}
-  <Subflow className="h-7 w-3/4 rounded-lg" />      {/* título */}
-  <Subflow className="h-4 w-full rounded-md" />     {/* linha de texto */}
-  <Subflow className="h-4 w-5/6 rounded-md" />
-</Card>
+<Card.Root p="6">
+  <VStack gap="4" align="stretch">
+    <Box h="4" w="24" rounded="md" bg="bg.muted" />
+    <Box h="7" w="75%" rounded="lg" bg="bg.muted" />
+    <Box h="4" w="full" rounded="md" bg="bg.muted" />
+    <Box h="4" w="83%" rounded="md" bg="bg.muted" />
+  </VStack>
+</Card.Root>
 ```
 
 ### 16.2 Estado Vazio (Empty State)
 
 ```tsx
-<VStack align="center" justify="center" className="py-20 gap-4 text-center">
-  <Box className="size-16 rounded-lg bg-background-100 dark:bg-background-800
-                  flex items-center justify-center">
-    <IcoVazio className="size-8 text-typography-400" strokeWidth={1.5} />
-  </Box>
-  <VStack gap={1}>
-    <p className="text-base font-semibold text-typography-950 dark:text-white">
+<VStack align="center" justify="center" py="20" gap="4" textAlign="center">
+  <Center boxSize="16" rounded="lg" bg="bg.muted">
+    <IcoVazio size={32} strokeWidth={1.5} />
+  </Center>
+  <VStack gap="1">
+    <Text fontSize="md" fontWeight="semibold">
       Nenhum item encontrado
-    </p>
-    <p className="text-sm text-typography-400">
+    </Text>
+    <Text fontSize="sm" color="fg.subtle">
       Descrição do estado vazio e o que o usuário pode fazer.
-    </p>
+    </Text>
   </VStack>
   <Button size="sm">Criar primeiro item</Button>
 </VStack>
@@ -646,24 +649,22 @@ Handle bar: w-12 h-1 bg-background-200 dark:bg-background-700 rounded-full mx-au
 ### 17.1 Estrutura Padrão
 
 ```tsx
-<div className="rounded-xl border border-outline-100 dark:border-outline-900 overflow-hidden">
-  <Table>
-    <TableHeader className="bg-background-50 dark:bg-background-900">
-      <TableRow>
-        <TableHead className="text-xs font-bold uppercase tracking-wider text-typography-400">
+<Box rounded="xl" borderWidth="1px" borderColor="border" overflow="hidden">
+  <Table.Root>
+    <Table.Header bg="bg.subtle">
+      <Table.Row>
+        <Table.ColumnHeader fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" color="fg.subtle">
           Coluna
-        </TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <TableRow className="hover:bg-background-50 dark:hover:bg-background-900/50">
-        <TableCell className="text-typography-950 dark:text-white">
-          Valor
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
-</div>
+        </Table.ColumnHeader>
+      </Table.Row>
+    </Table.Header>
+    <Table.Body>
+      <Table.Row _hover={{ bg: 'bg.subtle' }}>
+        <Table.Cell>Valor</Table.Cell>
+      </Table.Row>
+    </Table.Body>
+  </Table.Root>
+</Box>
 ```
 
 ### 17.2 Toolbar de Filtros
@@ -674,10 +675,10 @@ Sempre acima das tabelas:
 [Ícone filtro] [Select] [Select] [Input busca] · · · [Limpar ×]
 ```
 
-- Altura uniforme: `h-9` para todos os controles
-- Texto: `text-sm`
-- Botão "Limpar": visível **somente** quando há filtro ativo — `text-error-500`
-- Container: `flex items-center gap-2 flex-wrap`
+- Altura uniforme: `size="sm"` para todos os controles
+- Texto: `fontSize="sm"`
+- Botão "Limpar": visível **somente** quando há filtro ativo — `colorPalette="red"`
+- Container: `HStack gap="2" wrap="wrap"`
 
 ---
 
@@ -686,38 +687,38 @@ Sempre acima das tabelas:
 Antes de fazer PR ou considerar qualquer componente/tela finalizado:
 
 **Tokens e Cores**
-- [ ] Zero cores raw do Tailwind (`slate`, `gray`, `blue`, `green` etc.)? Somente tokens do sistema?
+- [ ] Zero cores raw? Somente tokens do sistema (`brand.*`, `fg.*`, `bg.*`)?
 - [ ] Cor brand usada em todos os elementos interativos e de destaque?
-- [ ] Bordas usando somente `outline-100` (light) / `outline-900` (dark)?
+- [ ] Bordas usando somente `border` / `border.muted`?
 
 **Dark Mode**
 - [ ] Funciona corretamente em Light E Dark Mode?
-- [ ] Fundos usando `background-*` tokens (nunca `bg-black` ou `bg-white` puro)?
-- [ ] Textos usando `typography-*` tokens?
+- [ ] Fundos usando tokens `bg.*` (nunca `black` ou `white` puro)?
+- [ ] Textos usando tokens `fg.*`?
 
 **Tipografia**
 - [ ] Poppins exclusivamente em headings? Lato no body?
 - [ ] Hierarquia de peso respeitada (black para H1, bold para H2, medium para body)?
-- [ ] `text-xs` nunca usado como body em mobile?
+- [ ] `fontSize="xs"` nunca usado como body em mobile?
 
 **Layout e Grid**
 - [ ] Grade Bento colapsa para 1 coluna no mobile?
-- [ ] Padding mínimo `px-4` no mobile?
+- [ ] Padding mínimo `px="4"` no mobile?
 - [ ] `VStack`/`HStack`/`Box` primitivos usados (sem `div` com flex manual)?
 
 **Arredondamentos**
 - [ ] Hierarquia L1–L4 respeitada?
-- [ ] `rounded-full` apenas em pills e avatares circulares?
+- [ ] `rounded="full"` apenas em pills e avatares circulares?
 
 **Componentes**
 - [ ] Apenas 1 botão primário por view?
-- [ ] Todos os `button`, `input`, `select`, `table` substituídos por componentes HeroUI equivalentes?
+- [ ] Todos os `button`, `input`, `select`, `table` substituídos por componentes Chakra UI equivalentes?
 - [ ] Hover effects em todos os elementos interativos?
-- [ ] Animação de entrada em seções com `whileInView`?
+- [ ] Animação de entrada em seções via `transition`?
 - [ ] Subflows replicam a estrutura do conteúdo real?
 - [ ] Modal tem variante Dialog (desktop) + Drawer (mobile)?
 
 **Responsividade**
-- [ ] CSS escrito mobile-first (`sm:`, `md:`, `lg:` expandindo)?
+- [ ] Props escritas mobile-first (`base`, `sm`, `md`, `lg`)?
 - [ ] FAB considerado para navegação complexa no mobile?
 - [ ] Alvos de toque mínimo de 44px em elementos clicáveis mobile?

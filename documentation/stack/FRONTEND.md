@@ -12,20 +12,18 @@ Este documento explica a estrutura e o fluxo do frontend React que vive em `web/
 | :--- | :--- |
 | **React 19** + **TypeScript 5.9** | UI reativa, modo strict |
 | **Vite 7** | Build tool e dev server com HMR ultra-rápido |
-| **Tailwind CSS 4** | Motor de estilo CSS-first; sem `tailwind.config.js` |
-| **HeroUI v3** (`@heroui/react` + `@heroui/styles`) | Componentes prontos e acessíveis |
+| **Chakra UI v3** (`@chakra-ui/react`) | Layout, tema, componentes e estilo |
 | **React Router 7** | Roteamento via `createBrowserRouter` + lazy loading |
 | **TanStack Query 5** | Estado do servidor, cache e invalidação |
 | **Zustand 5** | Estado global — só para o que não vem da API (auth, UI global) |
 | **Zod 4** | Validação de respostas da API e de formulários críticos |
 | **Axios** | HTTP client centralizado com interceptores JWT |
-| **tailwindcss-motion** | Animações simples via classe Tailwind — zero JS |
 | **Recharts** | Gráficos SVG reativos (dashboards, totais por categoria/origem) |
 | **Biome 1.9** | Linter, formatter e organizador de imports |
 
 > **Regra de Zustand**: não criar store por feature "por precaução". Começar com estado local/Context e migrar pra Zustand só quando sentir dor real de estado espalhado.
 >
-> **Regra de animação**: `tailwindcss-motion` é o padrão, inclusive dentro de gráficos Recharts (`isAnimationActive` nativo). `motion`/`AnimatePresence` do Framer Motion (módulo `ui-extra`) só entra quando há necessidade concreta de animar montagem/desmontagem condicional.
+> **Regra de animação**: props do Chakra (`_hover`, `transition`). `motion`/`AnimatePresence` do Framer Motion (módulo `ui-extra`) só entra quando há montagem/desmontagem condicional.
 
 ### Módulo `ui-extra` (opt-in — ative no setup.sh)
 
@@ -37,9 +35,9 @@ Este documento explica a estrutura e o fluxo do frontend React que vive em `web/
 
 ```
 web/
-├── main.tsx              Entry point — QueryClient, HeroUIProvider, ToastProvider
+├── main.tsx              Entry point — ChakraProvider, ThemeProvider, Toaster
 ├── App.tsx               Router raiz (createBrowserRouter)
-├── index.css             @import tailwindcss + @heroui/styles + tailwindcss-motion
+├── config/theme/theme.ts Sistema Chakra (paleta brand)
 ├── config/api.ts         Instância Axios centralizada com interceptores JWT
 ├── features/auth/        hooks, api, types de autenticação
 ├── layouts/
@@ -55,8 +53,8 @@ web/
 │   └── NotFound/         404
 ├── routes/               RotaProtegida.tsx
 ├── shared/
-│   ├── lib/cn.ts         Utilitário cn() — clsx + tailwind-merge
-│   ├── ui/layout.tsx     Primitivos: Flex, HStack, VStack, Box, Grid, Container
+│   ├── ui/toaster.tsx    toaster.create + toast.success / toast.danger
+│   ├── ui/chart.tsx      wrappers Recharts
 │   ├── hooks/            useDebounce, useMountEffect, useMediaQuery, useFiltrosUrl
 │   ├── components/       ErrorBoundary, DialogOuDrawer
 │   └── utils/            lazyWithRetry, animacoes, formatadores
@@ -65,57 +63,53 @@ web/
 
 > `web/test/`, `e2e/` e `.storybook/` só passam a existir quando a ferramenta correspondente for adicionada — ver Apêndice.
 
-## Setup do CSS (`web/index.css`)
+## Tema (`web/config/theme/theme.ts`)
 
-Tailwind v4 é CSS-first — nenhum `tailwind.config.js` necessário:
+`createSystem` + paleta `brand`. Estilo só com props Chakra.
 
-```css
-@import "tailwindcss";
-@import "@heroui/styles";
-@plugin "tailwindcss-motion";
-```
+## Primitivos (`@chakra-ui/react`)
 
-## Primitivos de Layout e Texto (`web/shared/ui/layout.tsx`)
-
-> **Regra obrigatória:** nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Usar sempre o componente correspondente.
+> **Regra obrigatória:** nunca usar `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>` nem `className`. Sempre o componente Chakra.
 
 ```tsx
-import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
+import { Box, Button, Container, Field, Heading, HStack, Input, SimpleGrid, Text, VStack } from '@chakra-ui/react'
+import { toast } from '@/shared/ui/toaster'
 ```
 
-**Layout (estrutura):**
+| Precisa de | Use |
+| :--- | :--- |
+| Caixa | `Box` |
+| Lado a lado | `HStack` |
+| Empilhado | `VStack` / `Stack` |
+| Flex | `Flex` |
+| Colunas | `SimpleGrid` |
+| Largura máxima | `Container maxW="6xl"` |
+| Parágrafo | `Text` |
+| Título | `Heading` |
 
-| Componente | Equivalente | Quando usar |
-| :--- | :--- | :--- |
-| `<Box>` | `<div>` | Container genérico |
-| `<HStack>` | `<div className="flex flex-row items-center gap-2">` | Filhos lado a lado |
-| `<VStack>` | `<div className="flex flex-col gap-2">` | Filhos empilhados |
-| `<Flex>` | `<div className="flex gap-2">` | Flex com direção manual |
-| `<Grid>` | `<div className="grid gap-4">` | Grid de colunas |
-| `<Container>` | `<div className="mx-auto w-full px-4 max-w-screen-xl">` | Seção centralizada |
-
-**Texto (tipografia):**
-
-| Componente | Equivalente | Quando usar |
-| :--- | :--- | :--- |
-| `<Text>` | `<p>` | Parágrafo (padrão) |
-| `<Text as="h1">` … `<Text as="h6">` | `<h1>`–`<h6>` | Títulos |
-| `<Text as="span">` | `<span>` | Texto inline |
-| `<Text as="strong">` | `<strong>` | Negrito semântico |
-| `<Text as="small">` | `<small>` | Texto auxiliar |
-
-Tags de estrutura de página (`<section>`, `<header>`, `<nav>`, `<main>`) são permitidas. Componentes HeroUI gerenciam os elementos de formulário.
+Tags de estrutura (`<section>`, `<header>`, `<nav>`, `<main>`) só com valor semântico — preferir `Box as="section"`. Overlay: `Dialog` / `Drawer`.
 
 ```tsx
-<HStack className="justify-between">...</HStack>
-<VStack className="gap-4">...</VStack>
-<Container size="lg" className="py-12">...</Container>
-<Box className="rounded-xl border p-4">...</Box>
-<Grid className="grid-cols-3 gap-6">...</Grid>
-<Text className="text-sm text-muted">Parágrafo</Text>
-<Text as="h1" className="text-4xl font-black">Título</Text>
-<Text as="span" className="text-brand-500">Inline</Text>
+<HStack justify="space-between">...</HStack>
+<VStack gap="4">...</VStack>
+<Container maxW="6xl" py="12">...</Container>
+<Box rounded="xl" borderWidth="1px" p="4">...</Box>
+<SimpleGrid columns={3} gap="6">...</SimpleGrid>
+<Text fontSize="sm" color="fg.muted">Parágrafo</Text>
+<Heading as="h1" size="4xl">Título</Heading>
+<Text as="span" color="brand.fg">Inline</Text>
+
+<Field.Root invalid={!!erro}>
+  <Field.Label>Usuário</Field.Label>
+  <Input value={valor} onChange={(e) => setValor(e.target.value)} />
+  <Field.ErrorText>{erro}</Field.ErrorText>
+</Field.Root>
+
+<Button colorPalette="brand" loading={pendente} width="full">Salvar</Button>
+toast.success('Salvo.')
 ```
+
+`ChakraProvider` usa `theme` de `web/config/theme/theme.ts`.
 
 ## Roteamento (`web/App.tsx`)
 
@@ -158,8 +152,8 @@ const router = createBrowserRouter(
 1. **Sem `useEffect` em pages/features**: use TanStack Query para dados, event handlers para ações, `useMemo` para derivações, `useMountEffect` para efeitos de montagem.
 2. **Componentes atômicos**: lógica pesada vai para hooks no diretório `hooks/` da própria feature.
 3. **Tipagem estrita**: sem `any`. Respostas de API validadas com schema Zod.
-4. **Nunca editar `node_modules/@heroui`**: customização via `className` (Tailwind), CSS variables e slots expostos.
-5. **Sem tags HTML brutas**: nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` — usar `Box`/`HStack`/`VStack`/`Grid`/`Container` para layout e `Text`/`Text as="h1"`/`Text as="span"` para tipografia, todos de `@/shared/ui/layout`.
+4. **Nunca editar `node_modules/@chakra-ui`**: customização via `createSystem` em `web/config/theme/theme.ts` e props (`colorPalette`, `variant`, `p`, `gap`).
+5. **Sem tags HTML brutas**: `Box`/`HStack`/`VStack`/`SimpleGrid`/`Container`/`Text`/`Heading` de `@chakra-ui/react`.
 
 ## Execução e Build
 

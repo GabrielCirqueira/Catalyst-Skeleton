@@ -34,8 +34,7 @@
   * **TanStack Query** (gerenciamento de estado do servidor e cache)
   * **Zustand** (gerenciamento de estado global)
   * **Axios** (via instância centralizada `api.ts`)
-  * **HeroUI v3** (componentes base acessíveis, inclui toast)
-  * **Tailwind CSS 4** + **tailwindcss-motion** (estilo e animações padrão)
+  * **Chakra UI v3** (layout, tema, componentes)
   * **Recharts** (gráficos)
 
   ### DevOps
@@ -833,7 +832,6 @@
   web/
     App.tsx
     main.tsx
-    index.css
     vite-env.d.ts
 
     assets/                 ← imagens, fontes, SVGs estáticos
@@ -841,7 +839,7 @@
     contexts/               ← Context API (tema, I18n — não estado de UI)
     layouts/                ← sidebar, header, wrappers de página
     routes/                 ← proteção de rotas (nunca dentro da página)
-    shared/ui/layout.tsx    ← primitivos de layout/texto (Box, VStack, Text…)
+    config/theme/theme.ts   ← sistema Chakra (paleta brand)
     stores/                 ← Zustand stores (useAuthStore, etc.)
 
     features/               ← módulos com feature própria
@@ -1140,9 +1138,9 @@
 
   **Checklist:**
 
-  - [ ] Nenhum HTML puro (`div`, `span`, `p`, `h1`, `button`, etc.) — usar `shared/ui/layout` + HeroUI
-  - [ ] Estilização via `className` + TailwindCSS
-  - [ ] Animações com `tailwindcss-motion` nas transições de entrada
+  - [ ] Nenhum HTML puro — só `@chakra-ui/react`
+  - [ ] Estilização via props Chakra (`p`, `gap`, `colorPalette`)
+  - [ ] Animações via props Chakra (`_hover`, `transition`); Framer Motion só com módulo `ui-extra`
 
   ---
 
@@ -1435,9 +1433,9 @@
   // Imita o layout exato da tabela
   function TabelaRecursosSubflow() {
     return (
-      <VStack gap-2>
+      <VStack gap="2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Box key={i} className="h-12 w-full rounded-lg bg-background-100 animate-pulse" />
+          <Box key={i} h="12" w="full" rounded="lg" bg="bg.muted" />
         ))}
       </VStack>
     );
@@ -1496,7 +1494,6 @@
   web/
     App.tsx
     main.tsx
-    index.css
     vite-env.d.ts
 
     assets/                     ← imagens, fontes, SVGs estáticos
@@ -1504,7 +1501,7 @@
     contexts/                   ← Context API (tema, I18n — não estado de UI)
     layouts/                    ← sidebar, header, wrappers de página
     routes/                     ← proteção de rotas (nunca dentro da página)
-    shared/ui/layout.tsx        ← primitivos de layout/texto (Box, VStack, Text…)
+    config/theme/theme.ts       ← sistema Chakra (paleta brand)
     stores/                     ← Zustand stores (useAuthStore, etc.)
 
     features/                   ← módulos com feature própria (>2 arquivos relacionados)
@@ -1543,16 +1540,16 @@
 
   ### Usar somente componentes do sistema
 
-  Layout/texto sempre via `web/shared/ui/layout.tsx` (`Box`, `HStack`, `VStack`, `Flex`, `Grid`, `Container`, `Text`). Elementos interativos (botão, input, select, tabela, dialog, toast) sempre via **HeroUI** (`@heroui/react`), nunca HTML cru.
+  Layout, texto e interativos sempre via **Chakra UI v3** (`Box`, `HStack`, `Heading`, `Button`, `Field`, `Dialog`). Estilo só com props (`p`, `gap`, `colorPalette`). Toast: `toast.success` / `toast.danger` de `@/shared/ui/toaster`.
 
   ### Estilização obrigatória
 
-  * Todo estilo via `className` + **TailwindCSS**.
+  * Todo estilo via props do Chakra (`p`, `gap`, `bg`, `colorPalette`).
   * O sistema deve sempre manter transições, animações e sensação moderna e fluida.
 
   ### Animações
 
-  Padrão oficial: **tailwindcss-motion** (classes Tailwind, zero JS). Framer Motion (`AnimatePresence`) só via módulo opcional `ui-extra`, quando há montagem/desmontagem condicional real.
+  Padrão oficial: props do Chakra. Framer Motion (`AnimatePresence`) só via módulo opcional `ui-extra`, quando há montagem/desmontagem condicional real.
 
   * Aplicar animações em: entrada de seções, abertura de modais, carregamentos, troca de páginas.
   * Evitar telas "secas" sem transição. Não exagerar.
@@ -1579,7 +1576,7 @@
 
   - [ ] `make lint-all` passou sem erros
   - [ ] HTTP/disco/processo só via `src/Infra/` — nunca I/O cru nem `HttpClientInterface` em Service/Command
-  - [ ] Nenhum HTML puro no frontend (`Box`/`VStack`/`Text` de `shared/ui/layout` + HeroUI)
+  - [ ] Nenhum HTML puro — só `@chakra-ui/react`
   - [ ] Página segue padrão `AppContainer → Container`
   - [ ] Hooks consumindo `api.ts`
   - [ ] Toast gerenciado pelo hook, não pelo componente
@@ -1712,11 +1709,11 @@
   * [Zustand](https://zustand-demo.pmnd.rs/)
   * [React Hook Form](https://react-hook-form.com/)
   * [Zod](https://zod.dev/)
-  * [HeroUI](https://www.heroui.com/)
-  * [tailwindcss-motion](https://tailwindcss-motion.rombo.co/)
+  * [Chakra UI](https://www.chakra-ui.com/)
+  * [Chakra UI](https://www.chakra-ui.com/)
   * [Framer Motion](https://www.framer.com/motion/) (módulo `ui-extra`)
   * [Recharts](https://recharts.org/)
-  * [TailwindCSS](https://tailwindcss.com/docs)
+  * [Chakra UI](https://www.chakra-ui.com/)
 
   ### DevOps
 

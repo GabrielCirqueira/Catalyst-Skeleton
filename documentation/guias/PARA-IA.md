@@ -54,7 +54,7 @@ No backend: **crie o Controller primeiro**. Ele chama um Service atômico **ou**
 | Header / Footer / casca | `web/layouts/` — **não recrie** na página |
 | Axios, JWT | `web/config/api.ts` — único cliente HTTP |
 | Auth global | `web/stores/useAuthStore.ts` |
-| Layout e texto | `web/shared/ui/layout.tsx` |
+| Layout e texto | `@chakra-ui/react` (`Box`, `HStack`, `Heading`…) |
 | Coisa usada em várias features | `web/shared/` |
 
 Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável → `shared/`. Não crie `web/pages/` para feature nova.
@@ -90,18 +90,15 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 A página **não** monta Header nem Footer. `MainLayout` já envolve o `Outlet`.
 
 ```tsx
-import { AppContainer } from '@/layouts'
-import { Container, Text, VStack } from '@/shared/ui/layout'
+import { Container, Heading, VStack } from '@chakra-ui/react'
 
 export function Component() {
   return (
-    <AppContainer>
-      <Container>
-        <VStack className="gap-6">
-          <Text as="h1" className="text-3xl font-bold">Título</Text>
-        </VStack>
-      </Container>
-    </AppContainer>
+    <Container maxW="6xl" py="8">
+      <VStack gap="6" align="stretch">
+        <Heading as="h1" size="2xl">Título</Heading>
+      </VStack>
+    </Container>
   )
 }
 ```
@@ -120,31 +117,30 @@ Página autenticada: envolva com `<RotaProtegida />` como `/app`.
 
 ### 3.2 UI (obrigatório)
 
-Proibido no JSX: `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>`.
+Proibido no JSX: `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>`, `className`.
 
-| Precisa de | Use |
+| Precisa de | Use (`@chakra-ui/react`) |
 | :--- | :--- |
 | Caixa | `Box` |
 | Lado a lado | `HStack` |
-| Empilhado | `VStack` |
+| Empilhado | `VStack` / `Stack` |
 | Flex livre | `Flex` |
-| Colunas | `Grid` |
+| Colunas | `SimpleGrid` / `Grid` |
 | Largura máxima | `Container` |
-| Texto / título | `Text` / `Text as="h1"` / `Text as="span"` |
+| Texto | `Text` |
+| Título | `Heading` |
 
 ```tsx
-import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
+import { Box, Button, Field, Heading, HStack, Input, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 ```
 
-Exceção: `<main>`, `<header>`, `<footer>`, `<nav>`, `<section>` só se forem semântica real. Botões, inputs e cards: **HeroUI** (`@heroui/react`), não HTML cru.
-
-Estilo: só `className` + Tailwind 4. Animação padrão: classes `tailwindcss-motion`. Framer Motion só se o módulo `ui-extra` estiver ativo e houver montar/desmontar de verdade.
+Estilo: **só props do Chakra** (`p`, `gap`, `bg`, `color`, `colorPalette`). Toast: `toast.success` / `toast.danger` de `@/shared/ui/toaster`. Framer Motion só se o módulo `ui-extra` estiver ativo.
 
 ### 3.3 Dados e estado
 
 - **Proibido `useEffect`** em página e feature. Derivado no render / `useMemo`. Evento em `onClick` / `onSubmit`. Fetch no TanStack Query. Montagem pontual: `useMountEffect` ou `useSEO`.
 - Página **nunca** chama Axios. Hook da feature chama `api` de `@/config/api`.
-- Toast no hook (`toast.success` / `toast.danger`), não no JSX da página.
+- Toast no hook (`toast.success` / `toast.danger` de `@/shared/ui/toaster`), não no JSX da página.
 - Zustand só para estado global de verdade (auth). Não abra store por feature “por precaução”.
 
 ```tsx
@@ -382,7 +378,7 @@ Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele 
 
 1. Entender a tela e o contrato JSON.
 2. Backend: **Controller primeiro** em `src/Controller/{Contexto}/`. Service atômico em `src/Service/{Contexto}/`. Vários services do domínio → Feature em `src/Feature/{Contexto}/`. Exceção em `src/Exception/{Contexto}/`. I/O em `src/Infra/`. Repository para toda consulta.
-3. Frontend: `types.ts` → `api.ts` → hook → componentes HeroUI + layout → página `Component` → rota lazy em `App.tsx`.
+3. Frontend: `types.ts` → `api.ts` → hook → componentes Chakra UI + layout → página `Component` → rota lazy em `App.tsx`.
 4. Se a rota for autenticada, registrar em `RotaProtegida`.
 5. `make lint-all`. Corrigir o que o Biome/PHP apontar.
 
@@ -391,7 +387,7 @@ Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele 
 ## 6. Checklist rápido (antes de encerrar)
 
 - [ ] Sem arquivo solto na raiz de `src/Controller/`, `src/Service/`, `src/Exception/`, `src/Feature/`
-- [ ] Sem `<div>` / `<p>` / `<h*>` / `<span>` — só primitivos de `@/shared/ui/layout`
+- [ ] Sem `<div>` / `<p>` / `<h*>` / `<span>` / `className` — só componentes Chakra (`Box`, `HStack`, `Heading`…)
 - [ ] Sem Header/Footer na página
 - [ ] Sem `useEffect`
 - [ ] Sem Axios fora de `config/api.ts` e dos `api.ts` da feature

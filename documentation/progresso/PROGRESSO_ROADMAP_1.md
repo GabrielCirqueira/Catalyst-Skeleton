@@ -44,11 +44,11 @@
 
 ---
 
-### ✅ Tópico 6 — HeroUI v3 + Tailwind CSS 4 + cor brand
+### ✅ Tópico 6 — Chakra UI v3 + cor brand
 
 - **Status**: Concluído
-- **Implementação**: `@heroui/styles` + paleta `--color-brand-*` violeta. Sem `tailwind.config.js`.
-- **Arquivos**: `web/index.css`, `documentation/stack/FRONTEND.md`
+- **Implementação**: `@chakra-ui/react` + paleta `brand` em `createSystem`.
+- **Arquivos**: `web/config/theme/theme.ts`, `documentation/stack/FRONTEND.md`
 
 ---
 
@@ -64,7 +64,7 @@
 
 - **Status**: Concluído
 - **Implementação**: `Box`, `HStack`, `VStack`, `Flex`, `Grid`, `Container`, `Text as="h1"|span`. Proibido HTML bruto de layout/tipografia.
-- **Arquivos**: `web/shared/ui/layout.tsx`, `documentation/guias/Estruturação.md`
+- **Arquivos**: `@chakra-ui/react`, `documentation/guias/Estruturação.md`
 
 ---
 
@@ -79,7 +79,7 @@
 ### ✅ Tópico 10 — Landing Home com showcase de componentes
 
 - **Status**: Concluído
-- **Implementação**: Hero, cards HeroUI, accordion de stack, steps e CTA. Sem navbar própria.
+- **Implementação**: Hero, cards Chakra UI, accordion de stack, steps e CTA. Sem navbar própria.
 - **Arquivos**: `web/features/home/Home.tsx`
 
 ---
