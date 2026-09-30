@@ -2,16 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Sistema;
 
+use App\Controller\Common\DefaultController;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HealthController extends DefaultController
 {
+    private const int LIMITE_DISCO_LIVRE_MB = 100;
+    private const string VERSAO_PADRAO = '1.0.0-dev';
+
     public function __construct(
         private readonly Connection $connection,
+        #[Autowire('%app_version_padrao%')]
+        private readonly string $appVersion = self::VERSAO_PADRAO,
     ) {
     }
 
@@ -29,7 +36,7 @@ final class HealthController extends DefaultController
                 'database' => $databaseStatus,
                 'disk' => $diskStatus,
             ],
-            'version' => $_ENV['APP_VERSION'] ?? '1.0.0-dev',
+            'version' => $this->appVersion,
         ], $isHealthy ? Response::HTTP_OK : Response::HTTP_SERVICE_UNAVAILABLE);
     }
 
@@ -55,13 +62,13 @@ final class HealthController extends DefaultController
      */
     private function checkDisk(): array
     {
+        $limiteBytes = self::LIMITE_DISCO_LIVRE_MB * 1024 * 1024;
         $freeSpace = disk_free_space('/') ?: 0;
-        $threshold = 100 * 1024 * 1024;
 
         return [
-            'status' => $freeSpace > $threshold ? 'ok' : 'critical',
+            'status' => $freeSpace > $limiteBytes ? 'ok' : 'critical',
             'free_mb' => round($freeSpace / 1024 / 1024, 2),
-            'threshold_mb' => 100,
+            'threshold_mb' => self::LIMITE_DISCO_LIVRE_MB,
         ];
     }
 }
