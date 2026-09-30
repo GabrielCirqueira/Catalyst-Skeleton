@@ -449,9 +449,10 @@ Regras:
 
 ### 13.1 Controllers
 
-#### Onde ficam os controllers
+Os controllers de **API** e de **Sistema** ficam **obrigatoriamente** em subpastas de contexto (`Auth/`, `Sistema/`, `Pedido/`, `Common/`, …). **Nunca** arquivo solto na raiz de `src/Controller/`.
 
-Os controllers de **API** ficam em subpastas por tópico (`Auth/`, `Admin/`, …) e **sempre** extends `DefaultController`. O HTML da SPA fica em `FrontendController`.
+- Base: `src/Controller/Common/DefaultController.php` — todo controller de API extends esta classe.
+- SPA e health: `src/Controller/Sistema/FrontendController.php` e `HealthController.php`.
 
 #### Regra principal dos controllers
 
@@ -478,18 +479,28 @@ Confundi-los gera acoplamentos errados.
 
 **Regra:** Se pode ser testado unitariamente sem nenhum mock de infraestrutura (banco, HTTP), é um **Domain Service**.
 
-#### 13.2.2 Feature (`src/Feature/`)
+#### 13.2.2 Service (`src/Service/{Contexto}/`)
 
-**Proibido** concentrar lógica grande num único arquivo. Sempre que a lógica for grande, repetida ou tiver várias peças, parta em vários services com a mesma interface e uma Feature com `#[TaggedIterator]`. A Feature só itera; não faz query. Nova peça = nova classe. Detalhe: [PARA-IA.md](PARA-IA.md) § 4.7.
+**PROIBIDO** arquivo solto na raiz de `src/Service/`. Sempre pasta de contexto; se crescer, subcategorias.
+
+Um Service = **uma ação**. Sem `new Service()`, sem `$_ENV`/`getenv()`, sem I/O de disco/HTTP/`Process`, sem `throw new \DomainException`. Erro → factory estático da exceção do contexto. Magic values → `private const`. Lote: falha por item, continua, devolve relatório.
+
+Se um Service precisa de **vários outros Services** do mesmo domínio, **não** vira fachada: vira Feature de orquestração.
+
+#### 13.2.3 Feature (`src/Feature/{Contexto}/`)
+
+Dois formatos oficiais — detalhe em [PARA-IA.md](PARA-IA.md) § 4.7:
+
+1. **Orquestração:** vários Services atômicos do mesmo domínio; o Controller injeta só a Feature.
+2. **TaggedIterator:** interface + tag + pipeline/estratégias expansíveis.
+
+**PROIBIDO** Feature (ou Service) que só repassa `$this->x->executar()` e descarta parte do retorno.
 
 Um Service único e atômico (criar, buscar) não vira Feature.
 
-#### 13.2.3 Interface (`src/Interface/`)
+#### 13.2.4 Interface (`src/Interface/`)
 
-Contratos PHP em `src/Interface/{Nome}Interface.php`.
-
-- Porta (repositório, HTTP, fila): Service/Feature tipam a interface.
-- Vários services do mesmo fluxo: `#[AutoconfigureTag('app.…')]` na interface; cada Service implementa; a Feature usa `TaggedIterator`. **É o jeito padrão de organizar**, não um caso especial.
+Contratos PHP em `src/Interface/{Nome}Interface.php` quando há 2+ implementações ou substituição em teste. Porta (repositório, HTTP, disco, fila): Service/Feature tipam a interface.
 
 ---
 
@@ -639,7 +650,7 @@ Handlers do Messenger seguem a disciplina de **Lógica Zero**.
 
 ### 13.7 Result Object
 
-Controller de API extends `DefaultController` e devolve `Response` com `$this->success()` / `$this->error()` (`success`/`data`/`error` em inglês). Service devolve o dado; erro previsto → `DomainException` (o `KernelExceptionListener` usa o mesmo envelope).
+Controller de API extends `App\Controller\Common\DefaultController` e devolve `Response` com `$this->success()` / `$this->error()`. Service devolve o dado; erro previsto → exceção do contexto com factory estático (o `KernelExceptionListener` usa o mesmo envelope). **PROIBIDO** `throw new \DomainException('slug', 400)`.
 
 ### 13.8 Domain Events
 
@@ -670,15 +681,16 @@ Sempre ordene as condições de guarda (**Guard Clauses**) pelo custo de process
 
 **Regra:** Nunca chame um serviço custoso antes de validar pre-condições simples que poderiam resultar em um `early return`.
 
-#### 13.12 Clientes HTTP Externos e Infraestrutura (src/Infra/ e src/Exception/)
+#### 13.12 Infraestrutura e exceções (`src/Infra/`, `src/Exception/`)
 
-Toda comunicação HTTP com APIs/sistemas externos deve ser desacoplada na camada de infraestrutura (`src/Infra/{Sistema}/`), nunca diretamente em Services ou Commands.
+I/O (HTTP, disco, processo CLI) só em `src/Infra/{Sistema}/`. HTTP base: `src/Infra/HTTP/Client.php`. Disco: permissão `0755` via constante, sem `@unlink`.
 
-* **Base Client (`src/Infra/Client.php`)**: Classe abstrata base que recebe `GuzzleHttp\ClientInterface`, `baseUrl` e `SerializerInterface`. Trata `RequestException` via `executarRequisicao()`, valida retornos com `Assert::isArray()` e suporta deserialização direta via Symfony Serializer.
-* **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**: Classe abstrata que estende `App\Infra\Client` e define a `$baseUrl`.
-* **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**: Classe concreta estendendo `{Sistema}Client` que expõe os métodos de ação de negócio da API (ex: `consultarStatus()`, `enviarCobranca()`).
-* **Injeção DI (`config/services.yaml`)**: Registra instâncias do `GuzzleHttp\Client` com `base_uri` configurada e as injeta em `{Sistema}API`.
-* **Exceções Personalizadas (`src/Exception/`)**: Exceções estendendo `ClienteHTTPException` para tratamento de erros em requisições de clientes externos.
+**Exceções (`src/Exception/{Contexto}/`):**
+
+- **PROIBIDO:** arquivo solto na raiz; `throw new \DomainException` / `\RuntimeException` / `\Exception`; mensagem slug (`'erro_salvar_arquivo'`); factory curto ou com `_`; constante de código de erro.
+- **SEMPRE:** classe por contexto estendendo `\DomainException` (HTTP de cliente: `ClienteHTTPException`); métodos estáticos descritivos em camelCase (`falhaAoExtrairMetadataDoVideo()`); primeiro argumento = frase completa em português.
+
+Parâmetros de ambiente só via DI (`services.yaml` / `#[Autowire('%env(...)%')]`). Zero `$_ENV`/`getenv()`.
 
 ---
 

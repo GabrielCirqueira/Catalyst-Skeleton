@@ -22,12 +22,15 @@ else
     echo -e "${GREEN}[OK]${NC}"
 fi
 
-echo -n "   - Diretórios de Controllers (Subpastas): "
-VIOLACOES_CONTROLLER=$(find "$ROOT_DIR/src/Controller" -mindepth 1 -maxdepth 1 -type f -name "*Controller.php" ! -name "HealthController.php" 2>/dev/null || true)
-if [ -n "$VIOLACOES_CONTROLLER" ]; then
+echo -n "   - Diretórios de Controllers/Services/Exceptions/Features (subpasta de contexto): "
+VIOLACOES_SOLTOS=$(
+  find "$ROOT_DIR/src/Controller" "$ROOT_DIR/src/Service" "$ROOT_DIR/src/Exception" "$ROOT_DIR/src/Feature" \
+    -mindepth 1 -maxdepth 1 -type f -name "*.php" 2>/dev/null || true
+)
+if [ -n "$VIOLACOES_SOLTOS" ]; then
     echo -e "${RED}[FALHOU]${NC}"
-    echo "$VIOLACOES_CONTROLLER" | sed 's/^/     -> /'
-    echo "       (Dica: mova-os para subpastas /Categoria/)"
+    echo "$VIOLACOES_SOLTOS" | sed 's/^/     -> /'
+    echo "       (Dica: mova para src/{Camada}/{Contexto}/ — zero arquivo na raiz dessas pastas)"
     ERRORS=1
 else
     echo -e "${GREEN}[OK]${NC}"
