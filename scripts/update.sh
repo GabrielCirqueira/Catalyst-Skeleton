@@ -100,7 +100,7 @@ ok "$(git log --oneline -1)"
 log "── [2/4] Frontend ──"
 
 FRONTEND_CHANGED=$(git diff "$BEFORE_HASH" "$AFTER_HASH" --name-only 2>/dev/null \
-  | grep -E "^web/|^assets/|package(-lock)?\.json|tsconfig|vite\.config|tailwind|postcss|biome" || true)
+  | grep -E "^web/|^assets/|package(-lock)?\.json|tsconfig|vite\.config|biome" || true)
 
 if [[ -n "$FRONTEND_CHANGED" ]] || [[ "$BEFORE_HASH" == "$AFTER_HASH" ]]; then
   if [[ -n "$FRONTEND_CHANGED" ]]; then

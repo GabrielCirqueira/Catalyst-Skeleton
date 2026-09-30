@@ -1,4 +1,3 @@
-import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,7 +11,6 @@ const frontendPort = Number.parseInt(process.env.FRONTEND_PORT ?? '', 10) || 517
 
 export default defineConfig((config) => ({
   plugins: [
-    tailwindcss(),
     react(),
     symfonyPlugin(),
     tsconfigPaths({
