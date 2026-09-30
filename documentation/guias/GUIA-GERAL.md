@@ -491,14 +491,14 @@
   - [ ] `#[IsGranted('ROLE_USER')]` nas rotas protegidas
   - [ ] `#[MapRequestPayload]` para mapear DTOs
   - [ ] Extends `DefaultController`; retornar sempre `Response` via `$this->success()` / `$this->error()` (`{ success, data }` / `{ success, error }`)
-  - [ ] Lançar `\DomainException($codigo, $codigoHTTP)` no Service e deixar o **`KernelExceptionListener`** logar e formatar a resposta.
+  - [ ] Lançar a exceção do contexto (`PedidoException::codigoJaCadastrado()`) no Service e deixar o **`KernelExceptionListener`** logar e formatar a resposta.
   - [ ] `\Exception` → `HTTP_INTERNAL_SERVER_ERROR`
   - [ ] **Lógica Zero**: apenas recebe Request, chama Service, retorna Response
   - [ ] Resolver usuário autenticado via `ResolverUsuarioPorTokenService`
 
   **O `KernelExceptionListener` já vem implementado no Subflow** para interceptar as exceções e mapear em JSON padronizado.
 
-  **Convenção obrigatória: DomainException → HTTP status**
+  **Convenção obrigatória: exceção do contexto → HTTP status**
 
   | Situação de negócio | Status | Uso típico |
   | :--- | :---: | :--- |
@@ -600,7 +600,7 @@
   }
   ```
 
-  Service devolve o dado. Erro previsto: `throw new \DomainException('email_duplicado', 409)`. O `KernelExceptionListener` responde no mesmo envelope.
+  Service devolve o dado. Erro previsto: `throw PedidoException::emailDuplicado()`. O `KernelExceptionListener` responde no mesmo envelope.
 
   ---
 
@@ -774,24 +774,14 @@
 
   ---
 
-  ### 5.15 Clientes HTTP Externos e Infraestrutura (src/Infra/ e src/Exception/)
+  ### 5.15 Infraestrutura e exceções (`src/Infra/`, `src/Exception/`)
 
-  **PROIBIDO**: Fazer requisições HTTP cruas (`HttpClientInterface` ou `$client->request()`) diretamente em Services ou Commands.
+  **PROIBIDO** em Service/Command/Feature: HTTP cru, `Process`, `mkdir`/`copy`/`unlink`/`@unlink`, `$_ENV`/`getenv()`, `throw new \DomainException`.
 
-  Toda comunicação com APIs e sistemas externos deve ser encapsulada e desacoplada em `src/Infra/{Sistema}/`:
-
-  1. **Base Client Abstrato (`src/Infra/Client.php`)**:
-     - Classe abstrata base gerenciando `GuzzleHttp\ClientInterface`, `baseUrl` e `SerializerInterface`.
-     - Método `protected function request()` executa a chamada HTTP, intercepta `RequestException` via `executarRequisicao()`, valida retornos com `Assert::isArray()` e deserializa respostas JSON diretamente via `SerializerInterface` caso `$type` seja informado.
-     - Método `protected function requestRaw()` para retornos brutos em formato string.
-  2. **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**:
-     - Estende `App\Infra\Client` configurando a `$baseUrl` no construtor.
-  3. **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**:
-     - Estende `{Sistema}Client` e implementa os métodos de ação de negócio da API (ex: `consultarStatus()`, `enviarCobranca()`).
-  4. **Injeção via `config/services.yaml`**:
-     - Registra o cliente do Guzzle com a `base_uri` e o injeta na classe `{Sistema}API`.
-  5. **Exceções Personalizadas (`src/Exception/`)**:
-     - Criar exceções personalizadas estendendo `ClienteHTTPException` para lançamento e captura refinada de erros de requisições externas.
+  - HTTP base: `src/Infra/HTTP/Client.php`. Cliente por sistema em `src/Infra/{Sistema}/`.
+  - Disco/processo CLI na Infra. Permissão de diretório: `private const` `0755`.
+  - Exceção por contexto em `src/Exception/{Contexto}/` com factory estático descritivo e mensagem frase completa em PT. HTTP: `App\Exception\HTTP\ClienteHTTPException`.
+  - Nenhum arquivo solto na raiz de `src/Exception/`.
 
   ---
 
@@ -801,28 +791,33 @@
   src/
     Command/                    ← comandos CLI (Symfony Console)
     Controller/
-      {Categoria}/              ← obrigatório: Admin/, Auth/, Geral/, etc.
-    DataObject/                 ← DTOs (CriarXxxDTO, AtualizarXxxDTO)
-      {Categoria}/              ← organizar por Categoria funcional
+      Common/DefaultController.php
+      Sistema/                  ← FrontendController, HealthController
+      {Contexto}/               ← obrigatório: Auth/, Pedido/, etc. — zero arquivo solto na raiz
+    DataObject/
+      {Contexto}/               ← DTOs
     Domain/
       {Funcionalidade}/         ← Domain Services (lógica pura, sem I/O)
-    Entity/                     ← Entidades e Aggregate Roots
-      {Categoria}/             ← organizar por Categoria funcional
-    Enum/                       ← Enums de domínio (Sexo, StatusPedido, TipoConta…)
+    Entity/
+    Enum/
     EventListener/
-      Event/                    ← Domain Events (XxxCriadoEvent, XxxCanceladoEvent)
-                                ← Listeners (#[AsEventListener]) ao lado
-    Feature/                    ← *Feature.php + TaggedIterator; lógica grande em vários services
-    Exception/                  ← ClienteHTTPException e exceções de APIs externas
-    Infra/                      ← Client.php + {Sistema}/{Sistema}Client.php + {Sistema}API.php
-    Interface/                  ← contratos PHP (*Interface.php)
+      Event/
+    Exception/
+      HTTP/ClienteHTTPException.php
+      {Contexto}/               ← factories estáticos descritivos
+    Feature/
+      {Contexto}/               ← orquestração de domínio e/ou TaggedIterator
+    Infra/
+      HTTP/Client.php           ← Guzzle base
+      {Sistema}/                ← disco, CLI, APIs
+    Interface/                  ← só com 2+ implementações
     Message/                    ← Mensagens para o Messenger
     MessageHandler/             ← Handlers (#[AsMessageHandler])
     Repository/                 ← Repositórios (um por entidade)
      {Categoria}/              ← organizar por Categoria funcional
     Serializer/                 ← Serializadores de resposta
     Service/
-      {Funcionalidade}/         ← Application Services (CriarXxxService, etc.)
+      {Contexto}/               ← uma ação por classe; vários do domínio → Feature
     Specification/              ← Specification Pattern
     ValueObject/                ← Value Objects (Email, Dinheiro, Cpf)
     Kernel.php
@@ -1583,7 +1578,7 @@
   Antes de abrir PR:
 
   - [ ] `make lint-all` passou sem erros
-  - [ ] HTTP externo só via `src/Infra/{Sistema}API` — nunca `HttpClientInterface` em Service/Command
+  - [ ] HTTP/disco/processo só via `src/Infra/` — nunca I/O cru nem `HttpClientInterface` em Service/Command
   - [ ] Nenhum HTML puro no frontend (`Box`/`VStack`/`Text` de `shared/ui/layout` + HeroUI)
   - [ ] Página segue padrão `AppContainer → Container`
   - [ ] Hooks consumindo `api.ts`
@@ -1600,8 +1595,8 @@
   - [ ] Specification criada quando a mesma regra aparece em mais de um lugar — ver seção 5.1.3
   - [ ] Domain Event disparado quando ação causa efeitos colaterais — ver seção 5.10
   - [ ] Services nomeados no padrão Verbo + Entidade + Service
-  - [ ] Controller dentro da subpasta de categoria correta (`src/Controller/{Categoria}/`)
-  - [ ] DomainException mapeada para o status HTTP correto (ver tabela na seção 5.7)
+  - [ ] Controller dentro da subpasta de contexto (`src/Controller/{Contexto}/`)
+  - [ ] Exceção do contexto mapeada para o status HTTP correto (código no factory estático)
   - [ ] Visual agradável + transições + animações
   - [ ] `useSEO` configurado na página nova com `title`, `description` e `keywords`
   - [ ] Rotas privadas/autenticadas com `noindex: true` no `useSEO`
@@ -1667,7 +1662,7 @@
   
   O roteiro `GET /api/v1/health` já vem implementado com verificações de serviços críticos. Docker, orquestradores e monitores externos usam esse endpoint para saber se o container está saudável.
   
-  A implementação real em `App\Controller\HealthController` verifica:
+  A implementação real em `App\Controller\Sistema\HealthController` verifica:
   1.  **Conectividade com Banco de Dados**: Tenta uma conexão nativa para garantir que o MySQL está respondendo.
   2.  **Espaço em Disco**: Alerta se houver menos de 100MB livres para logs e cache.
   3.  **Versão da App**: Expõe a `APP_VERSION` definida no ambiente.

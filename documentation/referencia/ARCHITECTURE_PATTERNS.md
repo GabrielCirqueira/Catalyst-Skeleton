@@ -6,7 +6,7 @@ O Catalyst Skeleton v5 é orientado por princípios de **Clean Code**, **SOLID**
 
 ## 1. Envelope HTTP (`DefaultController`)
 
-Controllers de API extends `src/Controller/DefaultController.php` e sempre devolvem `Response`. SPA fica em `FrontendController`.
+Controllers de API extends `src/Controller/Common/DefaultController.php` e sempre devolvem `Response`. SPA fica em `src/Controller/Sistema/FrontendController.php`.
 
 ```php
 public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
@@ -19,7 +19,7 @@ public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
 
 JSON: `{ "success": true, "data": ... }` ou `{ "success": false, "error": "username_taken" }`.
 
-Service devolve o dado. Erro previsto: `throw new \DomainException('username_taken', 409)`.
+Service devolve o dado. Erro previsto: `throw AuthException::nomeDeUsuarioJaCadastrado()`.
 
 ---
 
@@ -84,15 +84,15 @@ O Serializer protege o frontend de mudanças internas (renomear coluna, mover ca
 
 ---
 
-## 5. Clientes HTTP Externos (`src/Infra/`)
+## 5. Infraestrutura (`src/Infra/`) e exceções
 
-**PROIBIDO** chamar HTTP cru em Service ou Command. Toda API externa fica em `src/Infra/{Sistema}/`:
+**PROIBIDO** I/O cru em Service ou Command (HTTP, disco, `Process`).
 
-1. `src/Infra/Client.php` — base com Guzzle, `request()` / `requestRaw()`, `ClienteHTTPException`.
-2. `src/Infra/{Sistema}/{Sistema}Client.php` — abstrata, define `$baseUrl`.
-3. `src/Infra/{Sistema}/{Sistema}API.php` — métodos de negócio; Service só chama a API.
-4. `config/services.yaml` — `guzzle.{sistema}` com `base_uri`, injetado na `{Sistema}API`.
-5. `src/Exception/{Sistema}APIException` extends `ClienteHTTPException`.
+1. `src/Infra/HTTP/Client.php` — Guzzle, `request()` / `requestRaw()`.
+2. `src/Infra/{Sistema}/` — cliente e API do sistema.
+3. Disco/CLI na Infra; `0755` via constante; sem `@unlink`.
+4. `src/Exception/{Contexto}/{Nome}Exception.php` — factory estático descritivo, frase completa em PT. HTTP: `ClienteHTTPException`.
+5. Parâmetros só via DI. Zero `$_ENV`/`getenv()`.
 
 ---
 

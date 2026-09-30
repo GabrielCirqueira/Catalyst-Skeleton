@@ -106,12 +106,15 @@ Checklist:
 - [ ] `final class`, dependências pelo construtor, método `executar()`
 - [ ] Zero lógica HTTP (sem Request/Response)
 - [ ] **PROIBIDO** `EntityManagerInterface` direto — sempre via Repository
-- [ ] Contrato do repositório novo em `src/Interface/{Nome}Interface.php`
-- [ ] Erro previsto → `DomainException('codigo', $http)`; o Controller responde com `$this->success()` / `$this->error()` — ver GUIA-GERAL.md 5.9
+- [ ] **PROIBIDO** `throw new \DomainException` — factory estático da exceção em `src/Exception/{Contexto}/`
+- [ ] **PROIBIDO** I/O cru / `$_ENV` / `new Service()` — ver PARA-IA.md § 4.6 e 4.9
+- [ ] HTTP externo e disco só via `src/Infra/` — ver GUIA-GERAL.md 5.15
+- [ ] Vários services do mesmo domínio → Feature de orquestração em `src/Feature/{Contexto}/` — ver PARA-IA.md § 4.7
+- [ ] Contrato do repositório novo em `src/Interface/{Nome}Interface.php` só se houver 2+ implementações
+- [ ] Erro previsto → exceção do contexto; o Controller responde com `$this->success()` / `$this->error()`
 - [ ] Domain Event disparado quando a ação causa efeitos colaterais — ver GUIA-GERAL.md 5.10
 - [ ] Se o Service precisa de lógica pura entre entidades sem I/O, extrair para Domain Service em `src/Domain/` — ver GUIA-GERAL.md 5.12
-- [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature — ver PARA-IA.md § 4.7. Não concentrar num arquivo.
-- [ ] HTTP externo só via `src/Infra/{Sistema}/{Sistema}API.php` — nunca `HttpClientInterface` / `$client->request()` no Service — ver GUIA-GERAL.md 5.15
+- [ ] Pipeline/estratégia expansível → interface + `TaggedIterator` na Feature — ver PARA-IA.md § 4.7.2
 
 ### 3.6 Serializer
 
@@ -128,7 +131,7 @@ Checklist:
 - [ ] Prefixo de rota: `#[Route('/api/v1/nome-da-entidade')]`
 - [ ] `#[IsGranted('ROLE_USER')]` nas rotas protegidas
 - [ ] `#[MapRequestPayload]` para mapear DTOs
-- [ ] Extends `DefaultController`; retornar sempre `Response` via `$this->success()` / `$this->error()` (`{ success, data }` / `{ success, error }`)
+- [ ] Extends `App\Controller\Common\DefaultController`; retornar sempre `Response` via `$this->success()` / `$this->error()` (`{ success, data }` / `{ success, error }`)
 - [ ] **Lógica Zero**: recebe Request, chama Service, retorna Response
 - [ ] Resolver usuário autenticado via `ResolverUsuarioPorTokenService`
 
@@ -308,7 +311,7 @@ Checklist de PR:
 - [ ] Toast gerenciado pelo hook, não pelo componente
 - [ ] Error Boundary envolvendo componentes que fazem fetch
 - [ ] Subflow implementado para listas e conteúdo estruturado
-- [ ] HTTP externo só via `src/Infra/{Sistema}API` — nunca `HttpClientInterface` em Service/Command
+- [ ] HTTP externo e disco só via `src/Infra/` — nunca I/O cru em Service/Command
 - [ ] Controllers e MessageHandlers sem regra de negócio (Lógica Zero)
 - [ ] DTO com validações e sem setters
 - [ ] Getters sem prefixo `get`

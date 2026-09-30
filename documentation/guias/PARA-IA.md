@@ -28,13 +28,16 @@ web/          SPA React    — o usuário só vê isto
 Fluxo de uma feature completa:
 
 ```
-Controller (rota, sem lógica) → Service (regra de negócio) → Repository (toda query)
-Lógica grande ou repetida → vários services + interface + `TaggedIterator` numa Feature. Nunca um arquivo só.
+Controller (rota, sem lógica) → Service atômico (uma ação) → Repository (toda query)
+Vários services do mesmo domínio → Feature de orquestração em `src/Feature/{Contexto}/`
+Pipeline/estratégias expansíveis → Feature com interface + `TaggedIterator`
+I/O externo (HTTP, disco, processo CLI) → `src/Infra/{Sistema}/`
+Erro previsto → exceção do contexto com factory estático descritivo
 Entidade → Migration → DTO → Serializer
 Types → api.ts → Hook (TanStack Query) → Componentes → Página → rota em App.tsx
 ```
 
-No backend: **crie o Controller primeiro**. Ele só recebe o request e chama o Service (ou a Feature, se o fluxo for grande). A lógica mora no Service. Consulta e persistência **nunca** no Service nem na Feature — só no Repository.
+No backend: **crie o Controller primeiro**. Ele chama um Service atômico **ou** a Feature do contexto quando há várias ações. Consulta e persistência **nunca** no Service nem na Feature — só no Repository. **PROIBIDO** arquivo solto na raiz de `src/Controller/`, `src/Service/`, `src/Exception/` ou `src/Feature/`.
 
 ---
 
@@ -58,21 +61,25 @@ Regra: 2+ arquivos do mesmo assunto → `features/{feature}/`. Reutilizável →
 
 ### Backend (`src/`)
 
+> **Obrigatório:** nenhum arquivo PHP solto na raiz de `src/Controller/`, `src/Service/`, `src/Exception/` ou `src/Feature/`. Sempre uma subpasta de contexto (`Auth/`, `Sistema/`, `Pedido/`, `Storage/`, `HTTP/`). Se a pasta crescer demais, abra subcategorias dentro dela.
+
 | O quê | Onde |
 | :--- | :--- |
-| HTTP da API | `src/Controller/{Categoria}/` — **sempre** extends `DefaultController` |
-| SPA / Twig | `src/Controller/FrontendController.php` |
-| Caso de uso | `src/Service/{Funcionalidade}/VerboEntidadeService.php` |
-| Caso de uso grande / repetido | `src/Feature/{Nome}Feature.php` + vários `*Service` + `TaggedIterator` |
+| HTTP da API | `src/Controller/{Contexto}/` — **sempre** extends `App\Controller\Common\DefaultController` |
+| Base HTTP da API | `src/Controller/Common/DefaultController.php` |
+| SPA / Twig / health | `src/Controller/Sistema/` |
+| Caso de uso (uma ação) | `src/Service/{Contexto}/VerboEntidadeService.php` |
+| Orquestração de vários services do mesmo domínio | `src/Feature/{Contexto}/{Nome}Feature.php` |
+| Pipeline / estratégias expansíveis | `src/Feature/{Contexto}/{Nome}Feature.php` + interface + `TaggedIterator` |
 | Banco | `src/Repository/` — único lugar com Doctrine |
-| Contrato PHP | `src/Interface/{Nome}Interface.php` |
-| Entrada da API | `src/DataObject/` — sufixo `DTO` |
+| Contrato PHP (porta com 2+ implementações) | `src/Interface/{Nome}Interface.php` |
+| Entrada da API | `src/DataObject/{Contexto}/` — sufixo `DTO` |
 | Tabela | `src/Entity/` |
-| JSON de saída | `src/Serializer/` |
+| JSON de saída | `src/Serializer/{Contexto}/` |
 | Enum fechado | `src/Enum/` |
 | Evento + reação | `src/EventListener/` — fato em `Event/`, reação ao lado |
-| Clientes HTTP externos | `src/Infra/{Sistema}/{Sistema}Client.php` e `src/Infra/{Sistema}/{Sistema}API.php` |
-| Exceções personalizadas | `src/Exception/` |
+| HTTP / disco / processo CLI | `src/Infra/{Sistema}/` — HTTP base em `src/Infra/HTTP/Client.php` |
+| Exceções | `src/Exception/{Contexto}/{Nome}Exception.php` — factories estáticos descritivos |
 
 ---
 
@@ -159,16 +166,17 @@ Três camadas, sem exceção:
 
 | Camada | Faz | Não faz |
 | :--- | :--- | :--- |
-| **Controller** | Rota, DTO, chamar Service ou Feature, `$this->success()` / `$this->error()` | Regra de negócio, query, EntityManager |
-| **Service** | Uma ação de negócio, devolve o dado | Query; não empilhar 4+ ações no mesmo arquivo |
-| **Feature** | Orquestra vários services via `TaggedIterator` | Query; lógica toda num arquivo só |
+| **Controller** | Rota, DTO, chamar **um** Service atômico **ou** a Feature do contexto, `$this->success()` / `$this->error()` | Regra de negócio, query, EntityManager, I/O de disco/HTTP/processo |
+| **Service** | **Uma** ação de negócio, devolve o dado (ou DTO de saída) | Query; 8 ações no mesmo arquivo; `new OutroService()`; `$_ENV`/`getenv()` |
+| **Feature** | (1) orquestra vários Services atômicos do mesmo domínio **ou** (2) itera estratégias via `TaggedIterator` | Query; lógica toda num arquivo; fachada de 1 linha que descarta retorno |
 | **Repository** | Toda consulta e persistência | Regra de negócio HTTP |
+| **Infra** | HTTP, filesystem, processo CLI | Regra de domínio |
 
-Comece pelo **Controller** (contrato da rota). Em seguida o Service com a lógica. Toda busca (`find`, `createQueryBuilder`, SQL, `persist`, `flush`) vai para um método do Repository — o Service só chama esse método.
+Comece pelo **Controller**. Uma ação isolada → injeta o Service. Vários Services do mesmo domínio → injeta a **Feature de orquestração**, nunca um Service-fachada.
 
 ### 4.1 Controller
 
-Crie o Controller **primeiro**. Extends `DefaultController`. Corpo: ler DTO → chamar Service (ou Feature) → `$this->success()` / `$this->created()` / `$this->error()`. Sempre `Response`. Nada além disso.
+Crie o Controller **primeiro** em `src/Controller/{Contexto}/`. Extends `App\Controller\Common\DefaultController`. Corpo: ler DTO → chamar Service ou Feature → `$this->success()` / `$this->created()` / `$this->error()`. Sempre `Response`. Nada além disso.
 
 Envelope JSON: `{ success, data }` ou `{ success, error, details? }`. Chaves em **inglês**.
 
@@ -184,7 +192,7 @@ public function criar(#[MapRequestPayload] CriarPedidoDTO $dto): Response
 
 Rotas: prefixo `/api/v1/`, recurso no **plural**.
 
-Handler de fila (módulo `async`): mesma regra — zero regra de negócio; chama um Service.
+Handler de fila (módulo `async`): zero regra de negócio; chama um Service.
 
 ### 4.2 Entidade
 
@@ -192,6 +200,7 @@ Handler de fila (módulo `async`): mesma regra — zero regra de negócio; chama
 - Getter **sem** `get`: `nome()`, não `getNome()` — salvo contrato do Symfony (`UserInterface`).
 - Setter `setNome(): self`.
 - Fábrica `fromDTO`.
+- **Tell, Don't Ask:** mudança de estado via método de intenção (`classificarComo()`, `transicionarPara()`), não sequência de `set*()` soltos no Service.
 - Conjunto fechado de valores → Enum em `src/Enum/`, não string solta.
 
 ### 4.3 Migration
@@ -201,37 +210,53 @@ make new-migration
 make migrate
 ```
 
-Revise o SQL antes de aplicar.
+Revise o SQL antes de aplicar. Garanta índice/`UNIQUE` para unicidade de domínio (hash, nome, origem).
 
 ### 4.4 Repository
 
 **Único** lugar com query. `find`, `createQueryBuilder`, DQL, SQL, `persist`, `flush` — só aqui.
 
-**Proibido** no Service e no Controller: `EntityManagerInterface`, `createQueryBuilder`, `findBy`, consulta crua.
+**Proibido** no Service, Feature e Controller: `EntityManagerInterface`, `createQueryBuilder`, `findBy`, consulta crua.
 
-O Service pede dados com um método de intenção (`buscarPorUuid`, `usernameJaExiste`, `salvar`). Se a consulta ainda não existe, crie no Repository — não escreva a query no Service.
+O Service pede dados com método de intenção (`buscarPorUuid`, `usernameJaExiste`, `salvar`).
 
-Contrato do repositório (e de qualquer porta: cliente HTTP, fila) vai em `src/Interface/{Nome}Interface.php`. O Service/Feature tipa a interface, não a classe concreta.
+Lote: `$repository->remover($item, flush: false)` no loop e **um** `$repository->flush()` no final.
+
+Contrato de porta com 2+ implementações (ou substituição em teste) vai em `src/Interface/{Nome}Interface.php`. Não crie interface por dogmatismo quando só existe uma implementação sem plano de extensão.
 
 ### 4.5 DTO
 
-`final readonly class` em `src/DataObject/`, nome `VerboEntidadeDTO`. Sem setters. Getter = nome da propriedade. Validar com `#[Assert\…]`. Entrada HTTP via `MapRequestPayload` / `MapQueryString` — não monte array na mão com `$request->get()`.
+`final readonly class` em `src/DataObject/{Contexto}/`, nome `VerboEntidadeDTO`. Sem setters. Getter = nome da propriedade. Validar com `#[Assert\…]`. Entrada HTTP via `MapRequestPayload` / `MapQueryString` — não monte array na mão com `$request->get()`.
+
+**PROIBIDO** no DTO: `file_exists`, `hash_file`, I/O, chamada de serviço. DTO só carrega dados. Hash/arquivo pertencem ao Service ou à Infra.
+
+Retorno composto (upload + duplicado, lote + falhas) → DTO de saída (`ResultadoUploadDTO`), nunca `array{...}` mágico.
 
 ### 4.6 Service
 
-Toda lógica de negócio fica **aqui**, não no Controller. Um service = **uma ação**. Nome: `CriarPedidoService`. `final class`, deps no construtor, um método `executar()` que devolve o dado.
+Toda lógica de negócio fica **aqui**. Um service = **uma ação**. Nome: `CriarPedidoService`. `final class`, deps no construtor, método `executar()`.
 
 - Sem Request/Response.
-- **Sem query.** Precisa de dado do banco? Chame o Repository. Não monte QueryBuilder, DQL nem `find` no Service.
-- Erro previsto (duplicado, estado inválido) → `throw new \DomainException('codigo_duplicado', 409)`. O `KernelExceptionListener` responde `{ success: false, error }`.
+- **Sem query.**
+- **Sem `new Service()`** — só construtor DI.
+- **Sem** `$_ENV` / `getenv()` — parâmetro via `services.yaml` / `#[Autowire('%env(...)%')]`.
+- **Sem** `mkdir`, `copy`, `unlink`, `@unlink`, `Process`, `HttpClientInterface` / `$client->request()` — isso é `src/Infra/`.
+- **Sem** FQCN inline (`\App\DataObject\Foo`) — `use` no topo.
+- Erro previsto → **exceção do contexto** com factory estático (`throw PedidoException::codigoJaCadastrado()`). **PROIBIDO** `throw new \DomainException(...)`, `\RuntimeException`, `\Exception`.
 - Guard clauses baratas primeiro (dado local → memória → Repository → API externa).
+- Sem `else` — inverta e retorne cedo.
+- Valor de comportamento (timeout, permissão, hash, formato de data, extensão, prefixo de pasta) → `private const` no topo da classe, **mesmo que apareça uma vez**.
+- **PROIBIDO** constante de código de erro (`ERRO_NAO_ENCONTRADO = 'media_item_nao_encontrado'`). A mensagem vive no factory da exceção.
+- Service com 5+ dependências de negócio → vira Feature de orquestração.
+- Lote: capture **exceções de domínio/infra esperadas por item**, colete `{processados, falhas}`, continue o loop. **NUNCA** `catch (\Throwable)` cobrindo `TypeError`/`Error`. **NUNCA** abortar o lote inteiro na primeira falha.
 
 ```php
 public function executar(CriarPedidoDTO $dto): Pedido
 {
     if ($this->repositorio->jaExiste($dto->codigo())) {
-        throw new \DomainException('codigo_duplicado', 409);
+        throw PedidoException::codigoJaCadastrado();
     }
+
     $pedido = Pedido::fromDTO($dto);
     $this->repositorio->salvar($pedido);
 
@@ -239,15 +264,21 @@ public function executar(CriarPedidoDTO $dto): Pedido
 }
 ```
 
-### 4.7 Feature e tagged iterator
+**PROIBIDO** Service-fachada com 11 métodos de uma linha que só delegam e ainda descartam parte do retorno. Ou o Controller chama o Service atômico, ou a Feature orquestra **sem perder dado**.
 
-**Proibido** juntar a lógica grande num único Service/arquivo (`if`, `switch`, quatro `executar()`). Sempre que a lógica for grande, repetida ou tiver várias peças, **parta em vários services** com a mesma interface e deixe a Feature só iterar. Como vão ser vários services, **organize sempre assim** — não injete um por um “na mão”.
+### 4.7 Feature — dois formatos oficiais
 
-Fluxo obrigatório:
+Os dois moram em `src/Feature/{Contexto}/{Nome}Feature.php`. Sem query. Sem I/O cru.
 
-1. Interface em `src/Interface/` com tag.
-2. Um Service pequeno por regra/peça (`src/Service/`).
-3. Feature em `src/Feature/` com `#[TaggedIterator]`. Sem query, sem HTTP.
+#### 4.7.1 Orquestração de domínio
+
+Quando um contexto tem **vários Services atômicos** (classificar, apagar, retentar, upload) e o Controller precisaria injetar todos, **a Feature orquestra**. Cada Service continua com uma ação. A Feature coordena e devolve o resultado completo.
+
+Controller/Command injeta **só a Feature** desse contexto — não recrie um `MediaItemService` fachada em `src/Service/`.
+
+#### 4.7.2 TaggedIterator (pipeline / estratégia)
+
+Quando há regras/estratégias expansíveis: interface com tag + vários Services pequenos + Feature que só itera.
 
 ```php
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -283,50 +314,74 @@ final class CalcularDescontoFeature
 }
 ```
 
-Nova peça = nova classe. A Feature não muda. Symfony registra sozinho.
-
-**Quando isso é o padrão (sempre que possível)**
-
-- Lógica grande ou que se repete (desconto, validação, imposto, fraude, permissão).
-- Várias peças do mesmo conceito: pagamento, exportação, notificação, frete, parser, webhook.
-- Pipeline de etapas (`#[AsTaggedItem(priority: 100)]` define a ordem).
-- Outro módulo precisa plugar comportamento sem conhecer a Feature.
+Nova peça = nova classe. A Feature não muda.
 
 Um único Service atômico (criar pedido, buscar por uuid) **não** vira Feature.
 
-**Variações:** `TaggedLocator` + `#[AsTaggedItem(index: 'pix')]` quando a Feature já sabe a chave e só instancia o que usar.
-
-O Controller chama a Feature.
+`TaggedLocator` + `#[AsTaggedItem(index: 'pix')]` quando a Feature já sabe a chave.
 
 ### 4.8 Serializer
 
-Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps.
+Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps. Pasta: `src/Serializer/{Contexto}/`.
 
-### 4.9 Clientes HTTP e Infraestrutura (`src/Infra/` e `src/Exception/`)
+### 4.9 Infraestrutura (`src/Infra/`) e exceções (`src/Exception/`)
 
-**PROIBIDO**: Fazer requisições HTTP cruas (`HttpClientInterface` ou `$client->request()`) diretamente em Services ou Commands.
+**PROIBIDO** em Service/Command/Feature: HTTP cru, `Process`, `mkdir`/`copy`/`unlink`/`file_exists`/`@unlink`.
 
-Toda integração com APIs/sistemas externos deve ser desacoplada em `src/Infra/{Sistema}/`:
+1. HTTP base: `src/Infra/HTTP/Client.php` (`request()`, `requestRaw()`).
+2. Cliente por sistema: `src/Infra/{Sistema}/{Sistema}Client.php` e `{Sistema}API.php`.
+3. Disco: `src/Infra/Storage/` — `criarDiretorio()` usa `0755` via `private const`, valida retorno de `unlink`/`mkdir`/`copy`, lança exceção do contexto se falhar.
+4. Processo CLI: `src/Infra/{Ferramenta}/` — timeout e formato viram `private const`.
+5. DI: `base_uri` e `%env(...)%` no `services.yaml`. Zero `$_ENV`/`getenv()`.
+6. Porta com 2+ implementações: interface em `src/Interface/`.
 
-1. **Base Client Abstrato (`src/Infra/Client.php`)**:
-   - Injeta `\GuzzleHttp\ClientInterface` e `baseUrl`.
-   - Método `protected function request()` executa a requisição, trata `RequestException` via `executarRequisicao()`, deserializa via Symfony Serializer (se `$type` for informado) ou decodifica JSON e valida via `Assert::isArray()`.
-   - Método `protected function requestRaw()` para respostas puras em string.
-2. **Cliente por Sistema (`src/Infra/{Sistema}/{Sistema}Client.php`)**:
-   - Classe abstrata estendendo `App\Infra\Client` configurando a `$baseUrl` no construtor.
-3. **API do Sistema (`src/Infra/{Sistema}/{Sistema}API.php`)**:
-   - Classe concreta estendendo `{Sistema}Client` implementando os métodos de ação (`consultarStatus()`, `enviarCobranca()`, etc.).
-4. **Configuração DI (`config/services.yaml`)**:
-   - Registra o `GuzzleHttp\Client` do serviço com `base_uri` e o injeta na classe `{Sistema}API`.
-5. **Exceções Personalizadas (`src/Exception/`)**:
-   - Crie exceções sob `src/Exception/` estendendo `ClienteHTTPException` para tratamento refinado de erros externos.
+#### 4.9.1 Exceções personalizadas
+
+**PROIBIDO:** `throw new \DomainException`, `\RuntimeException`, `\Exception` no corpo do método. **PROIBIDO:** slug snake_case (`'erro_salvar_arquivo'`). **PROIBIDO:** factory curto ou com `_` (`erroSalvarArquivo`, `erro_salvar`). **PROIBIDO:** constante de código de erro.
+
+**SEMPRE:**
+
+- Uma classe por contexto em `src/Exception/{Contexto}/{Nome}Exception.php` estendendo `\DomainException`.
+- HTTP de cliente: estende `App\Exception\HTTP\ClienteHTTPException` (que já estende `\DomainException`).
+- Métodos **estáticos descritivos em camelCase**, frase da causa em português (`falhaAoExtrairMetadataDoVideo()`).
+- Primeiro argumento: **frase completa em português**, não identificador. O `KernelExceptionListener` devolve essa frase em `{ error }`.
+- Não concatene `$e->getMessage()` de lib externa na mensagem pública; passe a anterior em `$previous` para o log.
+
+```php
+namespace App\Exception\Pedido;
+
+class PedidoException extends \DomainException
+{
+    public static function codigoJaCadastrado(): self
+    {
+        return new self('Já existe um pedido cadastrado com este código.', 409);
+    }
+
+    public static function pedidoNaoEncontradoPorUuid(): self
+    {
+        return new self('Nenhum pedido foi encontrado com o UUID informado.', 404);
+    }
+}
+```
+
+Chamada: `throw PedidoException::codigoJaCadastrado();`
+
+### 4.10 Constantes (magic values)
+
+Qualquer número/string de **comportamento** vira `private const` no topo da classe, mesmo usado uma vez: timeout, permissão (`0755`), algoritmo (`sha256`), formato de data, extensão padrão, prefixo de diretório.
+
+Chaves de array de metadata compartilhadas → constantes em `src/Support/{Contexto}Keys.php`, nunca `'url_original'` solto em dois Services.
+
+Prefixo de pasta temporária compartilhado → parâmetro em `services.yaml`, não `sys_get_temp_dir().'/projeto_uploads'` copiado em três arquivos.
+
+Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele precisava de nome.
 
 ---
 
 ## 5. Passo a passo de uma feature nova
 
 1. Entender a tela e o contrato JSON.
-2. Backend: **Controller primeiro**. Service atômico. Lógica grande/repetida → vários services + interface + `TaggedIterator` na Feature. Nunca um arquivo com toda a lógica. Repository para toda consulta → Entidade / migration / DTO / Serializer.
+2. Backend: **Controller primeiro** em `src/Controller/{Contexto}/`. Service atômico em `src/Service/{Contexto}/`. Vários services do domínio → Feature em `src/Feature/{Contexto}/`. Exceção em `src/Exception/{Contexto}/`. I/O em `src/Infra/`. Repository para toda consulta.
 3. Frontend: `types.ts` → `api.ts` → hook → componentes HeroUI + layout → página `Component` → rota lazy em `App.tsx`.
 4. Se a rota for autenticada, registrar em `RotaProtegida`.
 5. `make lint-all`. Corrigir o que o Biome/PHP apontar.
@@ -335,16 +390,21 @@ Toda integração com APIs/sistemas externos deve ser desacoplada em `src/Infra/
 
 ## 6. Checklist rápido (antes de encerrar)
 
+- [ ] Sem arquivo solto na raiz de `src/Controller/`, `src/Service/`, `src/Exception/`, `src/Feature/`
 - [ ] Sem `<div>` / `<p>` / `<h*>` / `<span>` — só primitivos de `@/shared/ui/layout`
 - [ ] Sem Header/Footer na página
 - [ ] Sem `useEffect`
 - [ ] Sem Axios fora de `config/api.ts` e dos `api.ts` da feature
-- [ ] Controller extends `DefaultController`; só chama Service ou Feature; retorna `$this->success()` / `$this->error()` (`Response`)
-- [ ] Lógica só no Service (ou Feature orquestrando services) — zero query, zero EntityManager
-- [ ] Lógica grande ou repetida → vários services + interface + `TaggedIterator` na Feature, nunca um arquivo só
-- [ ] Toda consulta/persistência no Repository
-- [ ] Contrato novo em `src/Interface/{Nome}Interface.php`
-- [ ] DTO validado, sem setter
+- [ ] Controller extends `App\Controller\Common\DefaultController`; chama Service atômico **ou** Feature; `$this->success()` / `$this->error()`
+- [ ] Um Service = uma ação; vários do mesmo domínio → Feature de orquestração (não fachada que descarta retorno)
+- [ ] Pipeline/estratégia expansível → interface + `TaggedIterator` na Feature
+- [ ] Zero query / EntityManager fora do Repository
+- [ ] Zero `new Service()`, zero `$_ENV`/`getenv()`
+- [ ] Zero `mkdir`/`copy`/`unlink`/`Process`/HTTP cru no Service — só `src/Infra/`
+- [ ] Zero `throw new \DomainException` — factory estático descritivo, mensagem frase completa em PT
+- [ ] Magic values viraram `private const` (não código de erro)
+- [ ] Lote captura exceção **esperada** por item e devolve relatório; um `flush()` no fim
+- [ ] DTO sem I/O; retorno composto vira DTO de saída
 - [ ] JSON via Serializer, não entidade
 - [ ] Nomes em português, descritivos
 - [ ] `make lint-all` passou

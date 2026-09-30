@@ -85,18 +85,18 @@ Configurações de ferramentas centralizadas para reduzir poluição na raiz:
 ```
 src/
 ??? Command/            CLI: AppSeedCommand, CronHeartbeatCommand, JwtMasterCommand
-??? Controller/         API REST ? roteamento e orquestração leve
+??? Controller/         Common/DefaultController · Sistema/ · {Contexto}/
 ??? DataObject/         DTOs de entrada tipados e validados
 ??? Entity/             Entidades Doctrine (Usuario, RefreshToken)
 ??? Enum/               Enums PHP 8.1+
 ??? EventListener/      Listeners + Event/ (fatos de domínio)
-??? Exception/          ClienteHTTPException e exceções de APIs externas
-??? Feature/            *Feature.php + TaggedIterator (lógica grande em vários services)
-??? Infra/              Client.php + {Sistema}Client / {Sistema}API (Guzzle)
+??? Exception/          HTTP/ClienteHTTPException · {Contexto}/
+??? Feature/            {Contexto}/ orquestração ou TaggedIterator
+??? Infra/              HTTP/Client.php + {Sistema}/ (Guzzle, disco, CLI)
 ??? Interface/          Contratos PHP (*Interface.php)
 ??? Repository/         Acesso ao banco, queries DQL/QueryBuilder
 ??? Serializer/         Contratos JSON de saída
-??? Service/            Lógica de negócio (um service = uma ação)
+??? Service/            {Contexto}/ uma ação por classe
 ??? Kernel.php
 ```
 

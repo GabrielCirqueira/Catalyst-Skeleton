@@ -42,7 +42,7 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 | Symfony Rate Limiter | 7.x | Proteção contra brute-force em login e endpoints | ✅ Core |
 | NelmioCorsBundle | 3.x | Configuração CORS para todos os endpoints `/api/*` | ✅ Core |
 | Monolog | 3.x | Logs estruturados (JSON em produção) | ✅ Core |
-| Guzzle | 7.x | Cliente HTTP para APIs externas (`src/Infra/Client.php`) | ✅ Core |
+| Guzzle | 7.x | Cliente HTTP para APIs externas (`src/Infra/HTTP/Client.php`) | ✅ Core |
 | PHPStan | 2.x | Análise estática — nível 6 | ✅ Core |
 | PHP_CodeSniffer | 3.x | Estilo de código PSR-12 | ✅ Core |
 | Symfony Messenger | 7.x | Fila de mensagens com transporte Doctrine | 🔧 Módulo `async` |
@@ -134,18 +134,18 @@ Referência técnica completa do **Catalyst Skeleton** — fundação opinativa 
 ├── src/                      # Código PHP da aplicação
 │   ├── Kernel.php
 │   ├── Command/              # Comandos CLI (Console Component)
-│   ├── Controller/           # DefaultController (API) + FrontendController (SPA)
+│   ├── Controller/           # Common/DefaultController · Sistema/ · {Contexto}/
 │   ├── DataObject/           # DTOs: entrada validada de dados
 │   ├── Entity/               # Entidades Doctrine (UUID v7 como PK)
 │   ├── Enum/                 # Enums PHP 8.1+ usados em entidades e DTOs
 │   ├── EventListener/        # Listeners + Event/ (fatos de domínio)
-│   ├── Exception/            # ClienteHTTPException e exceções de APIs externas
-│   ├── Feature/              # TaggedIterator — lógica grande em vários services
-│   ├── Infra/                # Client.php + clientes HTTP externos (Guzzle)
+│   ├── Exception/            # HTTP/ClienteHTTPException · {Contexto}/
+│   ├── Feature/              # {Contexto}/ orquestração e/ou TaggedIterator
+│   ├── Infra/                # HTTP/Client.php + {Sistema}/ (Guzzle, disco, CLI)
 │   ├── Interface/            # Contratos PHP (*Interface.php)
 │   ├── Repository/           # Acesso ao banco de dados via Doctrine
 │   ├── Serializer/           # Normalizadores para o JSON de saída (contrato da API)
-│   ├── Service/              # Lógica de negócio e orquestração
+│   ├── Service/              # {Contexto}/ uma ação por classe
 │   │
 │   │   [módulo async — copiados pelo setup.sh quando --async é ativado]
 │   ├── Message/              # Payloads de mensagens para o Messenger
@@ -268,12 +268,12 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 | **DTOs** | `src/DataObject/` | Mapeiam o payload HTTP para um objeto tipado antes de chegar ao Service. |
 | **Repositórios** | `src/Repository/` | Único lugar onde o `EntityManager` é injetado. Queries em DQL/QueryBuilder. |
 | **Interfaces** | `src/Interface/` | Contratos. Porta (repo/HTTP) ou família tagged: `#[AutoconfigureTag]` + vários services + Feature. |
-| **Services** | `src/Service/` | **Uma** ação. `executar()`. Sem query. Peças de uma família tagged também são services. |
-| **Features** | `src/Feature/` | Padrão para lógica grande/repetida: `TaggedIterator` sobre vários services. Não faz query. Não concentra lógica num arquivo. |
+| **Services** | `src/Service/{Contexto}/` | **Uma** ação. `executar()`. Sem query. Sem I/O cru. Sem fachada que descarta retorno. |
+| **Features** | `src/Feature/{Contexto}/` | Orquestra vários services do domínio **ou** `TaggedIterator`. Não faz query. |
 | **Serializers** | `src/Serializer/` | Definem o contrato JSON de saída. Protegem o frontend de mudanças internas no banco. |
-| **Controllers** | `src/Controller/` | API extends `DefaultController` (`Response`). SPA em `FrontendController`. |
-| **Infra** | `src/Infra/` | Clientes HTTP externos. `Client.php` base + `{Sistema}Client` + `{Sistema}API`. Nunca HTTP cru em Service/Command. |
-| **Exceptions** | `src/Exception/` | `ClienteHTTPException` e especializações por sistema externo. |
+| **Controllers** | `src/Controller/{Contexto}/` | API extends `Common\DefaultController`. SPA em `Sistema/FrontendController`. Zero arquivo na raiz. |
+| **Infra** | `src/Infra/{Sistema}/` | HTTP (`HTTP/Client.php`), disco, processo CLI. Nunca I/O cru em Service/Command. |
+| **Exceptions** | `src/Exception/{Contexto}/` | Factory estático descritivo, mensagem frase em PT. HTTP: `HTTP/ClienteHTTPException`. |
 | **Events / Listeners** | `src/EventListener/` (`Event/` = fato, classes irmãs = reação) | Desacoplamento de efeitos colaterais (e-mail, auditoria). |
 | **Messages / Handlers** | `src/Message/`, `src/MessageHandler/` | Processamento assíncrono via Messenger. **Módulo `async` — só existe se ativado no setup.** |
 | **Commands** | `src/Command/` | CLI da aplicação via `php bin/console`. |
@@ -281,7 +281,7 @@ Definidas em `ports.env` e referenciadas pelo `docker-compose.yaml`. Edite esse 
 
 ### 5.2 `DefaultController`
 
-Todo controller de API extends `src/Controller/DefaultController.php` e devolve `Response`. Chaves JSON em inglês.
+Todo controller de API extends `src/Controller/Common/DefaultController.php` e devolve `Response`. Chaves JSON em inglês.
 
 | Método | HTTP | JSON |
 | :--- | :--- | :--- |
@@ -300,7 +300,7 @@ public function criar(#[MapRequestPayload] CriarUsuarioDTO $dto): Response
 }
 ```
 
-Service devolve o dado. Erro previsto: `throw new \DomainException('email_duplicado', 409)`. O `KernelExceptionListener` responde no mesmo envelope.
+Service devolve o dado. Erro previsto: `throw UsuarioException::emailDuplicado()`. O `KernelExceptionListener` responde no mesmo envelope.
 
 ### 5.3 `KernelExceptionListener`
 
