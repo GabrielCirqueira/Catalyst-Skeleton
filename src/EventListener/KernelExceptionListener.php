@@ -48,7 +48,7 @@ final class KernelExceptionListener
             }
         } elseif ($exception instanceof \DomainException) {
             $code = $exception->getCode();
-            $statusCode = (in_array($code, [400, 401, 403, 404, 409, 422], true))
+            $statusCode = (in_array($code, [400, 401, 403, 404, 409, 422, 500, 502], true))
                 ? (int) $code
                 : Response::HTTP_BAD_REQUEST;
 

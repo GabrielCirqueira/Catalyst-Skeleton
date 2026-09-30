@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Infra;
+namespace App\Infra\HTTP;
 
-use App\Exception\ClienteHTTPException;
+use App\Exception\HTTP\ClienteHTTPException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
@@ -101,10 +101,10 @@ abstract class Client
      */
     private function excecaoPadrao(string $method, string $uri): callable
     {
-        return static fn (RequestException $exception): \Throwable => new ClienteHTTPException(
-            message: sprintf('Erro ao executar requisição HTTP [%s %s]: %s', $method, $uri, $exception->getMessage()),
-            code: (int) $exception->getCode(),
-            previous: $exception,
+        return static fn (RequestException $exception): \Throwable => ClienteHTTPException::falhaAoExecutarRequisicaoHttp(
+            $method,
+            $uri,
+            $exception,
         );
     }
 }

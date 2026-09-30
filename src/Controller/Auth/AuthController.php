@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Auth;
 
-use App\Controller\DefaultController;
+use App\Controller\Common\DefaultController;
 use App\Entity\Usuario;
 use App\Repository\UsuarioRepository;
 use Symfony\Component\HttpFoundation\Request;
