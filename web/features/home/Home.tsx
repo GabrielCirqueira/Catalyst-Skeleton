@@ -1,35 +1,26 @@
 import { useTheme } from '@/contexts'
 import type { MainLayoutContext } from '@/layouts'
-import { Box, Container, Grid, HStack, Text, VStack } from '@/shared/ui/layout'
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
   Accordion,
-  AccordionBody,
-  AccordionHeading,
-  AccordionIndicator,
-  AccordionItem,
-  AccordionPanel,
-  AccordionTrigger,
+  Badge,
+  Box,
   Button,
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Chip,
+  Center,
+  Container,
+  Field,
+  HStack,
+  Heading,
   Input,
-  Label,
-  ProgressBar,
-  ProgressBarFill,
-  ProgressBarOutput,
-  ProgressBarTrack,
+  InputGroup,
+  Progress,
   Separator,
-  SwitchContent,
-  SwitchControl,
-  SwitchRoot,
-  SwitchThumb,
-  TextField,
-  buttonVariants,
-} from '@heroui/react'
+  SimpleGrid,
+  Switch,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import {
   Activity,
   ArrowRight,
@@ -70,19 +61,12 @@ const techStack = [
   {
     category: 'Frontend',
     icon: Code2,
-    items: [
-      'React 19',
-      'TypeScript 5.9',
-      'Vite 7',
-      'Tailwind CSS 4',
-      'HeroUI v3',
-      'React Router 7',
-    ],
+    items: ['React 19', 'TypeScript 5.9', 'Vite 7', 'Chakra UI v3', 'React Router 7'],
   },
   {
     category: 'Estado & Dados',
     icon: Activity,
-    items: ['TanStack Query 5', 'Zustand 5', 'Zod 4', 'Axios', 'React Aria'],
+    items: ['TanStack Query 5', 'Zustand 5', 'Zod 4', 'Axios'],
   },
   {
     category: 'Infraestrutura',
@@ -94,34 +78,38 @@ const techStack = [
 const steps = [
   {
     n: '01',
-    icon: Code2,
     title: 'Clone e configure',
     desc: 'Execute ./scripts/setup.sh, escolha os módulos opcionais e configure seu .env.',
   },
   {
     n: '02',
-    icon: Terminal,
     title: 'Suba o ambiente',
     desc: 'docker compose up -d inicia backend, banco de dados, frontend e proxy.',
   },
   {
     n: '03',
-    icon: Rocket,
     title: 'Comece a codar',
     desc: 'Autenticação pronta, rotas protegidas, hot reload — foque na regra de negócio.',
   },
 ]
 
 const teamMembers = [
-  {
-    initials: 'GC',
-    name: 'Gabriel C.',
-    role: 'Arquitetura',
-    bg: 'bg-brand-500/20',
-    text: 'text-brand-500',
-  },
-  { initials: 'AD', name: 'API Dev', role: 'Backend', bg: 'bg-success/20', text: 'text-success' },
-  { initials: 'UD', name: 'UI Dev', role: 'Frontend', bg: 'bg-warning/20', text: 'text-warning' },
+  { initials: 'GC', name: 'Gabriel C.', role: 'Arquitetura', palette: 'brand' },
+  { initials: 'AD', name: 'API Dev', role: 'Backend', palette: 'green' },
+  { initials: 'UD', name: 'UI Dev', role: 'Frontend', palette: 'orange' },
+] as const
+
+const alertas = [
+  { palette: 'green' as const, icon: '✓', msg: 'Deploy realizado com sucesso' },
+  { palette: 'orange' as const, icon: '⚠', msg: 'Rate limit em 80%' },
+  { palette: 'red' as const, icon: '!', msg: 'Token expirado' },
+]
+
+const stats = [
+  { label: 'Linhas de código', value: '< 2k', icon: Code2, palette: 'brand' as const },
+  { label: 'Dependências core', value: '18', icon: Package, palette: 'green' as const },
+  { label: 'Endpoints prontos', value: '5', icon: Globe, palette: 'orange' as const },
+  { label: 'Setup em minutos', value: '< 3', icon: Zap, palette: 'red' as const },
 ]
 
 export function Component() {
@@ -141,291 +129,306 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
   return (
     <Box>
-      {/* ════════════════════════════════════════════
-          HERO
-      ════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden">
-        <Box className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-5%,color-mix(in_oklch,var(--color-brand-500)_20%,transparent),transparent)] pointer-events-none" />
-        <Box className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_70%,var(--color-background))] pointer-events-none" />
+      <Box as="section" position="relative" overflow="hidden">
+        <VStack
+          position="relative"
+          maxW="6xl"
+          mx="auto"
+          px="6"
+          pt="20"
+          pb="12"
+          align="center"
+          textAlign="center"
+          gap="6"
+        >
+          <Badge variant="subtle" colorPalette="brand">
+            <Sparkles size={12} />
+            v5.0 · Chakra UI v3
+          </Badge>
 
-        <VStack className="relative max-w-6xl mx-auto px-6 pt-20 pb-12 items-center text-center gap-6">
-          <Chip
-            variant="soft"
-            size="sm"
-            className="border border-brand-500/30 bg-brand-500/10 text-brand-600 motion-preset-fade"
-          >
-            <Sparkles className="size-3 mr-1" />
-            v5.0 · Tailwind 4 + HeroUI v3
-          </Chip>
-
-          <VStack className="gap-3 motion-preset-slide-up motion-delay-100">
-            <Text
+          <VStack gap="3">
+            <Heading
               as="h1"
-              className="text-5xl sm:text-7xl font-black font-sans tracking-tight leading-none"
+              fontSize={{ base: '5xl', sm: '7xl' }}
+              fontWeight="black"
+              letterSpacing="tight"
+              lineHeight="1"
             >
               Catalyst{' '}
-              <Text as="span" className="text-brand-500">
+              <Text as="span" color="brand.fg">
                 Skeleton
               </Text>
-            </Text>
-            <Text className="text-lg text-muted max-w-xl mx-auto">
+            </Heading>
+            <Text fontSize="lg" color="fg.muted" maxW="xl">
               Fundação opinativa para aplicações{' '}
-              <strong className="text-foreground font-semibold">Symfony + React</strong>. Core
-              enxuto, módulos opt-in, pronto para produção.
+              <Text as="span" color="fg" fontWeight="semibold">
+                Symfony + React
+              </Text>
+              . Core enxuto, módulos opt-in, pronto para produção.
             </Text>
           </VStack>
 
           {autenticado ? (
-            <HStack className="px-4 py-2 rounded-xl bg-success/10 border border-success/20 text-success text-sm font-medium">
-              <CheckCircle2 className="size-4" />
+            <HStack
+              px="4"
+              py="2"
+              rounded="xl"
+              bg="green.subtle"
+              borderWidth="1px"
+              borderColor="green.muted"
+              color="green.fg"
+              fontSize="sm"
+              fontWeight="medium"
+            >
+              <CheckCircle2 size={16} />
               Bem-vindo, {usuario?.nomeCompleto ?? usuario?.username}!
             </HStack>
           ) : (
-            <HStack className="gap-3 flex-wrap justify-center motion-preset-fade motion-delay-200">
-              <button
-                type="button"
-                onClick={onAbrirModal}
-                className={buttonVariants({ variant: 'primary' })}
-              >
-                <LogIn className="size-4" />
+            <HStack gap="3" wrap="wrap" justify="center">
+              <Button type="button" onClick={onAbrirModal} colorPalette="brand">
+                <LogIn size={16} />
                 Começar agora
-              </button>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noreferrer"
-                className={buttonVariants({ variant: 'outline' })}
-              >
-                <Github className="size-4" />
-                Ver no GitHub
-              </a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="https://github.com" target="_blank" rel="noreferrer">
+                  <Github size={16} />
+                  Ver no GitHub
+                </a>
+              </Button>
             </HStack>
           )}
 
-          <HStack className="flex-wrap justify-center gap-2 motion-preset-fade motion-delay-300">
-            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Tailwind 4', 'Docker'].map((t) => (
-              <Text
-                as="span"
-                key={t}
-                className="px-3 py-1 rounded-full text-xs font-medium bg-surface-secondary border border-border text-muted"
-              >
+          <HStack wrap="wrap" justify="center" gap="2">
+            {['PHP 8.4', 'Symfony 7', 'React 19', 'TypeScript', 'Chakra UI', 'Docker'].map((t) => (
+              <Badge key={t} variant="outline">
                 {t}
-              </Text>
+              </Badge>
             ))}
           </HStack>
         </VStack>
-      </section>
+      </Box>
 
-      {/* ════════════════════════════════════════════
-          COMPONENT SHOWCASE
-      ════════════════════════════════════════════ */}
-      <section id="showcase" className="max-w-6xl mx-auto px-6 py-16">
-        <VStack className="items-center gap-2 mb-10 text-center">
-          <Chip
-            variant="soft"
-            size="sm"
-            className="bg-brand-500/10 text-brand-600 border border-brand-500/20"
-          >
+      <Box as="section" id="showcase" maxW="6xl" mx="auto" px="6" py="16">
+        <VStack align="center" gap="2" mb="10" textAlign="center">
+          <Badge variant="subtle" colorPalette="brand">
             Componentes
-          </Chip>
-          <Text as="h2" className="text-3xl font-bold font-sans">
+          </Badge>
+          <Heading as="h2" size="2xl">
             Tudo que você precisa, pronto
-          </Text>
-          <Text className="text-muted text-sm max-w-md">
-            HeroUI v3 + Tailwind 4 integrados. Veja os componentes em ação.
+          </Heading>
+          <Text color="fg.muted" fontSize="sm" maxW="md">
+            Chakra UI v3. Veja os componentes em ação.
           </Text>
         </VStack>
 
-        <Grid className="grid-cols-1 md:grid-cols-3">
-          <Card className="border border-border shadow-sm bg-surface">
-            <CardHeader className="pb-2">
-              <HStack className="mb-1">
-                <Box className="size-7 rounded-lg bg-brand-500/10 flex items-center justify-center">
-                  <Shield className="size-4 text-brand-500" strokeWidth={1.5} />
-                </Box>
-                <CardTitle className="text-sm font-semibold">Autenticação</CardTitle>
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap="4">
+          <Card.Root>
+            <Card.Header pb="2">
+              <HStack mb="1">
+                <Center boxSize="7" rounded="lg" bg="brand.subtle" color="brand.fg">
+                  <Shield size={16} strokeWidth={1.5} />
+                </Center>
+                <Card.Title fontSize="sm" fontWeight="semibold">
+                  Autenticação
+                </Card.Title>
               </HStack>
-              <Text className="text-xs text-muted">JWT RS256 com refresh token integrado</Text>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              <TextField>
-                <Label className="text-xs font-medium">Email</Label>
-                <Box className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted pointer-events-none" />
+              <Text fontSize="xs" color="fg.muted">
+                JWT RS256 com refresh token integrado
+              </Text>
+            </Card.Header>
+            <Card.Body gap="3">
+              <Field.Root>
+                <Field.Label>Email</Field.Label>
+                <InputGroup startElement={<Mail size={14} />}>
                   <Input
                     type="email"
                     placeholder="john@exemplo.com"
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
-                    className="pl-8 w-full text-sm"
                   />
-                </Box>
-              </TextField>
+                </InputGroup>
+              </Field.Root>
 
-              <TextField>
-                <Label className="text-xs font-medium">Senha</Label>
-                <Box className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted pointer-events-none" />
+              <Field.Root>
+                <Field.Label>Senha</Field.Label>
+                <InputGroup startElement={<Lock size={14} />}>
                   <Input
                     type="password"
                     placeholder="••••••••"
                     value={formSenha}
                     onChange={(e) => setFormSenha(e.target.value)}
-                    className="pl-8 w-full text-sm"
                   />
-                </Box>
-              </TextField>
+                </InputGroup>
+              </Field.Root>
 
-              <Button variant="primary" fullWidth size="sm" className="mt-1">
+              <Button colorPalette="brand" width="full" size="sm" mt="1">
                 Entrar na conta
               </Button>
 
-              <HStack className="gap-3">
-                <Box className="flex-1 h-px bg-border" />
-                <Text as="span" className="text-xs text-muted">
+              <HStack gap="3">
+                <Box flex="1" h="1px" bg="border" />
+                <Text as="span" fontSize="xs" color="fg.muted">
                   ou
                 </Text>
-                <Box className="flex-1 h-px bg-border" />
+                <Box flex="1" h="1px" bg="border" />
               </HStack>
 
-              <Grid className="grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
-                >
-                  <Globe className="size-3.5" />
+              <SimpleGrid columns={2} gap="2">
+                <Button type="button" variant="outline" size="sm">
+                  <Globe size={14} />
                   Google
-                </button>
-                <button
-                  type="button"
-                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
-                >
-                  <Github className="size-3.5" />
+                </Button>
+                <Button type="button" variant="outline" size="sm">
+                  <Github size={14} />
                   GitHub
-                </button>
-              </Grid>
+                </Button>
+              </SimpleGrid>
 
-              <HStack className="flex-wrap gap-2 pt-1">
-                <Chip size="sm" variant="soft" color="success">
+              <HStack wrap="wrap" gap="2" pt="1">
+                <Badge size="sm" variant="subtle" colorPalette="green">
                   ✓ Refresh Token
-                </Chip>
-                <Chip size="sm" variant="soft" color="accent">
+                </Badge>
+                <Badge size="sm" variant="subtle" colorPalette="brand">
                   RS256
-                </Chip>
-                <Chip size="sm" variant="soft" color="default">
+                </Badge>
+                <Badge size="sm" variant="subtle">
                   Stateless
-                </Chip>
+                </Badge>
               </HStack>
-            </CardContent>
-          </Card>
+            </Card.Body>
+          </Card.Root>
 
-          <Card className="border border-border shadow-sm bg-surface">
-            <CardHeader className="pb-2">
-              <HStack className="mb-1">
-                <Box className="size-7 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <Activity className="size-4 text-accent" strokeWidth={1.5} />
-                </Box>
-                <CardTitle className="text-sm font-semibold">Controles & Progresso</CardTitle>
+          <Card.Root>
+            <Card.Header pb="2">
+              <HStack mb="1">
+                <Center boxSize="7" rounded="lg" bg="brand.subtle" color="brand.fg">
+                  <Activity size={16} strokeWidth={1.5} />
+                </Center>
+                <Card.Title fontSize="sm" fontWeight="semibold">
+                  Controles & Progresso
+                </Card.Title>
               </HStack>
-              <Text className="text-xs text-muted">Switches, barras de progresso e tema</Text>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <VStack className="gap-3">
-                <SwitchRoot
-                  isSelected={theme === 'dark'}
-                  onChange={toggleTheme}
-                  className="flex-row items-center justify-between w-full"
+              <Text fontSize="xs" color="fg.muted">
+                Switches, barras de progresso e tema
+              </Text>
+            </Card.Header>
+            <Card.Body gap="4">
+              <VStack gap="3">
+                <Switch.Root
+                  checked={theme === 'dark'}
+                  onCheckedChange={() => toggleTheme()}
+                  colorPalette="brand"
+                  width="full"
                 >
-                  <SwitchContent className="flex items-center gap-2 text-sm font-medium">
-                    {theme === 'dark' ? (
-                      <Moon className="size-3.5 text-muted" />
-                    ) : (
-                      <Sun className="size-3.5 text-muted" />
-                    )}
-                    Modo escuro
-                  </SwitchContent>
-                  <SwitchControl>
-                    <SwitchThumb />
-                  </SwitchControl>
-                </SwitchRoot>
+                  <HStack justify="space-between" w="full">
+                    <Switch.Label>
+                      <HStack>
+                        {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
+                        Modo escuro
+                      </HStack>
+                    </Switch.Label>
+                    <Switch.HiddenInput />
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </HStack>
+                </Switch.Root>
 
-                <SwitchRoot
-                  isSelected={notif}
-                  onChange={setNotif}
-                  className="flex-row items-center justify-between w-full"
+                <Switch.Root
+                  checked={notif}
+                  onCheckedChange={(detalhes) => setNotif(detalhes.checked)}
+                  colorPalette="brand"
+                  width="full"
                 >
-                  <SwitchContent className="text-sm font-medium">Notificações</SwitchContent>
-                  <SwitchControl>
-                    <SwitchThumb />
-                  </SwitchControl>
-                </SwitchRoot>
+                  <HStack justify="space-between" w="full">
+                    <Switch.Label>Notificações</Switch.Label>
+                    <Switch.HiddenInput />
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </HStack>
+                </Switch.Root>
 
-                <SwitchRoot
-                  isSelected={analytics}
-                  onChange={setAnalytics}
-                  className="flex-row items-center justify-between w-full"
+                <Switch.Root
+                  checked={analytics}
+                  onCheckedChange={(detalhes) => setAnalytics(detalhes.checked)}
+                  colorPalette="brand"
+                  width="full"
                 >
-                  <SwitchContent className="text-sm font-medium">Analytics</SwitchContent>
-                  <SwitchControl>
-                    <SwitchThumb />
-                  </SwitchControl>
-                </SwitchRoot>
+                  <HStack justify="space-between" w="full">
+                    <Switch.Label>Analytics</Switch.Label>
+                    <Switch.HiddenInput />
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </HStack>
+                </Switch.Root>
               </VStack>
 
               <Separator />
 
-              <VStack className="gap-3">
-                <ProgressBar value={78} color="accent">
-                  <Label className="text-xs font-medium">CPU</Label>
-                  <ProgressBarOutput className="text-xs text-muted" />
-                  <ProgressBarTrack>
-                    <ProgressBarFill />
-                  </ProgressBarTrack>
-                </ProgressBar>
+              <VStack gap="3">
+                <Progress.Root value={78} colorPalette="brand" size="sm">
+                  <HStack justify="space-between" w="full">
+                    <Progress.Label>CPU</Progress.Label>
+                    <Progress.ValueText />
+                  </HStack>
+                  <Progress.Track>
+                    <Progress.Range />
+                  </Progress.Track>
+                </Progress.Root>
 
-                <ProgressBar value={45} color="success">
-                  <Label className="text-xs font-medium">Memória</Label>
-                  <ProgressBarOutput className="text-xs text-muted" />
-                  <ProgressBarTrack>
-                    <ProgressBarFill />
-                  </ProgressBarTrack>
-                </ProgressBar>
+                <Progress.Root value={45} colorPalette="green" size="sm">
+                  <HStack justify="space-between" w="full">
+                    <Progress.Label>Memória</Progress.Label>
+                    <Progress.ValueText />
+                  </HStack>
+                  <Progress.Track>
+                    <Progress.Range />
+                  </Progress.Track>
+                </Progress.Root>
 
-                <ProgressBar value={92} color="warning">
-                  <Label className="text-xs font-medium">Disco</Label>
-                  <ProgressBarOutput className="text-xs text-muted" />
-                  <ProgressBarTrack>
-                    <ProgressBarFill />
-                  </ProgressBarTrack>
-                </ProgressBar>
+                <Progress.Root value={92} colorPalette="orange" size="sm">
+                  <HStack justify="space-between" w="full">
+                    <Progress.Label>Disco</Progress.Label>
+                    <Progress.ValueText />
+                  </HStack>
+                  <Progress.Track>
+                    <Progress.Range />
+                  </Progress.Track>
+                </Progress.Root>
               </VStack>
-            </CardContent>
-          </Card>
+            </Card.Body>
+          </Card.Root>
 
-          <Card className="border border-border shadow-sm bg-surface">
-            <CardHeader className="pb-2">
-              <HStack className="mb-1">
-                <Box className="size-7 rounded-lg bg-success/10 flex items-center justify-center">
-                  <Zap className="size-4 text-success" strokeWidth={1.5} />
-                </Box>
-                <CardTitle className="text-sm font-semibold">Botões & Feedback</CardTitle>
+          <Card.Root>
+            <Card.Header pb="2">
+              <HStack mb="1">
+                <Center boxSize="7" rounded="lg" bg="green.subtle" color="green.fg">
+                  <Zap size={16} strokeWidth={1.5} />
+                </Center>
+                <Card.Title fontSize="sm" fontWeight="semibold">
+                  Botões & Feedback
+                </Card.Title>
               </HStack>
-              <Text className="text-xs text-muted">Variantes, estados e notificações</Text>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <VStack className="gap-2">
-                <Button variant="primary" size="sm" fullWidth>
-                  <Rocket className="size-3.5" />
+              <Text fontSize="xs" color="fg.muted">
+                Variantes, estados e notificações
+              </Text>
+            </Card.Header>
+            <Card.Body gap="4">
+              <VStack gap="2">
+                <Button colorPalette="brand" size="sm" width="full">
+                  <Rocket size={14} />
                   Deploy agora
                 </Button>
-                <Button variant="outline" size="sm" fullWidth>
-                  <BookOpen className="size-3.5" />
+                <Button variant="outline" size="sm" width="full">
+                  <BookOpen size={14} />
                   Ver documentação
                 </Button>
-                <Button variant="danger-soft" size="sm" fullWidth>
+                <Button colorPalette="red" variant="subtle" size="sm" width="full">
                   Revogar acesso
                 </Button>
-                <Button variant="ghost" size="sm" fullWidth isDisabled>
+                <Button variant="ghost" size="sm" width="full" disabled>
                   Em desenvolvimento...
                 </Button>
               </VStack>
@@ -433,18 +436,30 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               <Separator />
 
               <Box>
-                <Text className="text-xs font-medium text-muted mb-3">Time do projeto</Text>
-                <HStack className="flex-wrap gap-3">
+                <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="3">
+                  Time do projeto
+                </Text>
+                <HStack wrap="wrap" gap="3">
                   {teamMembers.map((m) => (
-                    <HStack key={m.name} className="gap-2">
-                      <Box
-                        className={`size-8 rounded-xl flex items-center justify-center text-xs font-black font-sans ${m.bg} ${m.text}`}
+                    <HStack key={m.name} gap="2">
+                      <Center
+                        boxSize="8"
+                        rounded="xl"
+                        bg={`${m.palette}.subtle`}
+                        color={`${m.palette}.fg`}
+                        fontSize="xs"
+                        fontWeight="black"
+                        fontFamily="heading"
                       >
                         {m.initials}
-                      </Box>
-                      <VStack className="gap-0">
-                        <Text className="text-xs font-semibold leading-none">{m.name}</Text>
-                        <Text className="text-xs text-muted">{m.role}</Text>
+                      </Center>
+                      <VStack gap="0" align="start">
+                        <Text fontSize="xs" fontWeight="semibold" lineHeight="1">
+                          {m.name}
+                        </Text>
+                        <Text fontSize="xs" color="fg.muted">
+                          {m.role}
+                        </Text>
                       </VStack>
                     </HStack>
                   ))}
@@ -453,244 +468,241 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
               <Separator />
 
-              <VStack className="gap-2">
-                {[
-                  {
-                    color: 'bg-success/10 border-success/25 text-success',
-                    icon: '✓',
-                    msg: 'Deploy realizado com sucesso',
-                  },
-                  {
-                    color: 'bg-warning/10 border-warning/25 text-warning',
-                    icon: '⚠',
-                    msg: 'Rate limit em 80%',
-                  },
-                  {
-                    color: 'bg-danger/10 border-danger/25 text-danger',
-                    icon: '!',
-                    msg: 'Token expirado',
-                  },
-                ].map((a) => (
+              <VStack gap="2">
+                {alertas.map((a) => (
                   <HStack
                     key={a.msg}
-                    className={`px-3 py-2 rounded-lg border text-xs font-medium ${a.color}`}
+                    px="3"
+                    py="2"
+                    rounded="lg"
+                    borderWidth="1px"
+                    bg={`${a.palette}.subtle`}
+                    borderColor={`${a.palette}.muted`}
+                    color={`${a.palette}.fg`}
+                    fontSize="xs"
+                    fontWeight="medium"
+                    w="full"
                   >
-                    <Text as="span" className="shrink-0">
+                    <Text as="span" flexShrink="0">
                       {a.icon}
                     </Text>
                     {a.msg}
                   </HStack>
                 ))}
               </VStack>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Card.Body>
+          </Card.Root>
+        </SimpleGrid>
 
-        <Grid className="mt-4 grid-cols-2 sm:grid-cols-4">
-          {[
-            {
-              label: 'Linhas de código',
-              value: '< 2k',
-              icon: Code2,
-              color: 'text-brand-500',
-              bg: 'bg-brand-500/10',
-            },
-            {
-              label: 'Dependências core',
-              value: '18',
-              icon: Package,
-              color: 'text-success',
-              bg: 'bg-success/10',
-            },
-            {
-              label: 'Endpoints prontos',
-              value: '5',
-              icon: Globe,
-              color: 'text-warning',
-              bg: 'bg-warning/10',
-            },
-            {
-              label: 'Setup em minutos',
-              value: '< 3',
-              icon: Zap,
-              color: 'text-danger',
-              bg: 'bg-danger/10',
-            },
-          ].map((s) => (
+        <SimpleGrid mt="4" columns={{ base: 2, sm: 4 }} gap="4">
+          {stats.map((s) => (
             <HStack
               key={s.label}
-              className="gap-3 p-4 rounded-xl border border-border bg-surface shadow-sm"
+              gap="3"
+              p="4"
+              rounded="xl"
+              borderWidth="1px"
+              bg="bg.panel"
+              boxShadow="sm"
             >
-              <Box
-                className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${s.bg}`}
+              <Center
+                boxSize="10"
+                rounded="xl"
+                flexShrink="0"
+                bg={`${s.palette}.subtle`}
+                color={`${s.palette}.fg`}
               >
-                <s.icon className={`size-5 ${s.color}`} />
-              </Box>
-              <VStack className="gap-0">
-                <Text className="text-2xl font-black font-sans leading-none">{s.value}</Text>
-                <Text className="text-xs text-muted">{s.label}</Text>
+                <s.icon size={20} />
+              </Center>
+              <VStack gap="0" align="start">
+                <Text fontSize="2xl" fontWeight="black" fontFamily="heading" lineHeight="1">
+                  {s.value}
+                </Text>
+                <Text fontSize="xs" color="fg.muted">
+                  {s.label}
+                </Text>
               </VStack>
             </HStack>
           ))}
-        </Grid>
-      </section>
+        </SimpleGrid>
+      </Box>
 
       <Separator />
 
-      {/* ════════════════════════════════════════════
-          STACK
-      ════════════════════════════════════════════ */}
-      <section id="stack" className="bg-surface-secondary border-b border-border">
-        <Container className="px-6 py-16">
-          <VStack className="items-center gap-2 mb-10 text-center">
-            <Chip
-              variant="soft"
-              size="sm"
-              className="bg-brand-500/10 text-brand-600 border border-brand-500/20"
-            >
+      <Box as="section" id="stack" bg="bg.muted" borderBottomWidth="1px">
+        <Container px="6" py="16">
+          <VStack align="center" gap="2" mb="10" textAlign="center">
+            <Badge variant="subtle" colorPalette="brand">
               Stack
-            </Chip>
-            <Text as="h2" className="text-3xl font-bold font-sans">
+            </Badge>
+            <Heading as="h2" size="2xl">
               Tecnologias incluídas
-            </Text>
+            </Heading>
           </VStack>
 
-          <Accordion variant="surface" className="max-w-2xl mx-auto">
+          <Accordion.Root collapsible maxW="2xl" mx="auto">
             {techStack.map((t) => (
-              <AccordionItem key={t.category} id={t.category}>
-                <AccordionHeading>
-                  <AccordionTrigger className="flex items-center gap-3 w-full text-left">
-                    <Box className="size-8 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
-                      <t.icon className="size-4 text-brand-500" />
-                    </Box>
-                    <Text as="span" className="font-semibold text-sm">
-                      {t.category}
-                    </Text>
-                    <Text as="span" className="ml-auto text-xs text-muted">
-                      {t.items.length} tecnologias
-                    </Text>
-                    <AccordionIndicator className="shrink-0" />
-                  </AccordionTrigger>
-                </AccordionHeading>
-                <AccordionPanel>
-                  <AccordionBody className="flex flex-wrap gap-2 pb-4 pl-11">
-                    {t.items.map((item) => (
-                      <Chip key={item} variant="soft" color="default" size="sm">
-                        {item}
-                      </Chip>
-                    ))}
-                  </AccordionBody>
-                </AccordionPanel>
-              </AccordionItem>
+              <Accordion.Item key={t.category} value={t.category}>
+                <Accordion.ItemTrigger>
+                  <Center
+                    boxSize="8"
+                    rounded="lg"
+                    bg="brand.subtle"
+                    color="brand.fg"
+                    flexShrink="0"
+                  >
+                    <t.icon size={16} />
+                  </Center>
+                  <Text as="span" fontWeight="semibold" fontSize="sm">
+                    {t.category}
+                  </Text>
+                  <Text as="span" ml="auto" fontSize="xs" color="fg.muted">
+                    {t.items.length} tecnologias
+                  </Text>
+                  <Accordion.ItemIndicator />
+                </Accordion.ItemTrigger>
+                <Accordion.ItemContent>
+                  <Accordion.ItemBody>
+                    <HStack wrap="wrap" gap="2" pb="4" pl="11">
+                      {t.items.map((item) => (
+                        <Badge key={item} variant="subtle" size="sm">
+                          {item}
+                        </Badge>
+                      ))}
+                    </HStack>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
+              </Accordion.Item>
             ))}
-          </Accordion>
+          </Accordion.Root>
         </Container>
-      </section>
+      </Box>
 
-      {/* ════════════════════════════════════════════
-          COMO FUNCIONA
-      ════════════════════════════════════════════ */}
-      <section id="steps" className="max-w-6xl mx-auto px-6 py-16">
-        <VStack className="items-center gap-2 mb-10 text-center">
-          <Chip
-            variant="soft"
-            size="sm"
-            className="bg-brand-500/10 text-brand-600 border border-brand-500/20"
-          >
+      <Box as="section" id="steps" maxW="6xl" mx="auto" px="6" py="16">
+        <VStack align="center" gap="2" mb="10" textAlign="center">
+          <Badge variant="subtle" colorPalette="brand">
             Como funciona
-          </Chip>
-          <Text as="h2" className="text-3xl font-bold font-sans">
+          </Badge>
+          <Heading as="h2" size="2xl">
             3 passos para começar
-          </Text>
+          </Heading>
         </VStack>
 
-        <Grid className="grid-cols-1 sm:grid-cols-3 gap-6">
+        <SimpleGrid columns={{ base: 1, sm: 3 }} gap="6">
           {steps.map((s, i) => (
             <VStack
               key={s.n}
-              className="relative gap-4 p-6 rounded-2xl border border-border bg-surface shadow-sm"
+              position="relative"
+              gap="4"
+              p="6"
+              rounded="2xl"
+              borderWidth="1px"
+              bg="bg.panel"
+              boxShadow="sm"
+              align="start"
             >
               {i < steps.length - 1 && (
-                <Box className="hidden sm:block absolute top-8 right-0 translate-x-1/2 text-border">
-                  <ArrowRight className="size-4" />
+                <Box
+                  hideBelow="sm"
+                  position="absolute"
+                  top="8"
+                  right="0"
+                  transform="translateX(50%)"
+                  color="border"
+                >
+                  <ArrowRight size={16} />
                 </Box>
               )}
-              <Box className="size-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                <Text as="span" className="text-sm font-black font-sans text-brand-500">
+              <Center
+                boxSize="10"
+                rounded="xl"
+                bg="brand.subtle"
+                borderWidth="1px"
+                borderColor="brand.muted"
+              >
+                <Text
+                  as="span"
+                  fontSize="sm"
+                  fontWeight="black"
+                  fontFamily="heading"
+                  color="brand.fg"
+                >
                   {s.n}
                 </Text>
-              </Box>
+              </Center>
               <Box>
-                <Text as="h3" className="font-bold font-sans text-sm mb-2">
+                <Heading as="h3" size="sm" mb="2">
                   {s.title}
+                </Heading>
+                <Text fontSize="xs" color="fg.muted" lineHeight="relaxed">
+                  {s.desc}
                 </Text>
-                <Text className="text-xs text-muted leading-relaxed">{s.desc}</Text>
               </Box>
             </VStack>
           ))}
-        </Grid>
-      </section>
+        </SimpleGrid>
+      </Box>
 
-      {/* ════════════════════════════════════════════
-          CTA FINAL
-      ════════════════════════════════════════════ */}
-      <section className="border-t border-border bg-surface">
-        <VStack className="max-w-6xl mx-auto px-6 py-20 items-center gap-6 text-center">
-          <Box className="size-16 rounded-2xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
-            <Rocket className="size-8 text-white" />
-          </Box>
+      <Box as="section" borderTopWidth="1px" bg="bg.panel">
+        <VStack maxW="6xl" mx="auto" px="6" py="20" align="center" gap="6" textAlign="center">
+          <Center boxSize="16" rounded="2xl" bg="brand.solid" boxShadow="lg">
+            <Rocket size={32} color="white" />
+          </Center>
 
           <Box>
-            <Text as="h2" className="text-4xl font-black font-sans mb-3">
+            <Heading as="h2" size="4xl" fontWeight="black" mb="3">
               Pronto para começar?
-            </Text>
-            <Text className="text-muted max-w-md text-sm">
+            </Heading>
+            <Text color="fg.muted" maxW="md" fontSize="sm">
               Clone, configure e tenha um projeto full-stack profissional rodando em minutos.
             </Text>
           </Box>
 
-          <HStack className="bg-surface-secondary border border-border rounded-xl px-5 py-3 font-mono text-sm w-full max-w-lg">
-            <Terminal className="size-4 text-muted shrink-0" />
-            <Text as="span" className="text-muted select-none">
+          <HStack
+            bg="bg.muted"
+            borderWidth="1px"
+            rounded="xl"
+            px="5"
+            py="3"
+            fontFamily="mono"
+            fontSize="sm"
+            w="full"
+            maxW="lg"
+          >
+            <Terminal size={16} />
+            <Text as="span" color="fg.muted" userSelect="none">
               $
             </Text>
-            <Text as="span" className="text-foreground">
-              git clone catalyst-skeleton && ./setup.sh
-            </Text>
+            <Text as="span">git clone catalyst-skeleton && ./setup.sh</Text>
           </HStack>
 
-          <HStack className="gap-3 flex-wrap justify-center">
+          <HStack gap="3" wrap="wrap" justify="center">
             {!autenticado && (
-              <button
-                type="button"
-                onClick={onAbrirModal}
-                className={buttonVariants({ variant: 'primary' })}
-              >
-                <LogIn className="size-4" />
+              <Button type="button" onClick={onAbrirModal} colorPalette="brand">
+                <LogIn size={16} />
                 Experimentar agora
-              </button>
+              </Button>
             )}
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className={buttonVariants({ variant: 'outline' })}
-            >
-              <Github className="size-4" />
-              Ver no GitHub
-            </a>
-            <a href="#" className={buttonVariants({ variant: 'ghost' })}>
-              <BookOpen className="size-4" />
-              Documentação
-            </a>
+            <Button asChild variant="outline">
+              <a href="https://github.com" target="_blank" rel="noreferrer">
+                <Github size={16} />
+                Ver no GitHub
+              </a>
+            </Button>
+            <Button asChild variant="ghost">
+              <a href="#">
+                <BookOpen size={16} />
+                Documentação
+              </a>
+            </Button>
           </HStack>
 
-          <HStack className="gap-2 text-xs text-muted">
-            <CheckCircle2 className="size-3 text-success" />
+          <HStack gap="2" fontSize="xs" color="fg.muted">
+            <CheckCircle2 size={12} />
             MIT License · Open Source · Sem vendor lock-in
           </HStack>
         </VStack>
-      </section>
+      </Box>
     </Box>
   )
 })

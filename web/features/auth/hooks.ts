@@ -1,10 +1,10 @@
 import { api } from '@/config/api'
+import type { RespostaApi } from '@/shared/types/api'
+import { toast } from '@/shared/ui/toaster'
 import { useAuthStore } from '@/stores'
-import { toast } from '@heroui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import type { RespostaApi } from '@/shared/types/api'
 import type {
   CadastroInput,
   LoginInput,

@@ -1,31 +1,34 @@
-import { Text, VStack } from '@/shared/ui/layout'
-import { Button } from '@heroui/react'
+import { Button, Heading, Text, VStack } from '@chakra-ui/react'
 import { MoveLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export function Component() {
   return (
-    <VStack className="flex-1 items-center justify-center gap-6 px-4 text-center motion-preset-fade">
-      <VStack className="gap-2">
-        <Text as="span" className="text-8xl font-black font-sans text-accent/20 leading-none">
+    <VStack flex="1" align="center" justify="center" gap="6" px="4" textAlign="center">
+      <VStack gap="2">
+        <Text
+          as="span"
+          fontSize="8xl"
+          fontWeight="black"
+          fontFamily="heading"
+          color="brand.muted"
+          lineHeight="1"
+        >
           404
         </Text>
-        <Text as="h1" className="text-2xl font-bold font-sans">
+        <Heading as="h1" size="xl">
           Página não encontrada
-        </Text>
-        <Text className="text-muted max-w-sm">
+        </Heading>
+        <Text color="fg.muted" maxW="sm">
           A rota que você tentou acessar não existe ou foi removida.
         </Text>
       </VStack>
 
-      <Button
-        as={Link}
-        to="/"
-        color="accent"
-        variant="flat"
-        startContent={<MoveLeft className="size-4" />}
-      >
-        Voltar para o início
+      <Button asChild colorPalette="brand" variant="subtle">
+        <Link to="/">
+          <MoveLeft size={16} />
+          Voltar para o início
+        </Link>
       </Button>
     </VStack>
   )

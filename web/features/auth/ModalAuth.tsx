@@ -1,32 +1,13 @@
 import { api } from '@/config/api'
-import { Box } from '@/shared/ui/layout'
+import type { RespostaApi } from '@/shared/types/api'
+import { toast } from '@/shared/ui/toaster'
 import { useAuthStore } from '@/stores'
-import { toast } from '@heroui/react'
-import {
-  Button,
-  FieldError,
-  Input,
-  Label,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContainer,
-  ModalDialog,
-  ModalHeader,
-  ModalHeading,
-  Tab,
-  TabList,
-  TabListContainer,
-  TabPanel,
-  Tabs,
-  TextField,
-} from '@heroui/react'
+import { Button, Center, Dialog, Field, Input, Portal, Stack, Tabs } from '@chakra-ui/react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { Code2 } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
-import type { RespostaApi } from '@/shared/types/api'
 import type {
   CadastroInput,
   LoginInput,
@@ -149,39 +130,36 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose()
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={(detalhes) => {
+        if (!detalhes.open) onClose()
       }}
+      placement="center"
+      size="sm"
     >
-      <ModalBackdrop isDismissable>
-        <ModalContainer placement="center" size="sm">
-          <ModalDialog>
-            <ModalHeader className="flex items-center gap-2">
-              <Box className="size-7 rounded-lg bg-accent flex items-center justify-center">
-                <Code2 className="size-4 text-white" strokeWidth={2.5} />
-              </Box>
-              <ModalHeading>Catalyst Skeleton</ModalHeading>
-            </ModalHeader>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Center boxSize="7" rounded="lg" bg="brand.solid">
+                <Code2 size={16} color="white" strokeWidth={2.5} />
+              </Center>
+              <Dialog.Title>Catalyst Skeleton</Dialog.Title>
+            </Dialog.Header>
 
-            <ModalBody className="pb-6">
-              <Tabs>
-                <TabListContainer>
-                  <TabList>
-                    <Tab id="login">Entrar</Tab>
-                    <Tab id="cadastro">Criar conta</Tab>
-                  </TabList>
-                </TabListContainer>
+            <Dialog.Body pb="6">
+              <Tabs.Root defaultValue="login">
+                <Tabs.List>
+                  <Tabs.Trigger value="login">Entrar</Tabs.Trigger>
+                  <Tabs.Trigger value="cadastro">Criar conta</Tabs.Trigger>
+                </Tabs.List>
 
-                <TabPanel id="login">
-                  <form
-                    onSubmit={handleLoginSubmit}
-                    className="flex flex-col gap-3 pt-2"
-                    noValidate
-                  >
-                    <TextField isInvalid={!!loginErros.username}>
-                      <Label className="text-sm font-medium">Usuário</Label>
+                <Tabs.Content value="login">
+                  <Stack as="form" gap="3" pt="2" onSubmit={handleLoginSubmit}>
+                    <Field.Root invalid={!!loginErros.username}>
+                      <Field.Label>Usuário</Field.Label>
                       <Input
                         value={loginForm.username}
                         onChange={(e) => {
@@ -189,13 +167,12 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                           setLoginErros((p) => ({ ...p, username: '' }))
                         }}
                         autoFocus
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">{loginErros.username}</FieldError>
-                    </TextField>
+                      <Field.ErrorText>{loginErros.username}</Field.ErrorText>
+                    </Field.Root>
 
-                    <TextField isInvalid={!!loginErros.senha}>
-                      <Label className="text-sm font-medium">Senha</Label>
+                    <Field.Root invalid={!!loginErros.senha}>
+                      <Field.Label>Senha</Field.Label>
                       <Input
                         type="password"
                         value={loginForm.senha}
@@ -203,62 +180,51 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                           setLoginForm((p) => ({ ...p, senha: e.target.value }))
                           setLoginErros((p) => ({ ...p, senha: '' }))
                         }}
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">{loginErros.senha}</FieldError>
-                    </TextField>
+                      <Field.ErrorText>{loginErros.senha}</Field.ErrorText>
+                    </Field.Root>
 
                     <Button
                       type="submit"
-                      variant="primary"
-                      fullWidth
-                      isPending={loginMutation.isPending}
-                      isDisabled={loginMutation.isPending}
-                      className="mt-1"
+                      colorPalette="brand"
+                      width="full"
+                      loading={loginMutation.isPending}
+                      disabled={loginMutation.isPending}
+                      mt="1"
                     >
                       Entrar
                     </Button>
-                  </form>
-                </TabPanel>
+                  </Stack>
+                </Tabs.Content>
 
-                <TabPanel id="cadastro">
-                  <form
-                    onSubmit={handleCadastroSubmit}
-                    className="flex flex-col gap-3 pt-2"
-                    noValidate
-                  >
-                    <TextField isInvalid={!!cadastroErros.nomeCompleto}>
-                      <Label className="text-sm font-medium">Nome completo</Label>
+                <Tabs.Content value="cadastro">
+                  <Stack as="form" gap="3" pt="2" onSubmit={handleCadastroSubmit}>
+                    <Field.Root invalid={!!cadastroErros.nomeCompleto}>
+                      <Field.Label>Nome completo</Field.Label>
                       <Input
                         value={cadastroForm.nomeCompleto}
                         onChange={(e) => {
                           setCadastroForm((p) => ({ ...p, nomeCompleto: e.target.value }))
                           setCadastroErros((p) => ({ ...p, nomeCompleto: '' }))
                         }}
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">
-                        {cadastroErros.nomeCompleto}
-                      </FieldError>
-                    </TextField>
+                      <Field.ErrorText>{cadastroErros.nomeCompleto}</Field.ErrorText>
+                    </Field.Root>
 
-                    <TextField isInvalid={!!cadastroErros.username}>
-                      <Label className="text-sm font-medium">Usuário</Label>
+                    <Field.Root invalid={!!cadastroErros.username}>
+                      <Field.Label>Usuário</Field.Label>
                       <Input
                         value={cadastroForm.username}
                         onChange={(e) => {
                           setCadastroForm((p) => ({ ...p, username: e.target.value }))
                           setCadastroErros((p) => ({ ...p, username: '' }))
                         }}
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">
-                        {cadastroErros.username}
-                      </FieldError>
-                    </TextField>
+                      <Field.ErrorText>{cadastroErros.username}</Field.ErrorText>
+                    </Field.Root>
 
-                    <TextField isInvalid={!!cadastroErros.senha}>
-                      <Label className="text-sm font-medium">Senha</Label>
+                    <Field.Root invalid={!!cadastroErros.senha}>
+                      <Field.Label>Senha</Field.Label>
                       <Input
                         type="password"
                         value={cadastroForm.senha}
@@ -266,13 +232,12 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                           setCadastroForm((p) => ({ ...p, senha: e.target.value }))
                           setCadastroErros((p) => ({ ...p, senha: '' }))
                         }}
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">{cadastroErros.senha}</FieldError>
-                    </TextField>
+                      <Field.ErrorText>{cadastroErros.senha}</Field.ErrorText>
+                    </Field.Root>
 
-                    <TextField isInvalid={!!cadastroErros.confirmacaoSenha}>
-                      <Label className="text-sm font-medium">Confirmar senha</Label>
+                    <Field.Root invalid={!!cadastroErros.confirmacaoSenha}>
+                      <Field.Label>Confirmar senha</Field.Label>
                       <Input
                         type="password"
                         value={cadastroForm.confirmacaoSenha}
@@ -280,30 +245,27 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
                           setCadastroForm((p) => ({ ...p, confirmacaoSenha: e.target.value }))
                           setCadastroErros((p) => ({ ...p, confirmacaoSenha: '' }))
                         }}
-                        className="w-full"
                       />
-                      <FieldError className="text-xs text-danger">
-                        {cadastroErros.confirmacaoSenha}
-                      </FieldError>
-                    </TextField>
+                      <Field.ErrorText>{cadastroErros.confirmacaoSenha}</Field.ErrorText>
+                    </Field.Root>
 
                     <Button
                       type="submit"
-                      variant="primary"
-                      fullWidth
-                      isPending={cadastroMutation.isPending}
-                      isDisabled={cadastroMutation.isPending}
-                      className="mt-1"
+                      colorPalette="brand"
+                      width="full"
+                      loading={cadastroMutation.isPending}
+                      disabled={cadastroMutation.isPending}
+                      mt="1"
                     >
                       Criar conta
                     </Button>
-                  </form>
-                </TabPanel>
-              </Tabs>
-            </ModalBody>
-          </ModalDialog>
-        </ModalContainer>
-      </ModalBackdrop>
-    </Modal>
+                  </Stack>
+                </Tabs.Content>
+              </Tabs.Root>
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   )
 }

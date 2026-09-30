@@ -1,17 +1,7 @@
 import { useLogin } from '@/features/auth'
-import { Text } from '@/shared/ui/layout'
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FieldError,
-  Input,
-  Label,
-  TextField,
-} from '@heroui/react'
+import { Button, Card, Field, Heading, Input, Link, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -44,59 +34,61 @@ export function Component() {
   }
 
   return (
-    <Card className="w-full max-w-sm shadow-md">
-      <CardHeader className="flex flex-col items-center gap-1 pb-0 pt-6">
-        <Text as="h1" className="text-2xl font-bold font-sans">Entrar</Text>
-        <Text className="text-sm text-center text-muted">Acesse sua conta com seu usuário e senha</Text>
-      </CardHeader>
+    <Card.Root w="full" maxW="sm" boxShadow="md">
+      <Card.Header alignItems="center" gap="1" pb="0" pt="6">
+        <Heading as="h1" size="xl">
+          Entrar
+        </Heading>
+        <Text fontSize="sm" textAlign="center" color="fg.muted">
+          Acesse sua conta com seu usuário e senha
+        </Text>
+      </Card.Header>
 
-      <CardContent className="px-6 py-6">
-        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-          <TextField isInvalid={!!erros.username}>
-            <Label className="text-sm font-medium">Usuário</Label>
+      <Card.Body px="6" py="6">
+        <Stack as="form" gap="4" onSubmit={onSubmit}>
+          <Field.Root invalid={!!erros.username}>
+            <Field.Label>Usuário</Field.Label>
             <Input
               placeholder="seu.usuario"
               value={form.username}
               onChange={(e) => handleChange('username', e.target.value)}
               autoComplete="username"
               autoFocus
-              className="w-full"
             />
-            <FieldError className="text-xs text-danger">{erros.username}</FieldError>
-          </TextField>
+            <Field.ErrorText>{erros.username}</Field.ErrorText>
+          </Field.Root>
 
-          <TextField isInvalid={!!erros.senha}>
-            <Label className="text-sm font-medium">Senha</Label>
+          <Field.Root invalid={!!erros.senha}>
+            <Field.Label>Senha</Field.Label>
             <Input
               type="password"
               placeholder="••••••••"
               value={form.senha}
               onChange={(e) => handleChange('senha', e.target.value)}
               autoComplete="current-password"
-              className="w-full"
             />
-            <FieldError className="text-xs text-danger">{erros.senha}</FieldError>
-          </TextField>
+            <Field.ErrorText>{erros.senha}</Field.ErrorText>
+          </Field.Root>
 
           <Button
             type="submit"
-            variant="primary"
-            fullWidth
-            className="font-semibold"
-            isPending={login.isPending}
-            isDisabled={login.isPending}
+            colorPalette="brand"
+            width="full"
+            fontWeight="semibold"
+            loading={login.isPending}
+            disabled={login.isPending}
           >
             Entrar
           </Button>
-        </form>
+        </Stack>
 
-        <Text className="mt-5 text-center text-sm text-muted">
+        <Text mt="5" textAlign="center" fontSize="sm" color="fg.muted">
           Não tem uma conta?{' '}
-          <Link to="/cadastro" className="font-medium text-accent hover:underline">
-            Criar conta
+          <Link asChild color="brand.fg" fontWeight="medium">
+            <RouterLink to="/cadastro">Criar conta</RouterLink>
           </Link>
         </Text>
-      </CardContent>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   )
 }
