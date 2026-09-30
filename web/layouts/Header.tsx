@@ -1,10 +1,9 @@
 import { useTheme } from '@/contexts'
-import { Box, HStack, Text } from '@/shared/ui/layout'
 import { useAuthStore } from '@/stores/useAuthStore'
-import { Chip, buttonVariants } from '@heroui/react'
+import { Badge, Box, Button, Center, HStack, IconButton, Link, Text } from '@chakra-ui/react'
 import { Code2, LogIn, Moon, Sun, User } from 'lucide-react'
 import { memo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 
 const navLinks = [
   { href: '/#showcase', label: 'Componentes' },
@@ -24,59 +23,72 @@ export const Header = memo(function Header({ onAbrirModal }: HeaderProps) {
   const isAuthPage = pathname === '/login' || pathname === '/cadastro'
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <HStack className="max-w-6xl mx-auto px-6 h-14 justify-between">
-        <Link to="/">
-          <HStack>
-            <Box className="size-7 rounded-lg bg-brand-500 flex items-center justify-center">
-              <Code2 className="size-4 text-white" strokeWidth={2.5} />
-            </Box>
-            <Text as="span" className="font-black font-sans text-sm tracking-tight">
-              Catalyst{' '}
-              <Text as="span" className="text-brand-500">
-                Skeleton
+    <Box
+      as="header"
+      position="sticky"
+      top="0"
+      zIndex="sticky"
+      borderBottomWidth="1px"
+      bg="bg/80"
+      backdropFilter="blur(12px)"
+    >
+      <HStack maxW="6xl" mx="auto" px="6" h="14" justify="space-between">
+        <Link asChild>
+          <RouterLink to="/">
+            <HStack>
+              <Center boxSize="7" rounded="lg" bg="brand.solid">
+                <Code2 size={16} color="white" strokeWidth={2.5} />
+              </Center>
+              <Text
+                as="span"
+                fontWeight="black"
+                fontSize="sm"
+                letterSpacing="tight"
+                fontFamily="heading"
+              >
+                Catalyst{' '}
+                <Text as="span" color="brand.fg">
+                  Skeleton
+                </Text>
               </Text>
-            </Text>
-          </HStack>
+            </HStack>
+          </RouterLink>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
+        <HStack as="nav" hideBelow="md" gap="6" fontSize="sm" color="fg.muted">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-foreground transition-colors">
+            <Link key={link.href} href={link.href} _hover={{ color: 'fg' }}>
               {link.label}
-            </a>
+            </Link>
           ))}
-        </nav>
+        </HStack>
 
         <HStack>
-          <button
+          <IconButton
             type="button"
             onClick={toggleTheme}
-            className="size-8 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-secondary transition-colors"
+            variant="ghost"
+            size="sm"
             aria-label="Alternar tema"
           >
-            {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
-          </button>
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </IconButton>
 
           {autenticado ? (
-            <Chip color="success" variant="soft" size="sm">
-              <User className="size-3 mr-1" />
+            <Badge colorPalette="green" variant="subtle" size="sm">
+              <User size={12} />
               {usuario?.username}
-            </Chip>
+            </Badge>
           ) : (
             !isAuthPage && (
-              <button
-                type="button"
-                onClick={onAbrirModal}
-                className={buttonVariants({ variant: 'primary', size: 'sm' })}
-              >
-                <LogIn className="size-3.5" />
+              <Button type="button" onClick={onAbrirModal} colorPalette="brand" size="sm">
+                <LogIn size={14} />
                 Entrar
-              </button>
+              </Button>
             )
           )}
         </HStack>
       </HStack>
-    </header>
+    </Box>
   )
 })

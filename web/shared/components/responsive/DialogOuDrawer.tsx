@@ -1,29 +1,10 @@
-import {
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContainer,
-  ModalDialog,
-  ModalFooter,
-  ModalHeader,
-  ModalHeading,
-  type UseOverlayStateReturn,
-  useMediaQuery,
-} from '@heroui/react'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
+import { Dialog, Drawer, Portal } from '@chakra-ui/react'
 import type { ReactNode } from 'react'
 
-/**
- * DialogOuDrawer — em desktop abre um Modal centralizado;
- * em mobile (< md) abre um Modal com posicionamento bottom para imitar drawer.
- *
- * Uso:
- *   const state = useOverlayState()
- *   <DialogOuDrawer state={state} titulo="Título" footer={<Button>Fechar</Button>}>
- *     conteúdo
- *   </DialogOuDrawer>
- */
 export interface DialogOuDrawerProps {
-  state: UseOverlayStateReturn
+  aberto: boolean
+  aoFechar: () => void
   titulo: string
   descricao?: string
   children: ReactNode
@@ -31,7 +12,8 @@ export interface DialogOuDrawerProps {
 }
 
 export function DialogOuDrawer({
-  state,
+  aberto,
+  aoFechar,
   titulo,
   descricao,
   children,
@@ -39,23 +21,47 @@ export function DialogOuDrawer({
 }: DialogOuDrawerProps) {
   const isMobile = useMediaQuery('(max-width: 767px)')
 
+  function aoMudarAbertura(detalhes: { open: boolean }) {
+    if (!detalhes.open) aoFechar()
+  }
+
+  if (isMobile) {
+    return (
+      <Drawer.Root open={aberto} onOpenChange={aoMudarAbertura} placement="bottom">
+        <Portal>
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content>
+              <Drawer.Header>
+                <Drawer.Title>{titulo}</Drawer.Title>
+                {descricao && <Drawer.Description>{descricao}</Drawer.Description>}
+              </Drawer.Header>
+              <Drawer.Body>{children}</Drawer.Body>
+              {footer && <Drawer.Footer>{footer}</Drawer.Footer>}
+              <Drawer.CloseTrigger />
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
+      </Drawer.Root>
+    )
+  }
+
   return (
-    <Modal isOpen={state.isOpen} onOpenChange={state.setOpen}>
-      <ModalBackdrop isDismissable>
-        <ModalContainer
-          placement={isMobile ? 'bottom' : 'center'}
-          className={isMobile ? 'rounded-b-none rounded-t-2xl m-0 max-w-full' : ''}
-        >
-          <ModalDialog>
-            <ModalHeader className="flex flex-col gap-1">
-              <ModalHeading>{titulo}</ModalHeading>
-              {descricao && <p className="text-sm opacity-60 font-normal">{descricao}</p>}
-            </ModalHeader>
-            <ModalBody>{children}</ModalBody>
-            {footer && <ModalFooter>{footer}</ModalFooter>}
-          </ModalDialog>
-        </ModalContainer>
-      </ModalBackdrop>
-    </Modal>
+    <Dialog.Root open={aberto} onOpenChange={aoMudarAbertura} placement="center">
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>{titulo}</Dialog.Title>
+              {descricao && <Dialog.Description>{descricao}</Dialog.Description>}
+            </Dialog.Header>
+            <Dialog.Body>{children}</Dialog.Body>
+            {footer && <Dialog.Footer>{footer}</Dialog.Footer>}
+            <Dialog.CloseTrigger />
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   )
 }

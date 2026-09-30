@@ -1,20 +1,24 @@
-import { Box, HStack, Text, VStack } from '@/shared/ui/layout'
+import { Box, Center, HStack, Link, Text, VStack } from '@chakra-ui/react'
 import { Code2 } from 'lucide-react'
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet, Link as RouterLink } from 'react-router-dom'
 
 export function AuthLayout() {
   return (
-    <VStack className="min-h-screen items-center justify-center px-4 py-12 gap-0">
-      <Link to="/" className="mb-8 group">
-        <HStack>
-          <Box className="size-8 rounded-xl bg-accent flex items-center justify-center shadow group-hover:scale-105 transition-transform">
-            <Code2 className="size-4 text-white" strokeWidth={2.5} />
-          </Box>
-          <Text as="span" className="font-sans font-bold text-xl">Catalyst</Text>
-        </HStack>
+    <VStack minH="100vh" align="center" justify="center" px="4" py="12" gap="0">
+      <Link asChild mb="8">
+        <RouterLink to="/">
+          <HStack>
+            <Center boxSize="8" rounded="xl" bg="brand.solid" boxShadow="md">
+              <Code2 size={16} color="white" strokeWidth={2.5} />
+            </Center>
+            <Text as="span" fontWeight="bold" fontSize="xl" fontFamily="heading">
+              Catalyst
+            </Text>
+          </HStack>
+        </RouterLink>
       </Link>
 
-      <Box className="w-full max-w-sm">
+      <Box w="full" maxW="sm">
         <Outlet />
       </Box>
     </VStack>

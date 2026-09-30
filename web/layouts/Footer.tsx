@@ -1,7 +1,7 @@
-import { Box, HStack, Text } from '@/shared/ui/layout'
+import { Box, Center, HStack, Link, Text } from '@chakra-ui/react'
 import { Code2, Github } from 'lucide-react'
 import { memo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 
 const footerLinks = [
   { href: '/#showcase', label: 'Componentes' },
@@ -11,43 +11,45 @@ const footerLinks = [
 
 export const Footer = memo(function Footer() {
   return (
-    <footer className="border-t border-border bg-surface">
-      <HStack className="max-w-6xl mx-auto px-6 h-16 justify-between flex-wrap">
-        <Link to="/">
-          <HStack>
-            <Box className="size-6 rounded-md bg-brand-500 flex items-center justify-center">
-              <Code2 className="size-3.5 text-white" strokeWidth={2.5} />
-            </Box>
-            <Text as="span" className="font-black font-sans text-xs tracking-tight">
-              Catalyst{' '}
-              <Text as="span" className="text-brand-500">
-                Skeleton
+    <Box as="footer" borderTopWidth="1px" bg="bg.panel">
+      <HStack maxW="6xl" mx="auto" px="6" h="16" justify="space-between" wrap="wrap">
+        <Link asChild>
+          <RouterLink to="/">
+            <HStack>
+              <Center boxSize="6" rounded="md" bg="brand.solid">
+                <Code2 size={14} color="white" strokeWidth={2.5} />
+              </Center>
+              <Text
+                as="span"
+                fontWeight="black"
+                fontSize="xs"
+                letterSpacing="tight"
+                fontFamily="heading"
+              >
+                Catalyst{' '}
+                <Text as="span" color="brand.fg">
+                  Skeleton
+                </Text>
               </Text>
-            </Text>
-          </HStack>
+            </HStack>
+          </RouterLink>
         </Link>
 
-        <nav className="hidden sm:flex items-center gap-5 text-xs text-muted">
+        <HStack as="nav" hideBelow="sm" gap="5" fontSize="xs" color="fg.muted">
           {footerLinks.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-foreground transition-colors">
+            <Link key={link.href} href={link.href} _hover={{ color: 'fg' }}>
               {link.label}
-            </a>
+            </Link>
           ))}
-        </nav>
+        </HStack>
 
-        <HStack className="gap-3 text-xs text-muted">
+        <HStack gap="3" fontSize="xs" color="fg.muted">
           <Text as="span">MIT License</Text>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-foreground transition-colors"
-            aria-label="GitHub"
-          >
-            <Github className="size-4" />
-          </a>
+          <Link href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
+            <Github size={16} />
+          </Link>
         </HStack>
       </HStack>
-    </footer>
+    </Box>
   )
 })

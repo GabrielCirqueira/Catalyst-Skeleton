@@ -1,4 +1,4 @@
-import { cn } from '@/shared/lib/cn'
+import { Box, Flex, Grid, HStack, Text } from '@chakra-ui/react'
 import * as React from 'react'
 import * as RechartsPrimitive from 'recharts'
 
@@ -36,24 +36,27 @@ export const ChartContainer = React.forwardRef<
     config: ChartConfig
     children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children']
   }
->(({ id, className, children, config, ...props }, ref) => {
+>(({ id, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`
 
   return (
     <ChartContext.Provider value={{ config }}>
-      <div
+      <Box
         data-chart={chartId}
         ref={ref}
-        className={cn(
-          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-default-500 [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-default-200 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-default-200 [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-default-200 [&_.recharts-radial-bar-background-sector]:fill-default-100 [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-default-100 [&_.recharts-reference-line_[stroke='#ccc']]:stroke-default-200 [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
-          className
-        )}
+        display="flex"
+        aspectRatio="16/9"
+        justifyContent="center"
+        fontSize="xs"
+        css={{
+          '& .recharts-layer, & .recharts-sector, & .recharts-surface': { outline: 'none' },
+        }}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
-      </div>
+      </Box>
     </ChartContext.Provider>
   )
 })
@@ -105,13 +108,11 @@ export const ChartTooltipContent = React.forwardRef<
     {
       active,
       payload,
-      className,
       indicator = 'dot',
       hideLabel = false,
       hideIndicator = false,
       label,
       labelFormatter,
-      labelClassName,
       formatter,
       color,
       nameKey,
@@ -135,17 +136,15 @@ export const ChartTooltipContent = React.forwardRef<
           : itemConfig?.label
 
       if (labelFormatter) {
-        return (
-          <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>
-        )
+        return <Text fontWeight="medium">{labelFormatter(value, payload)}</Text>
       }
 
       if (!value) {
         return null
       }
 
-      return <div className={cn('font-medium', labelClassName)}>{value}</div>
-    }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey])
+      return <Text fontWeight="medium">{value}</Text>
+    }, [label, labelFormatter, payload, hideLabel, config, labelKey])
 
     if (!active || !payload?.length) {
       return null
@@ -154,15 +153,21 @@ export const ChartTooltipContent = React.forwardRef<
     const nestLabel = payload.length === 1 && indicator !== 'dot'
 
     return (
-      <div
+      <Grid
         ref={ref}
-        className={cn(
-          'grid min-w-32 items-start gap-1.5 rounded-lg border border-default-200 bg-background px-2.5 py-1.5 text-xs shadow-xl',
-          className
-        )}
+        minW="32"
+        alignItems="start"
+        gap="1.5"
+        rounded="lg"
+        borderWidth="1px"
+        bg="bg.panel"
+        px="2.5"
+        py="1.5"
+        fontSize="xs"
+        boxShadow="xl"
       >
         {!nestLabel ? tooltipLabel : null}
-        <div className="grid gap-1.5">
+        <Grid gap="1.5">
           {payload
             .filter((item) => item.type !== 'none')
             .map((item, index) => {
@@ -171,12 +176,12 @@ export const ChartTooltipContent = React.forwardRef<
               const indicatorColor = color || item.payload.fill || item.color
 
               return (
-                <div
-                  key={item.dataKey}
-                  className={cn(
-                    'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-default-500',
-                    indicator === 'dot' && 'items-center'
-                  )}
+                <Flex
+                  key={String(item.dataKey)}
+                  w="full"
+                  wrap="wrap"
+                  align={indicator === 'dot' ? 'center' : 'stretch'}
+                  gap="2"
                 >
                   {formatter && item?.value !== undefined && item.name ? (
                     formatter(item.value, item.name, item, index, item.payload)
@@ -186,49 +191,42 @@ export const ChartTooltipContent = React.forwardRef<
                         <itemConfig.icon />
                       ) : (
                         !hideIndicator && (
-                          <div
-                            className={cn(
-                              'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
-                              {
-                                'h-2.5 w-2.5': indicator === 'dot',
-                                'w-1': indicator === 'line',
-                                'w-0 border-[1.5px] border-dashed bg-transparent':
-                                  indicator === 'dashed',
-                                'my-0.5': nestLabel && indicator === 'dashed',
-                              }
-                            )}
-                            style={
-                              {
-                                '--color-bg': indicatorColor,
-                                '--color-border': indicatorColor,
-                              } as React.CSSProperties
-                            }
+                          <Box
+                            flexShrink="0"
+                            rounded="2px"
+                            w={indicator === 'dot' ? '2.5' : indicator === 'line' ? '1' : '0'}
+                            h={indicator === 'dot' ? '2.5' : undefined}
+                            borderWidth={indicator === 'dashed' ? '1.5px' : undefined}
+                            borderStyle={indicator === 'dashed' ? 'dashed' : undefined}
+                            bg={indicator === 'dashed' ? 'transparent' : indicatorColor}
+                            borderColor={indicatorColor}
+                            my={nestLabel && indicator === 'dashed' ? '0.5' : undefined}
                           />
                         )
                       )}
-                      <div
-                        className={cn(
-                          'flex flex-1 justify-between leading-none',
-                          nestLabel ? 'items-end' : 'items-center'
-                        )}
+                      <Flex
+                        flex="1"
+                        justify="space-between"
+                        align={nestLabel ? 'end' : 'center'}
+                        lineHeight="1"
                       >
-                        <div className="grid gap-1.5">
+                        <Grid gap="1.5">
                           {nestLabel ? tooltipLabel : null}
-                          <span className="text-default-500">{itemConfig?.label || item.name}</span>
-                        </div>
+                          <Text color="fg.muted">{itemConfig?.label || item.name}</Text>
+                        </Grid>
                         {item.value && (
-                          <span className="font-mono font-medium tabular-nums text-foreground">
+                          <Text fontFamily="mono" fontWeight="medium">
                             {item.value.toLocaleString()}
-                          </span>
+                          </Text>
                         )}
-                      </div>
+                      </Flex>
                     </>
                   )}
-                </div>
+                </Flex>
               )
             })}
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     )
   }
 )
@@ -243,7 +241,7 @@ export const ChartLegendContent = React.forwardRef<
       hideIcon?: boolean
       nameKey?: string
     }
->(({ className, hideIcon = false, payload, verticalAlign = 'bottom', nameKey }, ref) => {
+>(({ hideIcon = false, payload, verticalAlign = 'bottom', nameKey }, ref) => {
   const { config } = useChart()
 
   if (!payload?.length) {
@@ -251,13 +249,12 @@ export const ChartLegendContent = React.forwardRef<
   }
 
   return (
-    <div
+    <HStack
       ref={ref}
-      className={cn(
-        'flex items-center justify-center gap-4',
-        verticalAlign === 'top' ? 'pb-3' : 'pt-3',
-        className
-      )}
+      justify="center"
+      gap="4"
+      pt={verticalAlign === 'top' ? undefined : '3'}
+      pb={verticalAlign === 'top' ? '3' : undefined}
     >
       {payload
         .filter((item) => item.type !== 'none')
@@ -266,25 +263,17 @@ export const ChartLegendContent = React.forwardRef<
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
           return (
-            <div
-              key={item.value}
-              className={cn(
-                'flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-default-500'
-              )}
-            >
+            <HStack key={String(item.value)} gap="1.5">
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />
               ) : (
-                <div
-                  className="h-2 w-2 shrink-0 rounded-[2px]"
-                  style={{ backgroundColor: item.color }}
-                />
+                <Box boxSize="2" flexShrink="0" rounded="2px" bg={item.color} />
               )}
               {itemConfig?.label}
-            </div>
+            </HStack>
           )
         })}
-    </div>
+    </HStack>
   )
 })
 ChartLegendContent.displayName = 'ChartLegendContent'
