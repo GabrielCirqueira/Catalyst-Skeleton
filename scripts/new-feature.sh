@@ -80,7 +80,7 @@ declare(strict_types=1);
 
 namespace App\Controller\\$FEATURE_NAME;
 
-use App\Controller\DefaultController;
+use App\Controller\Common\DefaultController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -95,6 +95,26 @@ class ${FEATURE_NAME}Controller extends DefaultController
 }
 EOF
     echo "✅ src/Controller/$FEATURE_NAME/${FEATURE_NAME}Controller.php"
+fi
+
+mkdir -p "$ROOT_DIR/src/Exception/$FEATURE_NAME"
+if [ ! -f "$ROOT_DIR/src/Exception/$FEATURE_NAME/${FEATURE_NAME}Exception.php" ]; then
+    cat <<EOF > "$ROOT_DIR/src/Exception/$FEATURE_NAME/${FEATURE_NAME}Exception.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\\Exception\\$FEATURE_NAME;
+
+class ${FEATURE_NAME}Exception extends \\DomainException
+{
+    public static function recursoNaoEncontradoPorUuid(): self
+    {
+        return new self('Nenhum registro de ${FEATURE_LOWER} foi encontrado com o UUID informado.', 404);
+    }
+}
+EOF
+    echo "✅ src/Exception/$FEATURE_NAME/${FEATURE_NAME}Exception.php"
 fi
 
 mkdir -p "$ROOT_DIR/src/DataObject/$FEATURE_NAME"
