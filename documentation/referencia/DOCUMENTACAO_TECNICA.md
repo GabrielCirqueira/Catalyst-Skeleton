@@ -697,11 +697,14 @@ class Usuario
 
 ```bash
 # 1. Altere a Entity (adicione campo, mude tipo, etc.)
-# 2. Gere a migration
-make new-migration
+# 2. Gere a migration (PROIBIDO criar arquivo à mão em migrations/)
+make doctrine-diff
 
 # 3. Revise o arquivo gerado em migrations/
-# 4. Aplique
+# 4. Valide o schema
+make doctrine-validate
+
+# 5. Aplique
 make migrate
 
 # Reverter a última migration (apenas em dev)
@@ -1032,8 +1035,9 @@ Script interativo que gera a estrutura completa de uma nova feature. Para a feat
 | `make logs` | Tail de logs do container principal |
 | `make bash` | Abre shell no container PHP |
 | `make install` | `composer install` + `npm install` |
+| `make doctrine-diff` | Gera nova migration (diff do schema) — nunca à mão |
 | `make migrate` | Executa migrations pendentes |
-| `make new-migration` | Gera nova migration (diff do schema) |
+| `make doctrine-validate` | Valida mappings e schema sincronizados |
 | `make rollback` | Reverte a última migration |
 | `make phpstan` | Roda PHPStan |
 | `make phpcs` | Roda PHP_CodeSniffer |

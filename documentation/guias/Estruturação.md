@@ -589,6 +589,7 @@ private ?Uuid $uuid = null;
 Entidades seguem o padrão:
 * Getters: nome da propriedade (ex: `nome()`).
 * Setters: prefixo `set` retornando `self` (ex: `setNome(string $nome): self`).
+* Predicados de estado: prefixo `is` retornando `bool` (ex: `isPago()`, `isFinal()`, `isPagoOuCancelado()`). Proibido checar status/flags inline no Service, Handler ou Controller.
 
 #### Fábrica de Entidade (fromDTO)
 
@@ -621,6 +622,15 @@ Quando entidades só fazem sentido juntas (ex: `Pedido` e `ItemPedido`), todas a
 #### 13.5.4 Specification Pattern
 
 Regras de negócio reutilizáveis e combináveis. Use para validar condições complexas de domínio de forma isolada e testável.
+
+#### 13.5.5 Migrations Obrigatórias via Makefile
+
+* **PROIBIDO**: Criar arquivos de migration manualmente na mão em `migrations/`.
+* **SEMPRE**: Gerar migrations exclusivamente via comandos do `Makefile`:
+  * `make doctrine-diff`: Gera automaticamente a migration baseando-se no diff entre entidades Doctrine e o banco MySQL.
+  * `make migrate`: Executa todas as migrations pendentes.
+  * `make doctrine-validate`: Valida se os mappings e o schema do banco estão 100% sincronizados.
+  * `make rollback`: Reverte a migration anterior em caso de necessidade.
 
 ---
 

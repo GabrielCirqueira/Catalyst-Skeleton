@@ -32,9 +32,10 @@ Este documento resume as principais receitas do `Makefile` para gerenciar a stac
 Guia: [progresso/README.md](../progresso/README.md). Script: `scripts/update_roadmap.py`.
 
 ## Banco de Dados (Doctrine)
+- `make doctrine-diff`: gera a migration comparando o schema das Entidades com o Banco. **Proibido** criar arquivo em `migrations/` à mão.
 - `make migrate`: executa migrations pendentes no ambiente local.
+- `make doctrine-validate`: valida se mappings e schema estão 100% sincronizados.
 - `make rollback`: reverte a última migração executada (útil em desenvolvimento).
-- `make new-migration`: gera uma nova classe de migração comparando o schema das Entidades com o Banco.
 
 ## Produção (DevOps)
 - `make deploy`: realiza o build de produção das imagens e sobe a stack no `docker-compose.prod.yaml`.

@@ -15,6 +15,8 @@ Se faltar detalhe, use a seção **Onde buscar mais contexto** no final deste ar
 5. Nomes em **português**: pastas, arquivos, variáveis, funções, DTOs, services, entidades.
 6. Sem comentários (`//`, `/* */`, `{/* */}`). Código se explica pelo nome. Exceção: DocBlock curto em Service PHP se o retorno for complexo.
 7. Não crie testes. Não instale PHPUnit.
+8. Importação explícita de classes (PHP): Proibido usar FQCN inline no meio do código (ex: `\App\...`, `\DateTime`, `\Symfony\...`). Todas as classes, DTOs, interfaces, exceções e enums devem ser importadas no topo do arquivo via `use` logo abaixo do `namespace`.
+9. Verificações de estado e predicados booleanos: Proibido fazer checagens complexas/inline de status, categoria ou flags de entidades nos Services, Handlers e Controllers. Crie métodos de domínio na própria Entidade ou Enum com prefixo `is` retornando `bool` (ex: `$pedido->isPago()`, `$pedido->isFinal()`, `$pedido->isPagoOuCancelado()`, `$status->isFinal()`).
 
 ---
 
@@ -197,16 +199,22 @@ Handler de fila (módulo `async`): zero regra de negócio; chama um Service.
 - Setter `setNome(): self`.
 - Fábrica `fromDTO`.
 - **Tell, Don't Ask:** mudança de estado via método de intenção (`classificarComo()`, `transicionarPara()`), não sequência de `set*()` soltos no Service.
+- Métodos de predicado e checagem de estado sempre com prefixo `is` retornando `bool`: `$pedido->isPago()`, `$pedido->isFinal()`, `$pedido->isPagoOuCancelado()`, `$pedido->isElegivelParaCancelamento()`. Nunca faça checagens inline combinando status e flags fora da entidade/enum.
 - Conjunto fechado de valores → Enum em `src/Enum/`, não string solta.
 
 ### 4.3 Migration
 
+> [!IMPORTANT]
+> **É ESTRITAMENTE PROIBIDO criar arquivos de migration manualmente na mão**. Toda migration deve ser gerada automaticamente a partir das diferenças do Schema Doctrine das entidades mapeadas utilizando os comandos oficiais do `Makefile`:
+
 ```bash
-make new-migration
-make migrate
+make doctrine-diff      # Gera automaticamente o arquivo de migration baseado no schema das entidades
+make migrate            # Executa todas as migrations pendentes no banco de dados
+make doctrine-validate  # Valida se o schema do banco está 100% sincronizado com o mapeamento ORM
+make rollback           # Reverte para a versão anterior da migration se necessário
 ```
 
-Revise o SQL antes de aplicar. Garanta índice/`UNIQUE` para unicidade de domínio (hash, nome, origem).
+Revise o SQL gerado antes de aplicar. Garanta índice/`UNIQUE` para unicidade de domínio (hash, nome, origem).
 
 ### 4.4 Repository
 
@@ -237,7 +245,7 @@ Toda lógica de negócio fica **aqui**. Um service = **uma ação**. Nome: `Cria
 - **Sem `new Service()`** — só construtor DI.
 - **Sem** `$_ENV` / `getenv()` — parâmetro via `services.yaml` / `#[Autowire('%env(...)%')]`.
 - **Sem** `mkdir`, `copy`, `unlink`, `@unlink`, `Process`, `HttpClientInterface` / `$client->request()` — isso é `src/Infra/`.
-- **Sem** FQCN inline (`\App\DataObject\Foo`) — `use` no topo.
+- **Sem** FQCN inline — ver § 4.11.
 - Erro previsto → **exceção do contexto** com factory estático (`throw PedidoException::codigoJaCadastrado()`). **PROIBIDO** `throw new \DomainException(...)`, `\RuntimeException`, `\Exception`.
 - Guard clauses baratas primeiro (dado local → memória → Repository → API externa).
 - Sem `else` — inverta e retorne cedo.
@@ -337,7 +345,7 @@ Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps. Pasta: 
 
 **SEMPRE:**
 
-- Uma classe por contexto em `src/Exception/{Contexto}/{Nome}Exception.php` estendendo `\DomainException`.
+- Uma classe por contexto em `src/Exception/{Contexto}/{Nome}Exception.php` estendendo `DomainException`.
 - HTTP de cliente: estende `App\Exception\HTTP\ClienteHTTPException` (que já estende `\DomainException`).
 - Métodos **estáticos descritivos em camelCase**, frase da causa em português (`falhaAoExtrairMetadataDoVideo()`).
 - Primeiro argumento: **frase completa em português**, não identificador. O `KernelExceptionListener` devolve essa frase em `{ error }`.
@@ -346,7 +354,9 @@ Nunca devolva entidade crua. Array estável: `uuid`, campos, timestamps. Pasta: 
 ```php
 namespace App\Exception\Pedido;
 
-class PedidoException extends \DomainException
+use DomainException;
+
+class PedidoException extends DomainException
 {
     public static function codigoJaCadastrado(): self
     {
@@ -371,6 +381,14 @@ Chaves de array de metadata compartilhadas → constantes em `src/Support/{Conte
 Prefixo de pasta temporária compartilhado → parâmetro em `services.yaml`, não `sys_get_temp_dir().'/projeto_uploads'` copiado em três arquivos.
 
 Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele precisava de nome.
+
+### 4.11 Importação Explícita de Classes (Proibido FQCN Inline)
+
+> [!IMPORTANT]
+> **Regra de Importação**: É estritamente **PROIBIDO** usar FQCNs (Fully Qualified Class Names) inline com barra invertida no meio do código PHP (ex: `#[MapRequestPayload] \App\DataObject\MeuDTO $dto`, `\App\Support\TextoUtil::metodo()`, `\DateTimeInterface`, `\DomainException`, `\Throwable`).
+>
+> - **SEMPRE**: Todas as classes, DTOs, interfaces, exceções, enums e traits devem ser importadas no topo do arquivo com declarações `use` explícitas, logo abaixo do `namespace`, organizadas em ordem alfabética.
+> - **No corpo do arquivo**: Use sempre o nome curto da classe importada (ex: `MeuDTO $dto`, `TextoUtil::naoEstaEmBranco(...)`, `DateTimeInterface::ATOM`, `DomainException`).
 
 ---
 
@@ -398,7 +416,10 @@ Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele 
 - [ ] Zero query / EntityManager fora do Repository
 - [ ] Zero `new Service()`, zero `$_ENV`/`getenv()`
 - [ ] Zero `mkdir`/`copy`/`unlink`/`Process`/HTTP cru no Service — só `src/Infra/`
-- [ ] Zero `throw new \DomainException` — factory estático descritivo, mensagem frase completa em PT
+- [ ] Zero `throw new DomainException` — factory estático descritivo, mensagem frase completa em PT
+- [ ] Sem FQCN inline (`\App\...`, `\DateTime`, `\Throwable`) — todo tipo via `use` no topo, ordem alfabética
+- [ ] Predicados `is*` na entidade/enum — zero checagem inline de status/flag no Service/Handler/Controller
+- [ ] Migration só via `make doctrine-diff` — nunca arquivo criado à mão em `migrations/`
 - [ ] Magic values viraram `private const` (não código de erro)
 - [ ] Lote captura exceção **esperada** por item e devolve relatório; um `flush()` no fim
 - [ ] DTO sem I/O; retorno composto vira DTO de saída
