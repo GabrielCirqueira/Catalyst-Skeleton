@@ -19,8 +19,7 @@ Este documento define o padrão oficial de arquitetura, organização de pastas,
 * **React 19** com **TypeScript**
 * **Vite 6**
 * **Axios**
-* **HeroUI v3** (componentes base acessíveis)
-* **Tailwind CSS 4** + **tailwindcss-motion** (estilo e animações padrão)
+* **Chakra UI v3** (layout, tema, componentes)
 * **Recharts** (gráficos)
 * **TanStack Query v5** (gerenciamento de estado de servidor)
 * **Zustand** (gerenciamento de estado global)
@@ -74,15 +73,13 @@ Dentro de `./web`, o projeto segue o padrão de **Features & Shared**:
 ```text
 App.tsx
 main.tsx
-index.css
 vite-env.d.ts
 
 assets/                 ← imagens, fontes, SVGs estáticos
-config/                 ← instância axios, constantes globais
+config/                 ← axios, constantes, theme/theme.ts
 contexts/               ← Context API (tema, I18n — não estado de UI)
 layouts/                ← sidebar, header, wrappers de página
 routes/                 ← proteção de rotas (nunca dentro da página)
-shared/ui/layout.tsx    ← primitivos de layout/texto (Box, VStack, Text…)
 stores/                 ← Zustand stores (useAuthStore, etc.)
 
 features/               ← módulos com feature própria
@@ -95,7 +92,7 @@ features/               ← módulos com feature própria
 
 shared/                 ← tudo que é global e sem feature
   components/           ← ErrorBoundary, Layouts
-  ui/layout.tsx          ← primitivos de layout/texto (Box, VStack, Text…)
+  ui/                   ← toaster, chart
   hooks/                ← useDebounce, usePaginacao, useSEO
   api/                  ← configuração axios, tipos globais de API
   stores/               ← Zustand stores globais (useAuthStore)
@@ -306,7 +303,7 @@ Exemplo:
 
 ### 9.1 Proibido usar tags HTML brutas
 
-Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Sempre usar o componente correspondente de `web/shared/ui/layout.tsx`:
+Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Sempre o componente de `@chakra-ui/react`:
 
 **Layout (estrutura):**
 
@@ -324,48 +321,37 @@ Nunca usar `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` diretamente. Sempre usar 
 | Situação | Componente |
 | :--- | :--- |
 | Parágrafo (`<p>`) | `<Text>` |
-| Títulos (`<h1>`–`<h6>`) | `<Text as="h1">` … `<Text as="h6">` |
+| Títulos (`<h1>`–`<h6>`) | `<Heading as="h1">` |
 | Inline (`<span>`) | `<Text as="span">` |
 | Negrito semântico | `<Text as="strong">` |
 | Texto pequeno | `<Text as="small">` |
 
-> **Exceção permitida:** tags de estrutura semântica de página (`<section>`, `<header>`, `<footer>`, `<nav>`, `<main>`, `<article>`, `<aside>`) são permitidas quando têm valor semântico real para acessibilidade/SEO. Componentes HeroUI (`TextField`, `Label`, `Input`, `Button`) gerenciam os elementos de formulário.
+> **Exceção permitida:** tags de estrutura semântica de página (`<section>`, `<header>`, `<footer>`, `<nav>`, `<main>`, `<article>`, `<aside>`) são permitidas quando têm valor semântico real para acessibilidade/SEO. Componentes Chakra UI (`Field`, `Input`, `Button`, `Dialog`) gerenciam os elementos de formulário.
 
-### 9.2 Primitivos de layout e texto oficiais
-
-Todos os primitivos ficam em:
-
-```text
-web/shared/ui/layout.tsx
-```
+### 9.2 Primitivos oficiais
 
 Importação:
 
 ```tsx
-import { Box, HStack, VStack, Flex, Grid, Container, Text } from '@/shared/ui/layout'
+import { Box, Container, Heading, HStack, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 ```
 
-Referência:
-
 ```tsx
-<Box className="p-4 rounded-xl bg-surface" />
-<HStack className="justify-between gap-4" />
-<VStack className="gap-6 items-start" />
-<Grid className="grid-cols-3 gap-4" />
-<Container size="lg" className="py-12" />
-<Text className="text-sm text-muted">Parágrafo</Text>
-<Text as="h1" className="text-4xl font-black">Título</Text>
-<Text as="span" className="text-brand-500">Destaque inline</Text>
+<Box p="4" rounded="xl" bg="bg.panel" />
+<HStack justify="space-between" gap="4" />
+<VStack gap="6" align="start" />
+<SimpleGrid columns={3} gap="4" />
+<Container maxW="6xl" py="12" />
+<Text fontSize="sm" color="fg.muted">Parágrafo</Text>
+<Heading as="h1" size="4xl">Título</Heading>
+<Text as="span" color="brand.fg">Destaque inline</Text>
 ```
 
 Tamanhos disponíveis para `<Container>`: `sm`, `md`, `lg`, `xl` (padrão), `2xl`, `full`.
 
 ### 9.3 Estilização obrigatória
 
-* Todo estilo deve ser feito com:
-
-  * `className`
-  * **TailwindCSS v4**
+* Todo estilo deve ser feito com props do Chakra (`p`, `gap`, `bg`, `colorPalette`).
 
 * O sistema deve sempre manter:
 
@@ -379,7 +365,7 @@ Tamanhos disponíveis para `<Container>`: `sm`, `md`, `lg`, `xl` (padrão), `2xl
 
 O sistema deve ter animações consistentes e agradáveis.
 
-Padrão oficial: **tailwindcss-motion** (classes Tailwind, zero JS). `motion`/`AnimatePresence` do **Framer Motion** só entra via módulo opcional `ui-extra`, e apenas quando há necessidade concreta de animar montagem/desmontagem condicional (modais, drawers) — ver `documentation/stack/FRONTEND.md`.
+Padrão oficial: props do Chakra. `motion`/`AnimatePresence` do **Framer Motion** só entra via módulo opcional `ui-extra`.
 
 Regras:
 
@@ -719,7 +705,7 @@ make auto-fix   # Corrige automaticamente o que é possível (biome e phpcbf)
 Antes de abrir PR:
 
 * [ ] Rode `make lint-all`
-* [ ] Não existe `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` direto no frontend (usar `Box`, `HStack`, `VStack`, `Grid`, `Container`, `Text` de `@/shared/ui/layout`)
+* [ ] Não existe `<div>`, `<p>`, `<h1>`–`<h6>` ou `<span>` direto no frontend (usar `Box`, `HStack`, `VStack`, `Grid`, `Container`, `Text` de `@chakra-ui/react`)
 * [ ] Página segue padrão `AppContainer -> Container`
 * [ ] Hooks consumindo `api.ts`
 * [ ] Lógicas grandes movidas para `services/`
@@ -749,11 +735,9 @@ Antes de abrir PR:
 * TanStack Query: [https://tanstack.com/query/latest](https://tanstack.com/query/latest)
 * Zustand: [https://zustand-demo.pmnd.rs/](https://zustand-demo.pmnd.rs/)
 * Biome JS: [https://biomejs.dev/](https://biomejs.dev/)
-* HeroUI: [https://www.heroui.com/](https://www.heroui.com/)
-* tailwindcss-motion: [https://tailwindcss-motion.rombo.co/](https://tailwindcss-motion.rombo.co/)
+* Chakra UI: [https://www.chakra-ui.com/](https://www.chakra-ui.com/)
 * Framer Motion (módulo `ui-extra`): [https://www.framer.com/motion/](https://www.framer.com/motion/)
 * Recharts: [https://recharts.org/](https://recharts.org/)
-* TailwindCSS: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
 
 ### Referências de DevOps
 

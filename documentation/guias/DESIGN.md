@@ -23,7 +23,7 @@ A estética é baseada em **sofisticação tecnológica**, **ritmo visual** e **
 
 ### 2.1 Regra de Ouro
 
-> **Nunca use `className`.** Cores só via tokens Chakra (`brand.solid`, `fg.muted`, `bg.panel`, `colorPalette="brand"`) em `web/config/theme/theme.ts`.
+> **Nunca use `className` nem hex.** Cores só da paleta gerada (`skeleton.grey.700`, `skeleton.brand.500`) em `web/config/theme/theme.ts`. `colorPalette` só com escalas dessa paleta.
 
 Isso garante que a troca de tema (light/dark) funcione automaticamente e que a identidade visual seja consistente em todas as telas.
 

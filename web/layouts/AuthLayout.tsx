@@ -8,8 +8,14 @@ export function AuthLayout() {
       <Link asChild mb="8">
         <RouterLink to="/">
           <HStack>
-            <Center boxSize="8" rounded="xl" bg="brand.solid" boxShadow="md">
-              <Code2 size={16} color="white" strokeWidth={2.5} />
+            <Center
+              boxSize="8"
+              rounded="xl"
+              bg="catalist.brand.500"
+              color="catalist.grey.0"
+              boxShadow="md"
+            >
+              <Code2 size={16} color="currentColor" strokeWidth={2.5} />
             </Center>
             <Text as="span" fontWeight="bold" fontSize="xl" fontFamily="heading">
               Catalyst

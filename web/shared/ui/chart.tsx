@@ -160,7 +160,7 @@ export const ChartTooltipContent = React.forwardRef<
         gap="1.5"
         rounded="lg"
         borderWidth="1px"
-        bg="bg.panel"
+        bg="catalist.grey.0"
         px="2.5"
         py="1.5"
         fontSize="xs"
@@ -212,7 +212,7 @@ export const ChartTooltipContent = React.forwardRef<
                       >
                         <Grid gap="1.5">
                           {nestLabel ? tooltipLabel : null}
-                          <Text color="fg.muted">{itemConfig?.label || item.name}</Text>
+                          <Text color="catalist.grey.600">{itemConfig?.label || item.name}</Text>
                         </Grid>
                         {item.value && (
                           <Text fontFamily="mono" fontWeight="medium">

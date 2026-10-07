@@ -155,13 +155,13 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               lineHeight="1"
             >
               Catalyst{' '}
-              <Text as="span" color="brand.fg">
+              <Text as="span" color="catalist.brand.700">
                 Skeleton
               </Text>
             </Heading>
-            <Text fontSize="lg" color="fg.muted" maxW="xl">
+            <Text fontSize="lg" color="catalist.grey.600" maxW="xl">
               Fundação opinativa para aplicações{' '}
-              <Text as="span" color="fg" fontWeight="semibold">
+              <Text as="span" color="catalist.grey.900" fontWeight="semibold">
                 Symfony + React
               </Text>
               . Core enxuto, módulos opt-in, pronto para produção.
@@ -173,10 +173,10 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               px="4"
               py="2"
               rounded="xl"
-              bg="green.subtle"
+              bg="catalist.green.100"
               borderWidth="1px"
-              borderColor="green.muted"
-              color="green.fg"
+              borderColor="catalist.green.200"
+              color="catalist.green.700"
               fontSize="sm"
               fontWeight="medium"
             >
@@ -216,7 +216,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           <Heading as="h2" size="2xl">
             Tudo que você precisa, pronto
           </Heading>
-          <Text color="fg.muted" fontSize="sm" maxW="md">
+          <Text color="catalist.grey.600" fontSize="sm" maxW="md">
             Chakra UI v3. Veja os componentes em ação.
           </Text>
         </VStack>
@@ -225,14 +225,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           <Card.Root>
             <Card.Header pb="2">
               <HStack mb="1">
-                <Center boxSize="7" rounded="lg" bg="brand.subtle" color="brand.fg">
+                <Center boxSize="7" rounded="lg" bg="catalist.brand.100" color="catalist.brand.700">
                   <Shield size={16} strokeWidth={1.5} />
                 </Center>
                 <Card.Title fontSize="sm" fontWeight="semibold">
                   Autenticação
                 </Card.Title>
               </HStack>
-              <Text fontSize="xs" color="fg.muted">
+              <Text fontSize="xs" color="catalist.grey.600">
                 JWT RS256 com refresh token integrado
               </Text>
             </Card.Header>
@@ -266,11 +266,11 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               </Button>
 
               <HStack gap="3">
-                <Box flex="1" h="1px" bg="border" />
-                <Text as="span" fontSize="xs" color="fg.muted">
+                <Box flex="1" h="1px" bg="catalist.grey.200" />
+                <Text as="span" fontSize="xs" color="catalist.grey.600">
                   ou
                 </Text>
-                <Box flex="1" h="1px" bg="border" />
+                <Box flex="1" h="1px" bg="catalist.grey.200" />
               </HStack>
 
               <SimpleGrid columns={2} gap="2">
@@ -301,14 +301,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           <Card.Root>
             <Card.Header pb="2">
               <HStack mb="1">
-                <Center boxSize="7" rounded="lg" bg="brand.subtle" color="brand.fg">
+                <Center boxSize="7" rounded="lg" bg="catalist.brand.100" color="catalist.brand.700">
                   <Activity size={16} strokeWidth={1.5} />
                 </Center>
                 <Card.Title fontSize="sm" fontWeight="semibold">
                   Controles & Progresso
                 </Card.Title>
               </HStack>
-              <Text fontSize="xs" color="fg.muted">
+              <Text fontSize="xs" color="catalist.grey.600">
                 Switches, barras de progresso e tema
               </Text>
             </Card.Header>
@@ -404,14 +404,14 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
           <Card.Root>
             <Card.Header pb="2">
               <HStack mb="1">
-                <Center boxSize="7" rounded="lg" bg="green.subtle" color="green.fg">
+                <Center boxSize="7" rounded="lg" bg="catalist.green.100" color="catalist.green.700">
                   <Zap size={16} strokeWidth={1.5} />
                 </Center>
                 <Card.Title fontSize="sm" fontWeight="semibold">
                   Botões & Feedback
                 </Card.Title>
               </HStack>
-              <Text fontSize="xs" color="fg.muted">
+              <Text fontSize="xs" color="catalist.grey.600">
                 Variantes, estados e notificações
               </Text>
             </Card.Header>
@@ -436,7 +436,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               <Separator />
 
               <Box>
-                <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="3">
+                <Text fontSize="xs" fontWeight="medium" color="catalist.grey.600" mb="3">
                   Time do projeto
                 </Text>
                 <HStack wrap="wrap" gap="3">
@@ -445,8 +445,8 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                       <Center
                         boxSize="8"
                         rounded="xl"
-                        bg={`${m.palette}.subtle`}
-                        color={`${m.palette}.fg`}
+                        bg={`skeleton.${m.palette}.100`}
+                        color={`skeleton.${m.palette}.700`}
                         fontSize="xs"
                         fontWeight="black"
                         fontFamily="heading"
@@ -457,7 +457,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                         <Text fontSize="xs" fontWeight="semibold" lineHeight="1">
                           {m.name}
                         </Text>
-                        <Text fontSize="xs" color="fg.muted">
+                        <Text fontSize="xs" color="catalist.grey.600">
                           {m.role}
                         </Text>
                       </VStack>
@@ -476,9 +476,9 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                     py="2"
                     rounded="lg"
                     borderWidth="1px"
-                    bg={`${a.palette}.subtle`}
-                    borderColor={`${a.palette}.muted`}
-                    color={`${a.palette}.fg`}
+                    bg={`skeleton.${a.palette}.100`}
+                    borderColor={`skeleton.${a.palette}.200`}
+                    color={`skeleton.${a.palette}.700`}
                     fontSize="xs"
                     fontWeight="medium"
                     w="full"
@@ -502,15 +502,15 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               p="4"
               rounded="xl"
               borderWidth="1px"
-              bg="bg.panel"
+              bg="catalist.grey.0"
               boxShadow="sm"
             >
               <Center
                 boxSize="10"
                 rounded="xl"
                 flexShrink="0"
-                bg={`${s.palette}.subtle`}
-                color={`${s.palette}.fg`}
+                bg={`skeleton.${s.palette}.100`}
+                color={`skeleton.${s.palette}.700`}
               >
                 <s.icon size={20} />
               </Center>
@@ -518,7 +518,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 <Text fontSize="2xl" fontWeight="black" fontFamily="heading" lineHeight="1">
                   {s.value}
                 </Text>
-                <Text fontSize="xs" color="fg.muted">
+                <Text fontSize="xs" color="catalist.grey.600">
                   {s.label}
                 </Text>
               </VStack>
@@ -529,7 +529,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
 
       <Separator />
 
-      <Box as="section" id="stack" bg="bg.muted" borderBottomWidth="1px">
+      <Box as="section" id="stack" bg="catalist.grey.100" borderBottomWidth="1px">
         <Container px="6" py="16">
           <VStack align="center" gap="2" mb="10" textAlign="center">
             <Badge variant="subtle" colorPalette="brand">
@@ -547,8 +547,8 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                   <Center
                     boxSize="8"
                     rounded="lg"
-                    bg="brand.subtle"
-                    color="brand.fg"
+                    bg="catalist.brand.100"
+                    color="catalist.brand.700"
                     flexShrink="0"
                   >
                     <t.icon size={16} />
@@ -556,7 +556,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                   <Text as="span" fontWeight="semibold" fontSize="sm">
                     {t.category}
                   </Text>
-                  <Text as="span" ml="auto" fontSize="xs" color="fg.muted">
+                  <Text as="span" ml="auto" fontSize="xs" color="catalist.grey.600">
                     {t.items.length} tecnologias
                   </Text>
                   <Accordion.ItemIndicator />
@@ -597,7 +597,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               p="6"
               rounded="2xl"
               borderWidth="1px"
-              bg="bg.panel"
+              bg="catalist.grey.0"
               boxShadow="sm"
               align="start"
             >
@@ -608,7 +608,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                   top="8"
                   right="0"
                   transform="translateX(50%)"
-                  color="border"
+                  color="catalist.grey.300"
                 >
                   <ArrowRight size={16} />
                 </Box>
@@ -616,16 +616,16 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
               <Center
                 boxSize="10"
                 rounded="xl"
-                bg="brand.subtle"
+                bg="catalist.brand.100"
                 borderWidth="1px"
-                borderColor="brand.muted"
+                borderColor="catalist.brand.200"
               >
                 <Text
                   as="span"
                   fontSize="sm"
                   fontWeight="black"
                   fontFamily="heading"
-                  color="brand.fg"
+                  color="catalist.brand.700"
                 >
                   {s.n}
                 </Text>
@@ -634,7 +634,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
                 <Heading as="h3" size="sm" mb="2">
                   {s.title}
                 </Heading>
-                <Text fontSize="xs" color="fg.muted" lineHeight="relaxed">
+                <Text fontSize="xs" color="catalist.grey.600" lineHeight="relaxed">
                   {s.desc}
                 </Text>
               </Box>
@@ -643,23 +643,29 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
         </SimpleGrid>
       </Box>
 
-      <Box as="section" borderTopWidth="1px" bg="bg.panel">
+      <Box as="section" borderTopWidth="1px" bg="catalist.grey.0">
         <VStack maxW="6xl" mx="auto" px="6" py="20" align="center" gap="6" textAlign="center">
-          <Center boxSize="16" rounded="2xl" bg="brand.solid" boxShadow="lg">
-            <Rocket size={32} color="white" />
+          <Center
+            boxSize="16"
+            rounded="2xl"
+            bg="catalist.brand.500"
+            color="catalist.grey.0"
+            boxShadow="lg"
+          >
+            <Rocket size={32} color="currentColor" />
           </Center>
 
           <Box>
             <Heading as="h2" size="4xl" fontWeight="black" mb="3">
               Pronto para começar?
             </Heading>
-            <Text color="fg.muted" maxW="md" fontSize="sm">
+            <Text color="catalist.grey.600" maxW="md" fontSize="sm">
               Clone, configure e tenha um projeto full-stack profissional rodando em minutos.
             </Text>
           </Box>
 
           <HStack
-            bg="bg.muted"
+            bg="catalist.grey.100"
             borderWidth="1px"
             rounded="xl"
             px="5"
@@ -670,7 +676,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             maxW="lg"
           >
             <Terminal size={16} />
-            <Text as="span" color="fg.muted" userSelect="none">
+            <Text as="span" color="catalist.grey.600" userSelect="none">
               $
             </Text>
             <Text as="span">git clone catalyst-skeleton && ./setup.sh</Text>
@@ -697,7 +703,7 @@ const HomeContent = memo(function HomeContent({ onAbrirModal }: { onAbrirModal: 
             </Button>
           </HStack>
 
-          <HStack gap="2" fontSize="xs" color="fg.muted">
+          <HStack gap="2" fontSize="xs" color="catalist.grey.600">
             <CheckCircle2 size={12} />
             MIT License · Open Source · Sem vendor lock-in
           </HStack>

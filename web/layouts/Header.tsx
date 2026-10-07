@@ -29,15 +29,15 @@ export const Header = memo(function Header({ onAbrirModal }: HeaderProps) {
       top="0"
       zIndex="sticky"
       borderBottomWidth="1px"
-      bg="bg/80"
+      bg="catalist.grey.0/80"
       backdropFilter="blur(12px)"
     >
       <HStack maxW="6xl" mx="auto" px="6" h="14" justify="space-between">
         <Link asChild>
           <RouterLink to="/">
             <HStack>
-              <Center boxSize="7" rounded="lg" bg="brand.solid">
-                <Code2 size={16} color="white" strokeWidth={2.5} />
+              <Center boxSize="7" rounded="lg" bg="catalist.brand.500" color="catalist.grey.0">
+                <Code2 size={16} color="currentColor" strokeWidth={2.5} />
               </Center>
               <Text
                 as="span"
@@ -47,7 +47,7 @@ export const Header = memo(function Header({ onAbrirModal }: HeaderProps) {
                 fontFamily="heading"
               >
                 Catalyst{' '}
-                <Text as="span" color="brand.fg">
+                <Text as="span" color="catalist.brand.700">
                   Skeleton
                 </Text>
               </Text>
@@ -55,9 +55,9 @@ export const Header = memo(function Header({ onAbrirModal }: HeaderProps) {
           </RouterLink>
         </Link>
 
-        <HStack as="nav" hideBelow="md" gap="6" fontSize="sm" color="fg.muted">
+        <HStack as="nav" hideBelow="md" gap="6" fontSize="sm" color="catalist.grey.600">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} _hover={{ color: 'fg' }}>
+            <Link key={link.href} href={link.href} _hover={{ color: 'catalist.grey.900' }}>
               {link.label}
             </Link>
           ))}

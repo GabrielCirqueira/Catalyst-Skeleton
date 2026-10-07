@@ -59,7 +59,7 @@ export function Component() {
         <Heading as="h1" size="xl">
           Criar conta
         </Heading>
-        <Text fontSize="sm" textAlign="center" color="fg.muted">
+        <Text fontSize="sm" textAlign="center" color="catalist.grey.600">
           Preencha os dados abaixo para se cadastrar
         </Text>
       </Card.Header>
@@ -125,9 +125,9 @@ export function Component() {
           </Button>
         </Stack>
 
-        <Text mt="5" textAlign="center" fontSize="sm" color="fg.muted">
+        <Text mt="5" textAlign="center" fontSize="sm" color="catalist.grey.600">
           Já tem uma conta?{' '}
-          <Link asChild color="brand.fg" fontWeight="medium">
+          <Link asChild color="catalist.brand.700" fontWeight="medium">
             <RouterLink to="/login">Fazer login</RouterLink>
           </Link>
         </Text>

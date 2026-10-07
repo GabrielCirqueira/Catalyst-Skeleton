@@ -11,13 +11,13 @@ const footerLinks = [
 
 export const Footer = memo(function Footer() {
   return (
-    <Box as="footer" borderTopWidth="1px" bg="bg.panel">
+    <Box as="footer" borderTopWidth="1px" bg="catalist.grey.0">
       <HStack maxW="6xl" mx="auto" px="6" h="16" justify="space-between" wrap="wrap">
         <Link asChild>
           <RouterLink to="/">
             <HStack>
-              <Center boxSize="6" rounded="md" bg="brand.solid">
-                <Code2 size={14} color="white" strokeWidth={2.5} />
+              <Center boxSize="6" rounded="md" bg="catalist.brand.500" color="catalist.grey.0">
+                <Code2 size={14} color="currentColor" strokeWidth={2.5} />
               </Center>
               <Text
                 as="span"
@@ -27,7 +27,7 @@ export const Footer = memo(function Footer() {
                 fontFamily="heading"
               >
                 Catalyst{' '}
-                <Text as="span" color="brand.fg">
+                <Text as="span" color="catalist.brand.700">
                   Skeleton
                 </Text>
               </Text>
@@ -35,15 +35,15 @@ export const Footer = memo(function Footer() {
           </RouterLink>
         </Link>
 
-        <HStack as="nav" hideBelow="sm" gap="5" fontSize="xs" color="fg.muted">
+        <HStack as="nav" hideBelow="sm" gap="5" fontSize="xs" color="catalist.grey.600">
           {footerLinks.map((link) => (
-            <Link key={link.href} href={link.href} _hover={{ color: 'fg' }}>
+            <Link key={link.href} href={link.href} _hover={{ color: 'catalist.grey.900' }}>
               {link.label}
             </Link>
           ))}
         </HStack>
 
-        <HStack gap="3" fontSize="xs" color="fg.muted">
+        <HStack gap="3" fontSize="xs" color="catalist.grey.600">
           <Text as="span">MIT License</Text>
           <Link href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
             <Github size={16} />

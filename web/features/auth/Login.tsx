@@ -39,7 +39,7 @@ export function Component() {
         <Heading as="h1" size="xl">
           Entrar
         </Heading>
-        <Text fontSize="sm" textAlign="center" color="fg.muted">
+        <Text fontSize="sm" textAlign="center" color="catalist.grey.600">
           Acesse sua conta com seu usuário e senha
         </Text>
       </Card.Header>
@@ -82,9 +82,9 @@ export function Component() {
           </Button>
         </Stack>
 
-        <Text mt="5" textAlign="center" fontSize="sm" color="fg.muted">
+        <Text mt="5" textAlign="center" fontSize="sm" color="catalist.grey.600">
           Não tem uma conta?{' '}
-          <Link asChild color="brand.fg" fontWeight="medium">
+          <Link asChild color="catalist.brand.700" fontWeight="medium">
             <RouterLink to="/cadastro">Criar conta</RouterLink>
           </Link>
         </Text>

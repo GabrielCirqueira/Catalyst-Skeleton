@@ -32,12 +32,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
       return (
         <VStack minH="50" align="center" justify="center" gap="4" p="8" textAlign="center">
-          <Center boxSize="12" rounded="xl" bg="red.subtle" color="red.fg">
+          <Center boxSize="12" rounded="xl" bg="catalist.red.100" color="catalist.red.700">
             <AlertTriangle size={24} />
           </Center>
           <VStack gap="1">
             <Text fontWeight="semibold">Algo deu errado</Text>
-            <Text fontSize="sm" color="fg.muted">
+            <Text fontSize="sm" color="catalist.grey.600">
               {this.state.error?.message ?? 'Erro inesperado'}
             </Text>
           </VStack>

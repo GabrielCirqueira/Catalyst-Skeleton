@@ -22,6 +22,7 @@
     "validate": "npm run type-check && npm run check",
     "watch": "vite build --watch --mode development --config .tooling/frontend/vite.config.js",
     "preview": "vite preview --config .tooling/frontend/vite.config.js",
+    "theme:brand": "bash scripts/gerar-paleta-brand.sh",
     "prepare": "husky"
   },
   "lint-staged": {

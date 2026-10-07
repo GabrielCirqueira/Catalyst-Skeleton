@@ -134,7 +134,7 @@ Proibido no JSX: `<div>`, `<p>`, `<h1>`–`<h6>`, `<span>`, `className`.
 import { Box, Button, Field, Heading, HStack, Input, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 ```
 
-Estilo: **só props do Chakra** (`p`, `gap`, `bg`, `color`, `colorPalette`). Toast: `toast.success` / `toast.danger` de `@/shared/ui/toaster`. Framer Motion só se o módulo `ui-extra` estiver ativo.
+Estilo: **só props do Chakra** (`p`, `gap`, `bg`, `color`). Cores **somente** da paleta gerada (`skeleton.grey.700`, `skeleton.brand.500`…). Proibido hex e tokens fora da paleta (`fg.muted`, `gray.500`, `red.500` cru do Chakra). `colorPalette` só com escalas da paleta (`brand`, `green`, `red`…). Trocar o nome: `bash scripts/gerar-paleta-brand.sh`. Toast: `toast.success` / `toast.danger` de `@/shared/ui/toaster`. Framer Motion só se o módulo `ui-extra` estiver ativo.
 
 ### 3.3 Dados e estado
 
@@ -388,6 +388,7 @@ Se ao ler o método você precisa adivinhar por que aquele valor está ali, ele 
 
 - [ ] Sem arquivo solto na raiz de `src/Controller/`, `src/Service/`, `src/Exception/`, `src/Feature/`
 - [ ] Sem `<div>` / `<p>` / `<h*>` / `<span>` / `className` — só componentes Chakra (`Box`, `HStack`, `Heading`…)
+- [ ] Cores só da paleta gerada (`skeleton.grey.700` / `paletteToken(...)`) — sem hex
 - [ ] Sem Header/Footer na página
 - [ ] Sem `useEffect`
 - [ ] Sem Axios fora de `config/api.ts` e dos `api.ts` da feature

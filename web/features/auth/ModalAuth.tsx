@@ -143,8 +143,8 @@ export function ModalAuth({ isOpen, onClose }: ModalAuthProps) {
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Center boxSize="7" rounded="lg" bg="brand.solid">
-                <Code2 size={16} color="white" strokeWidth={2.5} />
+              <Center boxSize="7" rounded="lg" bg="catalist.brand.500" color="catalist.grey.0">
+                <Code2 size={16} color="currentColor" strokeWidth={2.5} />
               </Center>
               <Dialog.Title>Catalyst Skeleton</Dialog.Title>
             </Dialog.Header>

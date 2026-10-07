@@ -15,7 +15,7 @@ export function MainLayout() {
   const ctx = useMemo<MainLayoutContext>(() => ({ abrirModal }), [abrirModal])
 
   return (
-    <Flex minH="100vh" direction="column" gap="0" bg="bg" color="fg">
+    <Flex minH="100vh" direction="column" gap="0" bg="catalist.grey.50" color="catalist.grey.900">
       <Header onAbrirModal={abrirModal} />
       <Box as="main" flex="1" display="flex" flexDirection="column">
         <Outlet context={ctx} />

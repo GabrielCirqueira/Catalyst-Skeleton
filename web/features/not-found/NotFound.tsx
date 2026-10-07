@@ -11,7 +11,7 @@ export function Component() {
           fontSize="8xl"
           fontWeight="black"
           fontFamily="heading"
-          color="brand.muted"
+          color="catalist.brand.200"
           lineHeight="1"
         >
           404
@@ -19,7 +19,7 @@ export function Component() {
         <Heading as="h1" size="xl">
           Página não encontrada
         </Heading>
-        <Text color="fg.muted" maxW="sm">
+        <Text color="catalist.grey.600" maxW="sm">
           A rota que você tentou acessar não existe ou foi removida.
         </Text>
       </VStack>

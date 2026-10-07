@@ -24,7 +24,7 @@ export function Toaster() {
         {(toastItem) => (
           <Toast.Root width={{ md: 'sm' }}>
             {toastItem.type === 'loading' ? (
-              <Spinner size="sm" color="blue.solid" />
+              <Spinner size="sm" color="catalist.blue.500" />
             ) : (
               <Toast.Indicator />
             )}
